@@ -1,7 +1,10 @@
+import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/cli/command.dart';
 import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/logging/logger.dart';
+import 'package:firedoctor/models/models.dart';
+import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
 final class DiagnoseCommand extends Command {
@@ -13,16 +16,121 @@ final class DiagnoseCommand extends Command {
   final Logger logger;
   final Terminal terminal;
   final FileSystem fileSystem;
+  final AnalyzerService analyzerService;
 
   DiagnoseCommand({
     required this.logger,
     required this.terminal,
     required this.fileSystem,
+    required this.analyzerService,
   });
 
   @override
   Future<int> execute(List<String> args) async {
-    terminal.writeInfo('Firebase diagnostics coming in Phase 2.');
-    return AppConstants.exitSuccess;
+    final projectPath =
+        args.isNotEmpty ? args.first : fileSystem.currentDirectory;
+
+    if (!fileSystem.exists(projectPath) ||
+        !fileSystem.isDirectory(projectPath)) {
+      terminal.writeError('Project path does not exist: $projectPath');
+      return AppConstants.exitFailure;
+    }
+
+    terminal.writeLine('Diagnosing Firebase setup in $projectPath...');
+    terminal.writeLine('');
+
+    final context = AnalyzerContext(
+      projectPath: projectPath,
+      fileSystem: fileSystem,
+    );
+
+    List<DiagnosticResult> results;
+    try {
+      results = await analyzerService.runAll(context);
+    } catch (e) {
+      terminal.writeError('Diagnosis failed: $e');
+      return AppConstants.exitFailure;
+    }
+
+    var hasCriticalOrError = false;
+    for (final result in results) {
+      _printAnalyzerHeader(result);
+
+      if (result.issues.isEmpty) {
+        terminal.writeSuccess('  No issues found.');
+        terminal.writeLine('');
+        continue;
+      }
+
+      for (final issue in result.issues) {
+        hasCriticalOrError = hasCriticalOrError ||
+            issue.severity == Severity.error ||
+            issue.severity == Severity.critical;
+
+        _printIssue(issue);
+      }
+      terminal.writeLine('');
+    }
+
+    _printSummary(results);
+
+    return hasCriticalOrError
+        ? AppConstants.exitFailure
+        : AppConstants.exitSuccess;
+  }
+
+  void _printAnalyzerHeader(DiagnosticResult result) {
+    terminal
+        .writeLine('── ${result.analyzerName} ── ${result.status.label} ──');
+  }
+
+  void _printIssue(DiagnosticIssue issue) {
+    terminal.writeLine('${issue.severity.emoji} ${issue.code}');
+    terminal.writeLine('  ${issue.title}');
+
+    if (issue.filePath != null) {
+      final location = issue.lineNumber != null
+          ? '${issue.filePath}:${issue.lineNumber}'
+          : issue.filePath!;
+      terminal.writeLine('  Location: $location');
+    }
+
+    if (issue.recommendation != null) {
+      terminal.writeLine(
+          '  Recommendation: ${issue.recommendation!.replaceAll('\n', '\n    ')}');
+    }
+    terminal.writeLine('');
+  }
+
+  void _printSummary(List<DiagnosticResult> results) {
+    var totalErrors = 0;
+    var totalWarnings = 0;
+    var totalInfos = 0;
+    var totalSkipped = 0;
+    var totalPassed = 0;
+
+    for (final r in results) {
+      for (final i in r.issues) {
+        if (i.severity == Severity.critical || i.severity == Severity.error) {
+          totalErrors++;
+        } else if (i.severity == Severity.warning) {
+          totalWarnings++;
+        } else {
+          totalInfos++;
+        }
+      }
+      if (r.status == CheckStatus.skipped) {
+        totalSkipped++;
+      } else if (r.status.isPassed) {
+        totalPassed++;
+      }
+    }
+
+    terminal.writeLine('══ Summary ══');
+    terminal.writeLine('  Analyzers run: ${results.length}');
+    terminal.writeLine('  Passed: $totalPassed | Skipped: $totalSkipped');
+    terminal.writeLine(
+        '  Errors: $totalErrors | Warnings: $totalWarnings | Info: $totalInfos');
+    terminal.writeLine('');
   }
 }

@@ -89,7 +89,8 @@ final class DependencyAnalyzer extends Analyzer {
         title: '${pkg.displayName} in dev_dependencies',
         description: '${pkg.packageName} is placed in dev_dependencies. '
             'Firebase packages should be in dependencies.',
-        recommendation: 'Move ${pkg.packageName} from dev_dependencies to dependencies.',
+        recommendation:
+            'Move ${pkg.packageName} from dev_dependencies to dependencies.',
         filePath: pubspecPath,
       ));
     }
@@ -99,9 +100,11 @@ final class DependencyAnalyzer extends Analyzer {
         severity: Severity.warning,
         code: 'FD202',
         title: 'Loose version constraint for ${entry.key}',
-        description: '${entry.key} has a loose version constraint: "${entry.value}". '
+        description:
+            '${entry.key} has a loose version constraint: "${entry.value}". '
             'This may lead to unexpected breaking changes.',
-        recommendation: 'Use a caret constraint like ^2.0.0 instead of "${entry.value}".',
+        recommendation:
+            'Use a caret constraint like ^2.0.0 instead of "${entry.value}".',
         filePath: pubspecPath,
       ));
     }

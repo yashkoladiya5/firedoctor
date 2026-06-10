@@ -19,9 +19,11 @@ final class Pubspec {
     required this.isFlutterProject,
   });
 
-  bool hasDependency(String packageName) => dependencies.containsKey(packageName);
+  bool hasDependency(String packageName) =>
+      dependencies.containsKey(packageName);
 
-  bool hasDevDependency(String packageName) => devDependencies.containsKey(packageName);
+  bool hasDevDependency(String packageName) =>
+      devDependencies.containsKey(packageName);
 
   String? dependencyVersion(String packageName) => dependencies[packageName];
 }

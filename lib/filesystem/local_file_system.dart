@@ -7,7 +7,8 @@ final class LocalFileSystem implements FileSystem {
   const LocalFileSystem();
 
   @override
-  bool exists(String path) => File(path).existsSync() || Directory(path).existsSync();
+  bool exists(String path) =>
+      File(path).existsSync() || Directory(path).existsSync();
 
   @override
   String readAsString(String path) => File(path).readAsStringSync();

@@ -33,7 +33,8 @@ void main() {
           projectPath: '/test',
           createdAt: DateTime(2024, 1, 1),
           results: [
-            _result(CheckStatus.passed, [_issue(Severity.info), _issue(Severity.warning)]),
+            _result(CheckStatus.passed,
+                [_issue(Severity.info), _issue(Severity.warning)]),
             _result(CheckStatus.passed, [_issue(Severity.error)]),
           ],
         );
@@ -58,7 +59,8 @@ void main() {
           projectPath: '/test',
           createdAt: DateTime(2024, 1, 1),
           results: [
-            _result(CheckStatus.failed, [_issue(Severity.error), _issue(Severity.critical)]),
+            _result(CheckStatus.failed,
+                [_issue(Severity.error), _issue(Severity.critical)]),
             _result(CheckStatus.passed, [_issue(Severity.warning)]),
           ],
         );
@@ -73,7 +75,8 @@ void main() {
           projectPath: '/test',
           createdAt: DateTime(2024, 1, 1),
           results: [
-            _result(CheckStatus.warning, [_issue(Severity.warning), _issue(Severity.warning)]),
+            _result(CheckStatus.warning,
+                [_issue(Severity.warning), _issue(Severity.warning)]),
             _result(CheckStatus.passed, [_issue(Severity.info)]),
           ],
         );
@@ -161,7 +164,8 @@ void main() {
         expect(report.passed, isFalse);
       });
 
-      test('returns true when all results have passed status even with errors', () {
+      test('returns true when all results have passed status even with errors',
+          () {
         final report = DiagnosticReport(
           projectName: 'test',
           projectPath: '/test',

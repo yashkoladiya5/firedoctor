@@ -18,7 +18,8 @@ final class FirebasePackage {
     displayName: 'Firebase Core',
     category: 'Core',
     documentationUrl: 'https://firebase.flutter.dev/docs/core/overview',
-    description: 'Firebase Core package for Flutter. Required by all Firebase services.',
+    description:
+        'Firebase Core package for Flutter. Required by all Firebase services.',
   );
 
   static const auth = FirebasePackage(
@@ -73,7 +74,8 @@ final class FirebasePackage {
     packageName: 'firebase_remote_config',
     displayName: 'Firebase Remote Config',
     category: 'Remote Config',
-    documentationUrl: 'https://firebase.flutter.dev/docs/remote-config/overview',
+    documentationUrl:
+        'https://firebase.flutter.dev/docs/remote-config/overview',
     description: 'Firebase Remote Config package for Flutter.',
   );
 
@@ -94,8 +96,16 @@ final class FirebasePackage {
   );
 
   static const List<FirebasePackage> all = [
-    core, auth, cloudFirestore, storage, messaging,
-    crashlytics, analytics, remoteConfig, database, appCheck,
+    core,
+    auth,
+    cloudFirestore,
+    storage,
+    messaging,
+    crashlytics,
+    analytics,
+    remoteConfig,
+    database,
+    appCheck,
   ];
 
   static FirebasePackage? fromPackageName(String name) {
