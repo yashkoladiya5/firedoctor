@@ -2,7 +2,7 @@ import 'package:firedoctor/analyzers/analyzers.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/logging/logging.dart';
 
-final class AnalyzerService {
+class AnalyzerService {
   final List<Analyzer> _analyzers = [];
   final Logger logger;
 
@@ -27,7 +27,8 @@ final class AnalyzerService {
     return results;
   }
 
-  Future<DiagnosticResult> runAnalyzer(Analyzer analyzer, AnalyzerContext context) async {
+  Future<DiagnosticResult> runAnalyzer(
+      Analyzer analyzer, AnalyzerContext context) async {
     logger.info('Running analyzer: ${analyzer.name}');
     final stopwatch = Stopwatch()..start();
     try {
@@ -40,7 +41,8 @@ final class AnalyzerService {
         duration: stopwatch.elapsed,
         timestamp: result.timestamp,
       );
-      logger.success('${analyzer.name}: ${timedResult.status.label} (${timedResult.issueCount} issues)');
+      logger.success(
+          '${analyzer.name}: ${timedResult.status.label} (${timedResult.issueCount} issues)');
       return timedResult;
     } catch (e) {
       stopwatch.stop();

@@ -17,7 +17,8 @@ void main() {
       final cmd = VersionCommand(logger: logger, terminal: terminal);
       final exitCode = await cmd.execute([]);
 
-      verify(() => terminal.writeLine('FireDoctor v${AppConstants.version}')).called(1);
+      verify(() => terminal.writeLine('FireDoctor v${AppConstants.version}'))
+          .called(1);
       expect(exitCode, equals(AppConstants.exitSuccess));
     });
   });

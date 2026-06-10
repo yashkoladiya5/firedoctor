@@ -54,7 +54,8 @@ dev_dependencies: {}
       });
 
       test('parses project with no dependencies', () {
-        final yaml = 'name: empty_project\ndependencies: {}\ndev_dependencies: {}';
+        final yaml =
+            'name: empty_project\ndependencies: {}\ndev_dependencies: {}';
         final pubspec = PubspecParser.parse(yaml);
 
         expect(pubspec.name, equals('empty_project'));
@@ -115,22 +116,20 @@ dev_dependencies:
       });
 
       test('throws FormatException for non-map content', () {
-        expect(
-            () => PubspecParser.parse('just a string'),
+        expect(() => PubspecParser.parse('just a string'),
             throwsA(isA<FormatException>()));
       });
 
       test('throws TypeError for null content', () {
         expect(
-            () => PubspecParser.parse('null'),
-            throwsA(isA<FormatException>()));
+            () => PubspecParser.parse('null'), throwsA(isA<FormatException>()));
       });
     });
 
     group('tryParse', () {
       test('returns Pubspec for valid YAML', () {
-        final result =
-            PubspecParser.tryParse('name: test\ndependencies: {}\ndev_dependencies: {}');
+        final result = PubspecParser.tryParse(
+            'name: test\ndependencies: {}\ndev_dependencies: {}');
 
         expect(result, isA<Pubspec>());
         expect(result!.name, equals('test'));
@@ -179,8 +178,9 @@ dev_dependencies: {}
       test('returns Pubspec when file exists and is valid', () async {
         final fs = _MockFileSystem();
         when(() => fs.exists('/project/pubspec.yaml')).thenReturn(true);
-        when(() => fs.readAsStringAsync('/project/pubspec.yaml'))
-            .thenAnswer((_) async => 'name: test_app\ndependencies: {}\ndev_dependencies: {}');
+        when(() => fs.readAsStringAsync('/project/pubspec.yaml')).thenAnswer(
+            (_) async =>
+                'name: test_app\ndependencies: {}\ndev_dependencies: {}');
 
         final result =
             await PubspecParser.parseFromFile('/project/pubspec.yaml', fs);

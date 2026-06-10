@@ -26,7 +26,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.critical,
         code: 'MISSING_PUBSPEC',
         title: 'pubspec.yaml not found',
-        description: 'No pubspec.yaml found at $pubspecPath. This directory is not a Dart or Flutter project.',
+        description:
+            'No pubspec.yaml found at $pubspecPath. This directory is not a Dart or Flutter project.',
         filePath: pubspecPath,
       ));
       return DiagnosticResult(
@@ -44,7 +45,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.critical,
         code: 'INVALID_PUBSPEC',
         title: 'pubspec.yaml is invalid',
-        description: 'The pubspec.yaml file could not be parsed. Check for YAML syntax errors.',
+        description:
+            'The pubspec.yaml file could not be parsed. Check for YAML syntax errors.',
         filePath: pubspecPath,
       ));
       return DiagnosticResult(
@@ -61,7 +63,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.warning,
         code: 'NOT_FLUTTER_PROJECT',
         title: 'Not a Flutter project',
-        description: 'This project does not declare a dependency on Flutter. Add flutter to dependencies.',
+        description:
+            'This project does not declare a dependency on Flutter. Add flutter to dependencies.',
         filePath: pubspecPath,
       ));
     }
@@ -72,7 +75,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.warning,
         code: 'MISSING_ANDROID',
         title: 'Missing android/ directory',
-        description: 'No android/ directory found. Android platform support may not be configured.',
+        description:
+            'No android/ directory found. Android platform support may not be configured.',
         filePath: projectPath,
       ));
     }
@@ -83,7 +87,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.warning,
         code: 'MISSING_IOS',
         title: 'Missing ios/ directory',
-        description: 'No ios/ directory found. iOS platform support may not be configured.',
+        description:
+            'No ios/ directory found. iOS platform support may not be configured.',
         filePath: projectPath,
       ));
     }
@@ -94,7 +99,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.error,
         code: 'MISSING_LIB',
         title: 'Missing lib/ directory',
-        description: 'No lib/ directory found. Every Dart project needs a lib/ directory.',
+        description:
+            'No lib/ directory found. Every Dart project needs a lib/ directory.',
         filePath: projectPath,
       ));
     }
@@ -105,7 +111,8 @@ final class ProjectAnalyzer extends Analyzer {
         severity: Severity.info,
         code: 'MISSING_TEST',
         title: 'Missing test/ directory',
-        description: 'No test/ directory found. Consider adding tests to your project.',
+        description:
+            'No test/ directory found. Consider adding tests to your project.',
         filePath: projectPath,
       ));
     }
@@ -116,7 +123,8 @@ final class ProjectAnalyzer extends Analyzer {
         code: 'FLUTTER_SDK_CONSTRAINT',
         title: 'Flutter SDK constraint',
         description: 'Flutter SDK constraint: ${pubspec.flutterSdkConstraint}',
-        recommendation: 'Ensure your Flutter SDK version satisfies this constraint.',
+        recommendation:
+            'Ensure your Flutter SDK version satisfies this constraint.',
         filePath: pubspecPath,
       ));
     }

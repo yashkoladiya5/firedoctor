@@ -7,6 +7,7 @@ import 'package:firedoctor/terminal/terminal_interface.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 
 class MockTerminal extends Mock implements Terminal {}
+
 class MockFileSystem extends Mock implements FileSystem {}
 
 DiagnosticIssue _issue(Severity severity) {
@@ -142,7 +143,8 @@ void main() {
       test('writes JSON to filesystem', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
         final fs = MockFileSystem();
-        when(() => fs.writeAsStringAsync(any(), any())).thenAnswer((_) async {});
+        when(() => fs.writeAsStringAsync(any(), any()))
+            .thenAnswer((_) async {});
 
         final report = service.generateReport(results: []);
 

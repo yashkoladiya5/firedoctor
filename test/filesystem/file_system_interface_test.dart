@@ -19,10 +19,12 @@ class FakeFileSystem implements FileSystem {
   }
 
   @override
-  bool exists(String path) => _files.containsKey(path) || _directories.contains(path);
+  bool exists(String path) =>
+      _files.containsKey(path) || _directories.contains(path);
 
   @override
-  String readAsString(String path) => _files[path] ?? (throw Exception('File not found: $path'));
+  String readAsString(String path) =>
+      _files[path] ?? (throw Exception('File not found: $path'));
 
   @override
   Future<String> readAsStringAsync(String path) async =>
@@ -42,7 +44,8 @@ class FakeFileSystem implements FileSystem {
   List<String> listDirectory(String path) {
     if (!_directories.contains(path)) return [];
     return _files.keys
-        .where((f) => f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1)
+        .where((f) =>
+            f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1)
         .toList()
       ..sort();
   }
@@ -80,8 +83,14 @@ class FakeFileSystem implements FileSystem {
   Future<void> delete(String path) async {
     _files.remove(path);
     _directories.remove(path);
-    _files.keys.where((k) => k.startsWith('$path/')).toList().forEach(_files.remove);
-    _directories.where((d) => d.startsWith('$path/')).toList().forEach(_directories.remove);
+    _files.keys
+        .where((k) => k.startsWith('$path/'))
+        .toList()
+        .forEach(_files.remove);
+    _directories
+        .where((d) => d.startsWith('$path/'))
+        .toList()
+        .forEach(_directories.remove);
   }
 }
 

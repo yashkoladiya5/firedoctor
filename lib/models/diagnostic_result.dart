@@ -18,8 +18,11 @@ final class DiagnosticResult {
   });
 
   int get issueCount => issues.length;
-  int get errorCount =>
-      issues.where((i) => i.severity == Severity.error || i.severity == Severity.critical).length;
-  int get warningCount => issues.where((i) => i.severity == Severity.warning).length;
+  int get errorCount => issues
+      .where((i) =>
+          i.severity == Severity.error || i.severity == Severity.critical)
+      .length;
+  int get warningCount =>
+      issues.where((i) => i.severity == Severity.warning).length;
   bool get passed => status.isPassed;
 }

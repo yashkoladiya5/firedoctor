@@ -2,12 +2,15 @@ import 'package:mocktail/mocktail.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 import 'package:firedoctor/analyzers/analyzer.dart';
+import 'package:firedoctor/services/analyzer_service.dart';
 
 class MockTerminal extends Mock implements Terminal {}
 
 class MockFileSystem extends Mock implements FileSystem {}
 
 class MockAnalyzer extends Mock implements Analyzer {}
+
+class MockAnalyzerService extends Mock implements AnalyzerService {}
 
 class FakeTerminal implements Terminal {
   final buffer = StringBuffer();
@@ -79,7 +82,8 @@ class FakeFileSystem implements FileSystem {
   List<String> listDirectory(String path) {
     if (!_directories.contains(path)) return [];
     return _files.keys
-        .where((f) => f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1)
+        .where((f) =>
+            f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1)
         .toList()
       ..sort();
   }

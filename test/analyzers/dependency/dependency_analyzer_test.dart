@@ -20,25 +20,30 @@ void main() {
 
     test('has correct metadata', () {
       expect(analyzer.name, equals('dependency'));
-      expect(analyzer.description, equals('Analyzes Firebase dependencies in pubspec.yaml'));
+      expect(analyzer.description,
+          equals('Analyzes Firebase dependencies in pubspec.yaml'));
       expect(analyzer.category, equals('dependency'));
     });
 
     group('empty / no Firebase', () {
-      test('returns passed with no issues when no Firebase packages in pubspec', () async {
+      test('returns passed with no issues when no Firebase packages in pubspec',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies: {}
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
         expect(result.issues, isEmpty);
       });
 
-      test('returns passed with no issues when pubspec has only non-Firebase packages', () async {
+      test(
+          'returns passed with no issues when pubspec has only non-Firebase packages',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
@@ -49,7 +54,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -60,16 +66,19 @@ dev_dependencies:
     group('missing pubspec', () {
       test('returns skipped when pubspec.yaml does not exist', () async {
         final fs = FakeFileSystem();
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
         expect(result.issues, isEmpty);
       });
 
-      test('returns skipped with no issues when pubspec.yaml does not exist', () async {
+      test('returns skipped with no issues when pubspec.yaml does not exist',
+          () async {
         final fs = FakeFileSystem();
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -80,7 +89,8 @@ dev_dependencies:
     group('invalid pubspec', () {
       test('returns skipped when pubspec.yaml content is invalid', () async {
         final fs = _createFs('{{{');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -89,14 +99,17 @@ dev_dependencies:
     });
 
     group('missing firebase_core (FD200)', () {
-      test('returns critical FD200 when firebase_auth exists without firebase_core', () async {
+      test(
+          'returns critical FD200 when firebase_auth exists without firebase_core',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
   firebase_auth: ^1.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -105,14 +118,17 @@ dev_dependencies: {}
         expect(result.issues.first.severity, equals(Severity.critical));
       });
 
-      test('returns critical FD200 when cloud_firestore exists without firebase_core', () async {
+      test(
+          'returns critical FD200 when cloud_firestore exists without firebase_core',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
   cloud_firestore: ^5.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -128,7 +144,8 @@ dependencies:
   firebase_auth: ^1.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.first.recommendation, isNotEmpty);
@@ -137,7 +154,9 @@ dev_dependencies: {}
     });
 
     group('firebase_core present', () {
-      test('does not produce FD200 when firebase_core is present with other packages', () async {
+      test(
+          'does not produce FD200 when firebase_core is present with other packages',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
@@ -146,7 +165,8 @@ dependencies:
   cloud_firestore: ^5.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD200'), isEmpty);
@@ -159,7 +179,8 @@ dependencies:
   firebase_core: ^3.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -168,7 +189,8 @@ dev_dependencies: {}
     });
 
     group('dev_dependencies check (FD201)', () {
-      test('returns error FD201 for each Firebase package in dev_dependencies', () async {
+      test('returns error FD201 for each Firebase package in dev_dependencies',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
@@ -177,15 +199,19 @@ dev_dependencies:
   firebase_auth: ^1.0.0
   firebase_analytics: ^11.0.0
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
-        final fd201Issues = result.issues.where((i) => i.code == 'FD201').toList();
+        final fd201Issues =
+            result.issues.where((i) => i.code == 'FD201').toList();
         expect(fd201Issues, hasLength(2));
         expect(fd201Issues.every((i) => i.severity == Severity.error), isTrue);
       });
 
-      test('returns correct status (failed) when packages are in dev_dependencies', () async {
+      test(
+          'returns correct status (failed) when packages are in dev_dependencies',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
@@ -193,20 +219,24 @@ dependencies:
 dev_dependencies:
   firebase_auth: ^1.0.0
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
       });
 
-      test('produces both FD201 and FD200 when packages in dev_deps without firebase_core', () async {
+      test(
+          'produces both FD201 and FD200 when packages in dev_deps without firebase_core',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies: {}
 dev_dependencies:
   firebase_auth: ^1.0.0
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD200'), isTrue);
@@ -222,7 +252,8 @@ dependencies:
   firebase_core: any
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues, hasLength(1));
@@ -237,7 +268,8 @@ dependencies:
   firebase_core: '*'
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues, hasLength(1));
@@ -252,7 +284,8 @@ dependencies:
   firebase_core: ''
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues, hasLength(1));
@@ -260,27 +293,31 @@ dev_dependencies: {}
         expect(result.issues.first.severity, equals(Severity.warning));
       });
 
-      test('does not produce FD202 for proper caret version constraint', () async {
+      test('does not produce FD202 for proper caret version constraint',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
   firebase_core: ^3.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD202'), isEmpty);
       });
 
-      test('does not produce FD202 for proper pinned version constraint', () async {
+      test('does not produce FD202 for proper pinned version constraint',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
   firebase_core: 3.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD202'), isEmpty);
@@ -288,7 +325,9 @@ dev_dependencies: {}
     });
 
     group('combined scenarios', () {
-      test('produces all three issue types (FD200, FD201, FD202) in a complex pubspec', () async {
+      test(
+          'produces all three issue types (FD200, FD201, FD202) in a complex pubspec',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
@@ -296,7 +335,8 @@ dependencies:
 dev_dependencies:
   firebase_analytics: ^11.0.0
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD200'), isTrue);
@@ -304,27 +344,31 @@ dev_dependencies:
         expect(result.issues.any((i) => i.code == 'FD202'), isTrue);
       });
 
-      test('returns correct CheckStatus.failed when critical issues exist', () async {
+      test('returns correct CheckStatus.failed when critical issues exist',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
   firebase_auth: ^1.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
       });
 
-      test('returns correct CheckStatus.warning when only warning issues exist', () async {
+      test('returns correct CheckStatus.warning when only warning issues exist',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
   firebase_core: any
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
@@ -339,7 +383,8 @@ dependencies:
   Firebase_Auth: ^1.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Firebase_Auth is not a recognized Firebase package, so no issues
@@ -363,7 +408,8 @@ dependencies:
   firebase_app_check: ^3.0.0
 dev_dependencies: {}
 ''');
-        final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // firebase_core is present, so no FD200

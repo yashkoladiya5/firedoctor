@@ -9,7 +9,9 @@ import 'package:firedoctor/terminal/terminal_interface.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 
 class MockTerminal extends Mock implements Terminal {}
+
 class MockFileSystem extends Mock implements FileSystem {}
+
 class MockCommand extends Mock implements Command {}
 
 void main() {
@@ -22,7 +24,8 @@ void main() {
     terminal = MockTerminal();
     fileSystem = MockFileSystem();
     logger = Logger(terminal: terminal);
-    runner = CommandRunner(logger: logger, terminal: terminal, fileSystem: fileSystem);
+    runner = CommandRunner(
+        logger: logger, terminal: terminal, fileSystem: fileSystem);
   });
 
   group('HelpCommand', () {
@@ -30,10 +33,12 @@ void main() {
       test('with no args calls printUsage and returns exitSuccess', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
 
-        final cmd = HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd =
+            HelpCommand(logger: logger, terminal: terminal, runner: runner);
         final exitCode = await cmd.execute([]);
 
-        verify(() => terminal.writeLine(any(that: contains('Usage')))).called(1);
+        verify(() => terminal.writeLine(any(that: contains('Usage'))))
+            .called(1);
         expect(exitCode, equals(AppConstants.exitSuccess));
       });
 
@@ -46,11 +51,13 @@ void main() {
 
         runner.register(mockCommand);
 
-        final cmd = HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd =
+            HelpCommand(logger: logger, terminal: terminal, runner: runner);
         final exitCode = await cmd.execute(['version']);
 
         verify(() => terminal.writeLine('Command: version')).called(1);
-        verify(() => terminal.writeLine('Description: Shows the version')).called(1);
+        verify(() => terminal.writeLine('Description: Shows the version'))
+            .called(1);
         verify(() => terminal.writeLine('Aliases: v, -v')).called(1);
         expect(exitCode, equals(AppConstants.exitSuccess));
       });
@@ -64,18 +71,20 @@ void main() {
 
         runner.register(mockCommand);
 
-        final cmd = HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd =
+            HelpCommand(logger: logger, terminal: terminal, runner: runner);
         final exitCode = await cmd.execute(['simple']);
 
         verify(() => terminal.writeLine('Command: simple')).called(1);
-          verifyNever(() => terminal.writeLine(any(that: startsWith('Aliases'))));
+        verifyNever(() => terminal.writeLine(any(that: startsWith('Aliases'))));
         expect(exitCode, equals(AppConstants.exitSuccess));
       });
 
       test('with unknown command name returns exitFailure', () async {
         when(() => terminal.writeError(any())).thenReturn(null);
 
-        final cmd = HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd =
+            HelpCommand(logger: logger, terminal: terminal, runner: runner);
         final exitCode = await cmd.execute(['unknown']);
 
         verify(() => terminal.writeError('Unknown command: unknown')).called(1);

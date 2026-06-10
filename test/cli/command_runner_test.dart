@@ -8,7 +8,9 @@ import 'package:firedoctor/terminal/terminal_interface.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 
 class MockTerminal extends Mock implements Terminal {}
+
 class MockFileSystem extends Mock implements FileSystem {}
+
 class MockCommand extends Mock implements Command {}
 
 void main() {
@@ -21,7 +23,8 @@ void main() {
     terminal = MockTerminal();
     fileSystem = MockFileSystem();
     logger = Logger(terminal: terminal);
-    runner = CommandRunner(logger: logger, terminal: terminal, fileSystem: fileSystem);
+    runner = CommandRunner(
+        logger: logger, terminal: terminal, fileSystem: fileSystem);
   });
 
   group('CommandRunner', () {
@@ -76,7 +79,8 @@ void main() {
       test('with no args calls printUsage and returns exitSuccess', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
         final exitCode = await runner.run([]);
-        verify(() => terminal.writeLine(any(that: contains('Usage')))).called(1);
+        verify(() => terminal.writeLine(any(that: contains('Usage'))))
+            .called(1);
         expect(exitCode, equals(AppConstants.exitSuccess));
       });
 
@@ -91,7 +95,8 @@ void main() {
         final command = MockCommand();
         when(() => command.name).thenReturn('testcmd');
         when(() => command.aliases).thenReturn([]);
-        when(() => command.execute(any())).thenAnswer((_) async => AppConstants.exitSuccess);
+        when(() => command.execute(any()))
+            .thenAnswer((_) async => AppConstants.exitSuccess);
         when(() => terminal.writeLine(any())).thenReturn(null);
 
         runner.register(command);

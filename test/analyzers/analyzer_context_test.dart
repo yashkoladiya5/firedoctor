@@ -36,7 +36,8 @@ void main() {
         configuration: {'key': 'value', 'verbose': 'true'},
       );
 
-      expect(context.configuration, equals({'key': 'value', 'verbose': 'true'}));
+      expect(
+          context.configuration, equals({'key': 'value', 'verbose': 'true'}));
     });
   });
 }

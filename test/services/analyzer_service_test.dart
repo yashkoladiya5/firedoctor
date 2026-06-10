@@ -9,7 +9,9 @@ import 'package:firedoctor/logging/logger.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
 class MockAnalyzer extends Mock implements Analyzer {}
+
 class MockTerminal extends Mock implements Terminal {}
+
 class MockFileSystem extends Mock implements FileSystem {}
 
 void main() {
@@ -57,7 +59,8 @@ void main() {
         final analyzer = MockAnalyzer();
         when(() => analyzer.name).thenReturn('test');
         service.register(analyzer);
-        expect(() => service.registeredAnalyzers.add(analyzer), throwsA(isA<Error>()));
+        expect(() => service.registeredAnalyzers.add(analyzer),
+            throwsA(isA<Error>()));
       });
     });
 
@@ -101,7 +104,8 @@ void main() {
           fileSystem: MockFileSystem(),
         );
 
-        when(() => analyzer.analyze(any())).thenThrow(Exception('Something broke'));
+        when(() => analyzer.analyze(any()))
+            .thenThrow(Exception('Something broke'));
         when(() => terminal.writeInfo(any())).thenReturn(null);
         when(() => terminal.writeError(any())).thenReturn(null);
 

@@ -24,6 +24,11 @@ Future<void> runFireDoctor(List<String> args) async {
   const fileSystem = LocalFileSystem();
   final logger = Logger(terminal: terminal, name: 'firedoctor');
 
+  final analyzerService = AnalyzerService(logger: logger);
+  analyzerService.register(ProjectAnalyzer());
+  analyzerService.register(DependencyAnalyzer());
+  analyzerService.register(FirebaseCoreAnalyzer());
+
   final runner = CommandRunner(
     logger: logger,
     terminal: terminal,
@@ -33,16 +38,25 @@ Future<void> runFireDoctor(List<String> args) async {
   runner.registerAll([
     HelpCommand(logger: logger, terminal: terminal, runner: runner),
     VersionCommand(logger: logger, terminal: terminal),
-    DiagnoseCommand(logger: logger, terminal: terminal, fileSystem: fileSystem),
-    DoctorCommand(logger: logger, terminal: terminal, fileSystem: fileSystem),
-    ReportCommand(logger: logger, terminal: terminal, fileSystem: fileSystem),
+    DiagnoseCommand(
+      logger: logger,
+      terminal: terminal,
+      fileSystem: fileSystem,
+      analyzerService: analyzerService,
+    ),
+    DoctorCommand(
+      logger: logger,
+      terminal: terminal,
+      fileSystem: fileSystem,
+      analyzerService: analyzerService,
+    ),
+    ReportCommand(
+      logger: logger,
+      terminal: terminal,
+      fileSystem: fileSystem,
+      analyzerService: analyzerService,
+    ),
   ]);
-
-  // Initialize analyzers for future use
-  final analyzerService = AnalyzerService(logger: logger);
-  analyzerService.register(ProjectAnalyzer());
-  analyzerService.register(DependencyAnalyzer());
-  analyzerService.register(FirebaseCoreAnalyzer());
 
   final exitCode = await runner.run(args);
   exit(exitCode);

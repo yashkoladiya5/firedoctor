@@ -107,7 +107,8 @@ void main() {
       });
 
       test('returns notApplicable for "not_applicable"', () {
-        expect(CheckStatus.fromName('not_applicable'), equals(CheckStatus.notApplicable));
+        expect(CheckStatus.fromName('not_applicable'),
+            equals(CheckStatus.notApplicable));
       });
 
       test('throws for invalid name', () {

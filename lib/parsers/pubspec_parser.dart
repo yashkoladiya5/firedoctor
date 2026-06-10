@@ -46,7 +46,8 @@ final class PubspecParser {
     final flutterSdk = environment?['flutter'] as String?;
     final dartSdk = environment?['sdk'] as String?;
 
-    final isFlutter = deps.containsKey('flutter') || devDeps.containsKey('flutter');
+    final isFlutter =
+        deps.containsKey('flutter') || devDeps.containsKey('flutter');
 
     return Pubspec(
       name: name,

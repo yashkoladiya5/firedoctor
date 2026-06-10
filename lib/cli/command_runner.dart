@@ -64,9 +64,9 @@ final class CommandRunner {
     terminal.writeLine('');
     terminal.writeLine('Commands:');
     for (final cmd in _commands) {
-      final aliases =
-          cmd.aliases.isEmpty ? '' : ' (${cmd.aliases.join(", ")})';
-      terminal.writeLine('  ${cmd.name.padRight(16)}$aliases  ${cmd.description}');
+      final aliases = cmd.aliases.isEmpty ? '' : ' (${cmd.aliases.join(", ")})';
+      terminal
+          .writeLine('  ${cmd.name.padRight(16)}$aliases  ${cmd.description}');
     }
     terminal.writeLine('');
     terminal.writeLine('Run "firedoctor help <command>" for more info.');
