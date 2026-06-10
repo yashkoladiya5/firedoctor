@@ -81,11 +81,27 @@ class FakeFileSystem implements FileSystem {
   @override
   List<String> listDirectory(String path) {
     if (!_directories.contains(path)) return [];
-    return _files.keys
-        .where((f) =>
-            f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1)
-        .toList()
-      ..sort();
+    final entries = <String>{};
+    for (final f in _files.keys) {
+      if (f.startsWith('$path/')) {
+        final relative = f.substring(path.length + 1);
+        final slashIndex = relative.indexOf('/');
+        if (slashIndex == -1) {
+          entries.add(f);
+        } else {
+          entries.add('${path}/${relative.substring(0, slashIndex)}');
+        }
+      }
+    }
+    for (final d in _directories) {
+      if (d.startsWith('$path/') && d != path) {
+        final relative = d.substring(path.length + 1);
+        if (!relative.contains('/')) {
+          entries.add(d);
+        }
+      }
+    }
+    return entries.toList()..sort();
   }
 
   @override

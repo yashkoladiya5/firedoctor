@@ -5,3 +5,5 @@ export 'project/project.dart';
 export 'dependency/dependency.dart';
 export 'firebase_core/firebase_core.dart';
 export 'android/android.dart';
+export 'ios/ios.dart';
+export 'fcm/fcm.dart';
