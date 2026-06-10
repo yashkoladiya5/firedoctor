@@ -8,6 +8,7 @@ final class DiagnosticResult {
   final List<DiagnosticIssue> issues;
   final Duration duration;
   final DateTime timestamp;
+  final String? projectName;
 
   const DiagnosticResult({
     required this.analyzerName,
@@ -15,6 +16,7 @@ final class DiagnosticResult {
     required this.issues,
     required this.duration,
     required this.timestamp,
+    this.projectName,
   });
 
   int get issueCount => issues.length;

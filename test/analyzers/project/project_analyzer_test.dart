@@ -262,5 +262,37 @@ dev_dependencies: {}
 
       expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);
     });
+
+    group('projectName', () {
+      test('sets projectName when pubspec is valid', () async {
+        final fs = FakeFileSystem();
+        setUpFlutterProject(fs);
+        addAllDirectories(fs);
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final result = await analyzer.analyze(context);
+
+        expect(result.projectName, equals('test_app'));
+      });
+
+      test('is null when pubspec is missing', () async {
+        final fs = FakeFileSystem();
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final result = await analyzer.analyze(context);
+
+        expect(result.projectName, isNull);
+      });
+
+      test('is null when pubspec is invalid', () async {
+        final fs = FakeFileSystem();
+        fs.addFile('/project/pubspec.yaml', '{{{');
+        final context =
+            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final result = await analyzer.analyze(context);
+
+        expect(result.projectName, isNull);
+      });
+    });
   });
 }

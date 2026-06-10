@@ -76,11 +76,7 @@ final class DoctorCommand extends Command {
 
   String _extractProjectName(List<DiagnosticResult> results) {
     for (final result in results) {
-      if (result.analyzerName == 'project') {
-        for (final issue in result.issues) {
-          if (issue.code == 'MISSING_PUBSPEC') return 'unknown';
-        }
-      }
+      if (result.projectName != null) return result.projectName!;
     }
     return 'unknown';
   }
