@@ -63,32 +63,34 @@ final class FirebaseCoreAnalyzer extends Analyzer {
 
     for (final filePath in dartFiles) {
       final content = fs.readAsString(filePath);
-      final lines = content.split('\n');
-      for (int i = 0; i < lines.length; i++) {
-        final line = lines[i];
+      final cleaned = _stripCommentsAndStrings(content);
+      final cleanedLines = cleaned.split('\n');
+
+      initCalls.addAll(_findInitCalls(cleaned, filePath));
+
+      for (int i = 0; i < cleanedLines.length; i++) {
+        final line = cleanedLines[i];
         final lineNumber = i + 1;
 
-        if (line.contains('Firebase.initializeApp(')) {
-          final initIndex = line.indexOf('Firebase.initializeApp(');
-          final isAwaited =
-              line.contains('await') && line.indexOf('await') < initIndex;
-          initCalls.add(_InitCall(
-            filePath: filePath,
-            lineNumber: lineNumber,
-            isAwaited: isAwaited,
-          ));
-        }
-
         if (line.contains('WidgetsFlutterBinding.ensureInitialized(')) {
-          ensureInitializedByFile.putIfAbsent(filePath, () => lineNumber);
+          final idx = line.indexOf('WidgetsFlutterBinding.ensureInitialized(');
+          if (!(idx > 0 && RegExp(r'[a-zA-Z0-9_]').hasMatch(line[idx - 1]))) {
+            ensureInitializedByFile.putIfAbsent(filePath, () => lineNumber);
+          }
         }
 
         if (line.contains('runApp(')) {
-          runAppByFile.putIfAbsent(filePath, () => lineNumber);
+          final idx = line.indexOf('runApp(');
+          if (!(idx > 0 && RegExp(r'[a-zA-Z0-9_]').hasMatch(line[idx - 1]))) {
+            runAppByFile.putIfAbsent(filePath, () => lineNumber);
+          }
         }
 
         if (line.contains('DefaultFirebaseOptions.currentPlatform')) {
-          foundDefaultOptions = true;
+          final idx = line.indexOf('DefaultFirebaseOptions.currentPlatform');
+          if (!(idx > 0 && RegExp(r'[a-zA-Z0-9_]').hasMatch(line[idx - 1]))) {
+            foundDefaultOptions = true;
+          }
         }
       }
     }
@@ -134,11 +136,7 @@ final class FirebaseCoreAnalyzer extends Analyzer {
       } else {
         for (final call in initCalls) {
           final eiLine = ensureInitializedByFile[call.filePath];
-          if (eiLine == null) {
-            shouldEmit = true;
-            break;
-          }
-          if (call.lineNumber <= eiLine) {
+          if (eiLine != null && call.lineNumber <= eiLine) {
             shouldEmit = true;
             break;
           }
@@ -272,6 +270,135 @@ final class FirebaseCoreAnalyzer extends Analyzer {
       }
     }
     return files;
+  }
+
+  String _stripCommentsAndStrings(String source) {
+    final buffer = StringBuffer();
+    var i = 0;
+    while (i < source.length) {
+      if (i < source.length - 1 && source[i] == '/' && source[i + 1] == '/') {
+        buffer.write(' ');
+        i++;
+        while (i < source.length && source[i] != '\n') {
+          buffer.write(' ');
+          i++;
+        }
+        if (i < source.length) {
+          buffer.write(source[i]);
+          i++;
+        }
+        continue;
+      }
+      if (i < source.length - 1 && source[i] == '/' && source[i + 1] == '*') {
+        buffer.write('  ');
+        i += 2;
+        while (i < source.length - 1 &&
+            !(source[i] == '*' && source[i + 1] == '/')) {
+          buffer.write(source[i] == '\n' ? '\n' : ' ');
+          i++;
+        }
+        if (i < source.length - 1) {
+          buffer.write('  ');
+          i += 2;
+        }
+        continue;
+      }
+      if (source[i] == '"' || source[i] == "'") {
+        final quote = source[i];
+        buffer.write(quote);
+        i++;
+        if (i + 1 < source.length &&
+            source[i] == quote &&
+            source[i + 1] == quote) {
+          buffer.write('$quote$quote');
+          i += 2;
+          while (i < source.length - 2 &&
+              !(source[i] == quote &&
+                  source[i + 1] == quote &&
+                  source[i + 2] == quote)) {
+            buffer.write(source[i] == '\n' ? '\n' : ' ');
+            i++;
+          }
+          if (i < source.length - 2) {
+            buffer.write('$quote$quote$quote');
+            i += 3;
+          }
+        } else {
+          while (i < source.length && source[i] != quote) {
+            if (source[i] == '\\' && i + 1 < source.length) {
+              buffer.write('  ');
+              i += 2;
+            } else {
+              buffer.write(source[i] == '\n' ? '\n' : ' ');
+              i++;
+            }
+          }
+          if (i < source.length) {
+            buffer.write(quote);
+            i++;
+          }
+        }
+        continue;
+      }
+      buffer.write(source[i]);
+      i++;
+    }
+    return buffer.toString();
+  }
+
+  List<_InitCall> _findInitCalls(String content, String filePath) {
+    final calls = <_InitCall>[];
+    final lines = content.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      var searchStart = 0;
+      while (true) {
+        final idx = line.indexOf('Firebase.initializeApp(', searchStart);
+        if (idx == -1) break;
+
+        if (idx > 0 && RegExp(r'[a-zA-Z0-9_]').hasMatch(line[idx - 1])) {
+          searchStart = idx + 1;
+          continue;
+        }
+
+        final beforeCall = line.substring(0, idx);
+        final afterCall =
+            line.substring(idx + 'Firebase.initializeApp('.length);
+
+        var depth = 1;
+        var j = 0;
+        while (j < afterCall.length && depth > 0) {
+          if (afterCall[j] == '(') depth++;
+          if (afterCall[j] == ')') depth--;
+          j++;
+        }
+
+        var lineIdx = i + 1;
+        while (depth > 0 && lineIdx < lines.length) {
+          final nextLine = lines[lineIdx];
+          for (var k = 0; k < nextLine.length && depth > 0; k++) {
+            if (nextLine[k] == '(') depth++;
+            if (nextLine[k] == ')') depth--;
+          }
+          lineIdx++;
+        }
+
+        final trimmedBefore = beforeCall.trim();
+        final lastWord = trimmedBefore.isEmpty
+            ? ''
+            : trimmedBefore.split(RegExp(r'\s+')).last;
+        final isAwaited = lastWord == 'await';
+
+        calls.add(_InitCall(
+          filePath: filePath,
+          lineNumber: i + 1,
+          isAwaited: isAwaited,
+        ));
+
+        searchStart = idx + 1;
+      }
+    }
+    return calls;
   }
 }
 

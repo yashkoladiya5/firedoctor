@@ -5,7 +5,6 @@ import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/logging/logger.dart';
 import 'package:firedoctor/models/models.dart';
-import 'package:firedoctor/services/analyzer_service.dart';
 import '../../shared/mocks.dart';
 
 void main() {
@@ -233,6 +232,61 @@ void main() {
       expect(exitCode, equals(AppConstants.exitSuccess));
       expect(fakeTerminal.buffer.toString(),
           contains('FireDoctor Diagnostic Report'));
+    });
+
+    test('uses projectName from results', () async {
+      final fakeTerminal = FakeTerminal();
+      final cmd = DoctorCommand(
+        logger: Logger(terminal: fakeTerminal),
+        terminal: fakeTerminal,
+        fileSystem: fileSystem,
+        analyzerService: analyzerService,
+      );
+
+      when(() => fileSystem.exists('/project')).thenReturn(true);
+      when(() => fileSystem.isDirectory('/project')).thenReturn(true);
+      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+            DiagnosticResult(
+              analyzerName: 'project',
+              status: CheckStatus.passed,
+              issues: [],
+              duration: Duration.zero,
+              timestamp: DateTime.now(),
+              projectName: 'my_app',
+            ),
+          ]);
+
+      final exitCode = await cmd.execute(['/project']);
+
+      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(fakeTerminal.buffer.toString(), contains('Project: my_app'));
+    });
+
+    test('falls back to unknown when no projectName in results', () async {
+      final fakeTerminal = FakeTerminal();
+      final cmd = DoctorCommand(
+        logger: Logger(terminal: fakeTerminal),
+        terminal: fakeTerminal,
+        fileSystem: fileSystem,
+        analyzerService: analyzerService,
+      );
+
+      when(() => fileSystem.exists('/project')).thenReturn(true);
+      when(() => fileSystem.isDirectory('/project')).thenReturn(true);
+      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+            DiagnosticResult(
+              analyzerName: 'project',
+              status: CheckStatus.passed,
+              issues: [],
+              duration: Duration.zero,
+              timestamp: DateTime.now(),
+            ),
+          ]);
+
+      final exitCode = await cmd.execute(['/project']);
+
+      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(fakeTerminal.buffer.toString(), contains('Project: unknown'));
     });
   });
 }

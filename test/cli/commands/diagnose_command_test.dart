@@ -5,7 +5,6 @@ import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/logging/logger.dart';
 import 'package:firedoctor/models/models.dart';
-import 'package:firedoctor/services/analyzer_service.dart';
 import '../../shared/mocks.dart';
 
 void main() {

@@ -40,6 +40,7 @@ class AnalyzerService {
         issues: result.issues,
         duration: stopwatch.elapsed,
         timestamp: result.timestamp,
+        projectName: result.projectName,
       );
       logger.success(
           '${analyzer.name}: ${timedResult.status.label} (${timedResult.issueCount} issues)');

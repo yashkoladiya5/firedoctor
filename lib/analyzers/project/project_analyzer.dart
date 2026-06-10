@@ -149,6 +149,7 @@ final class ProjectAnalyzer extends Analyzer {
       issues: issues,
       duration: DateTime.now().difference(startTime),
       timestamp: DateTime.now(),
+      projectName: pubspec.name,
     );
   }
 }

@@ -141,5 +141,30 @@ void main() {
         expect(result.passed, isTrue);
       });
     });
+
+    group('projectName', () {
+      test('defaults to null when not provided', () {
+        final result = DiagnosticResult(
+          analyzerName: 'test',
+          status: CheckStatus.passed,
+          issues: [],
+          duration: Duration.zero,
+          timestamp: DateTime(2024, 1, 1),
+        );
+        expect(result.projectName, isNull);
+      });
+
+      test('can be set via constructor', () {
+        final result = DiagnosticResult(
+          analyzerName: 'test',
+          status: CheckStatus.passed,
+          issues: [],
+          duration: Duration.zero,
+          timestamp: DateTime(2024, 1, 1),
+          projectName: 'my_app',
+        );
+        expect(result.projectName, equals('my_app'));
+      });
+    });
   });
 }

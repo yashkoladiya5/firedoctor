@@ -74,9 +74,13 @@ final class ReportCommand extends Command {
 
     final reportService = ReportService(terminal: terminal);
 
+    final projectName = results
+        .map((r) => r.projectName)
+        .firstWhere((n) => n != null, orElse: () => null);
+
     final report = reportService.generateReport(
       results: results,
-      projectName: 'unknown',
+      projectName: projectName,
       projectPath: projectPath,
     );
 
