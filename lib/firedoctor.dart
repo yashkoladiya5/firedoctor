@@ -6,6 +6,8 @@ import 'package:firedoctor/filesystem/filesystem.dart';
 import 'package:firedoctor/analyzers/dependency/dependency_analyzer.dart';
 import 'package:firedoctor/analyzers/firebase_core/firebase_core_analyzer.dart';
 import 'package:firedoctor/analyzers/android/android_analyzer.dart';
+import 'package:firedoctor/analyzers/ios/ios_analyzer.dart';
+import 'package:firedoctor/analyzers/fcm/fcm_analyzer.dart';
 import 'package:firedoctor/analyzers/project/project_analyzer.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 
@@ -30,6 +32,8 @@ Future<void> runFireDoctor(List<String> args) async {
   analyzerService.register(DependencyAnalyzer());
   analyzerService.register(FirebaseCoreAnalyzer());
   analyzerService.register(AndroidAnalyzer());
+  analyzerService.register(IOSAnalyzer());
+  analyzerService.register(FCMAnalyzer());
 
   final runner = CommandRunner(
     logger: logger,
