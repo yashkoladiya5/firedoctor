@@ -3,6 +3,8 @@ import 'package:firedoctor/cli/cli.dart';
 import 'package:firedoctor/logging/logging.dart';
 import 'package:firedoctor/terminal/terminal.dart';
 import 'package:firedoctor/filesystem/filesystem.dart';
+import 'package:firedoctor/analyzers/dependency/dependency_analyzer.dart';
+import 'package:firedoctor/analyzers/firebase_core/firebase_core_analyzer.dart';
 import 'package:firedoctor/analyzers/project/project_analyzer.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 
@@ -39,6 +41,8 @@ Future<void> runFireDoctor(List<String> args) async {
   // Initialize analyzers for future use
   final analyzerService = AnalyzerService(logger: logger);
   analyzerService.register(ProjectAnalyzer());
+  analyzerService.register(DependencyAnalyzer());
+  analyzerService.register(FirebaseCoreAnalyzer());
 
   final exitCode = await runner.run(args);
   exit(exitCode);
