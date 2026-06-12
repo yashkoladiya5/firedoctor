@@ -117,7 +117,7 @@ dev_dependencies: {}
 
       final output = terminal.buffer.toString();
       expect(output, contains('my_test_project'));
-      expect(exitCode, AppConstants.exitSuccess);
+      expect(exitCode, AppConstants.exitNoIssues);
     });
 
     test('ReportCommand uses project name from analyzer result', () async {
@@ -150,7 +150,7 @@ dev_dependencies: {}
 
       final output = terminal.buffer.toString();
       expect(output, contains('my_test_project'));
-      expect(exitCode, AppConstants.exitSuccess);
+      expect(exitCode, AppConstants.exitNoIssues);
     });
   });
 

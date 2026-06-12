@@ -41,25 +41,25 @@ void main() {
   });
 
   group('DoctorCommand', () {
-    test('returns exitFailure when project path does not exist', () async {
+    test('returns exitInternalFailure when project path does not exist', () async {
       when(() => fileSystem.exists('/invalid')).thenReturn(false);
 
       final exitCode = await command.execute(['/invalid']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
       verify(() => terminal.writeError(any())).called(1);
     });
 
-    test('returns exitFailure when path is not a directory', () async {
+    test('returns exitInternalFailure when path is not a directory', () async {
       when(() => fileSystem.exists('/file')).thenReturn(true);
       when(() => fileSystem.isDirectory('/file')).thenReturn(false);
 
       final exitCode = await command.execute(['/file']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
     });
 
-    test('returns exitSuccess when no issues found', () async {
+    test('returns exitNoIssues when no issues found', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
@@ -88,10 +88,10 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
     });
 
-    test('returns exitSuccess when only warning issues present', () async {
+    test('returns exitNoIssues when only warning issues present', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
@@ -113,10 +113,10 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
     });
 
-    test('returns exitFailure when critical issues present', () async {
+    test('returns exitCriticalIssues when critical issues present', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
@@ -138,10 +138,10 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitCriticalIssues));
     });
 
-    test('returns exitFailure when error issues present', () async {
+    test('returns exitErrorsOnly when error issues present', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
@@ -163,10 +163,10 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitErrorsOnly));
     });
 
-    test('returns exitFailure when analyzer service throws', () async {
+    test('returns exitInternalFailure when analyzer service throws', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any()))
@@ -174,7 +174,7 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
       verify(() => terminal.writeError(
           'Analysis failed: Exception: Unexpected error')).called(1);
     });
@@ -195,7 +195,7 @@ void main() {
 
       final exitCode = await command.execute([]);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       verify(() => fileSystem.exists('/cwd')).called(1);
     });
 
@@ -229,7 +229,7 @@ void main() {
 
       final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(),
           contains('FireDoctor Diagnostic Report'));
     });
@@ -258,7 +258,7 @@ void main() {
 
       final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(), contains('Project: my_app'));
     });
 
@@ -285,7 +285,7 @@ void main() {
 
       final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(), contains('Project: unknown'));
     });
   });

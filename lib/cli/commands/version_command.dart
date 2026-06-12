@@ -19,6 +19,6 @@ final class VersionCommand extends Command {
   @override
   Future<int> execute(List<String> args) async {
     terminal.writeLine('FireDoctor v${AppConstants.version}');
-    return AppConstants.exitSuccess;
+    return AppConstants.exitNoIssues;
   }
 }

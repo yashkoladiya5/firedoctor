@@ -9,7 +9,7 @@ class MockTerminal extends Mock implements Terminal {}
 
 void main() {
   group('VersionCommand', () {
-    test('execute prints version string and returns exitSuccess', () async {
+    test('execute prints version string and returns exitNoIssues', () async {
       final terminal = MockTerminal();
       final logger = Logger(terminal: terminal);
       when(() => terminal.writeLine(any())).thenReturn(null);
@@ -19,7 +19,7 @@ void main() {
 
       verify(() => terminal.writeLine('FireDoctor v${AppConstants.version}'))
           .called(1);
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
     });
   });
 }

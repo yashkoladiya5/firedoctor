@@ -26,13 +26,13 @@ final class HelpCommand extends Command {
   Future<int> execute(List<String> args) async {
     if (args.isEmpty) {
       _runner.printUsage();
-      return AppConstants.exitSuccess;
+      return AppConstants.exitNoIssues;
     }
 
     final command = _runner.findCommand(args.first);
     if (command == null) {
       terminal.writeError('Unknown command: ${args.first}');
-      return AppConstants.exitFailure;
+      return AppConstants.exitInternalFailure;
     }
 
     terminal.writeLine('');
@@ -42,6 +42,6 @@ final class HelpCommand extends Command {
       terminal.writeLine('Aliases: ${command.aliases.join(", ")}');
     }
     terminal.writeLine('');
-    return AppConstants.exitSuccess;
+    return AppConstants.exitNoIssues;
   }
 }

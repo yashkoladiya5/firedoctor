@@ -1,3 +1,4 @@
+import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/models/diagnostic_result.dart';
 import 'package:firedoctor/models/health_score.dart';
 import 'package:firedoctor/services/health_score_engine.dart';
@@ -35,6 +36,25 @@ final class DiagnosticReport {
   }
 
   bool get passed => results.every((r) => r.passed);
+
+  /// The highest severity rank across all results.
+  /// 0 = no issues, 1 = info only, 2 = warnings, 3 = errors, 4 = critical.
+  int get mostSevereRank {
+    var rank = 0;
+    for (final r in results) {
+      final rRank = r.mostSevereRank;
+      if (rRank > rank) rank = rRank;
+    }
+    return rank;
+  }
+
+  /// CI-friendly exit code:
+  ///   0 = no issues
+  ///   1 = warnings only
+  ///   2 = errors (but no critical)
+  ///   3 = critical issues
+  int get exitCode =>
+      AppConstants.exitCodeForSeverityRank(mostSevereRank);
 
   DiagnosticReport computeHealthScore({
     HealthScoreEngine? engine,

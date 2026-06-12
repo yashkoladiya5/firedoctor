@@ -27,4 +27,15 @@ final class DiagnosticResult {
   int get warningCount =>
       issues.where((i) => i.severity == Severity.warning).length;
   bool get passed => status.isPassed;
+
+  /// The highest severity rank among all issues.
+  /// Returns 0 if no issues.
+  int get mostSevereRank {
+    var rank = 0;
+    for (final issue in issues) {
+      final r = issue.severity.value + 1;
+      if (r > rank) rank = r;
+    }
+    return rank;
+  }
 }

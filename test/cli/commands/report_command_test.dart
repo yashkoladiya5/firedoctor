@@ -41,23 +41,23 @@ void main() {
   });
 
   group('ReportCommand', () {
-    test('returns exitFailure when project path does not exist', () async {
+    test('returns exitInternalFailure when project path does not exist', () async {
       when(() => fileSystem.exists('/invalid')).thenReturn(false);
 
       final exitCode = await command.execute(['/invalid']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
       verify(() => terminal.writeError('Project path does not exist: /invalid'))
           .called(1);
     });
 
-    test('returns exitFailure when path is not a directory', () async {
+    test('returns exitInternalFailure when path is not a directory', () async {
       when(() => fileSystem.exists('/file')).thenReturn(true);
       when(() => fileSystem.isDirectory('/file')).thenReturn(false);
 
       final exitCode = await command.execute(['/file']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
     });
 
     test('prints report on stdout with no flags', () async {
@@ -83,7 +83,7 @@ void main() {
 
       final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(),
           contains('FireDoctor Diagnostic Report'));
     });
@@ -111,7 +111,7 @@ void main() {
 
       final exitCode = await cmd.execute(['--json', '/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(), contains('{'));
     });
 
@@ -133,7 +133,7 @@ void main() {
       final exitCode =
           await command.execute(['--output', '/tmp/report.json', '/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       verify(() => terminal.writeSuccess('Report saved to /tmp/report.json'))
           .called(1);
       verify(() => fileSystem.writeAsStringAsync('/tmp/report.json', any()))
@@ -162,7 +162,7 @@ void main() {
         '/project',
       ]);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       verify(() => terminal.writeSuccess('Report saved to /tmp/report.json'))
           .called(1);
       verify(() => fileSystem.writeAsStringAsync('/tmp/report.json', any()))
@@ -193,7 +193,7 @@ void main() {
 
       final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(), contains('Project: my_app'));
     });
 
@@ -220,7 +220,7 @@ void main() {
 
       final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
       expect(fakeTerminal.buffer.toString(), contains('Project: unknown'));
     });
 
@@ -240,18 +240,18 @@ void main() {
 
       final exitCode = await command.execute([]);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
     });
 
-    test('returns exitFailure when --output is missing value', () async {
+    test('returns exitInternalFailure when --output is missing value', () async {
       final exitCode = await command.execute(['--output']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
       verify(() => terminal.writeError('Missing value for --output flag'))
           .called(1);
     });
 
-    test('returns exitFailure when analyzer service throws', () async {
+    test('returns exitInternalFailure when analyzer service throws', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any()))
@@ -259,12 +259,12 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitInternalFailure));
       verify(() => terminal.writeError(
           'Report generation failed: Exception: Report failed')).called(1);
     });
 
-    test('returns exitFailure when critical issues found', () async {
+    test('returns exitCriticalIssues when critical issues found', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
       when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
@@ -286,7 +286,7 @@ void main() {
 
       final exitCode = await command.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitFailure));
+      expect(exitCode, equals(AppConstants.exitCriticalIssues));
     });
 
     test('handles path after flags correctly', () async {
@@ -307,7 +307,7 @@ void main() {
       final exitCode = await command
           .execute(['--json', '--output', '/tmp/r.json', '/my_project']);
 
-      expect(exitCode, equals(AppConstants.exitSuccess));
+      expect(exitCode, equals(AppConstants.exitNoIssues));
     });
   });
 }
