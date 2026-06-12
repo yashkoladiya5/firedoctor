@@ -21,9 +21,9 @@ FakeFileSystem _createProject({
     fs.addFile(
       '/project/ios/Runner/GoogleService-Info.plist',
       '<?xml version="1.0" encoding="UTF-8"?>'
-      '<plist version="1.0"><dict>'
-      '<key>BUNDLE_ID</key><string>com.example.app</string>'
-      '</dict></plist>',
+          '<plist version="1.0"><dict>'
+          '<key>BUNDLE_ID</key><string>com.example.app</string>'
+          '</dict></plist>',
     );
   }
 
@@ -72,10 +72,7 @@ FakeFileSystem _createProjectWithMain(
 
   return _createProject(
     pubspecContent: buffer.toString(),
-    dartFiles: {
-      '/project/lib/main.dart': mainContent,
-      ...additionalFiles,
-    },
+    dartFiles: {'/project/lib/main.dart': mainContent, ...additionalFiles},
     hasIosConfig: hasIosConfig,
     hasAndroidConfig: hasAndroidConfig,
     hasIosDir: hasIosDir,
@@ -177,8 +174,10 @@ void main() {
     group('skipped conditions', () {
       test('returns skipped when pubspec.yaml does not exist', () async {
         final fs = FakeFileSystem();
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -188,8 +187,10 @@ void main() {
       test('returns skipped when pubspec.yaml is invalid', () async {
         final fs = FakeFileSystem();
         fs.addFile('/project/pubspec.yaml', '{{{');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -199,39 +200,45 @@ void main() {
 
     group('FD600: missing firebase_messaging dependency', () {
       test(
-          'emits FD600 when GoogleService-Info.plist exists but firebase_messaging not in deps',
-          () async {
-        final fs = _createProjectWithMain(
-          'void main() {}',
-          withFirebaseMessaging: false,
-          hasIosConfig: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD600 when GoogleService-Info.plist exists but firebase_messaging not in deps',
+        () async {
+          final fs = _createProjectWithMain(
+            'void main() {}',
+            withFirebaseMessaging: false,
+            hasIosConfig: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD600'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD600');
-        expect(issue.severity, equals(Severity.warning));
-        expect(issue.filePath, endsWith('pubspec.yaml'));
-      });
+          expect(result.issues.any((i) => i.code == 'FD600'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD600');
+          expect(issue.severity, equals(Severity.warning));
+          expect(issue.filePath, endsWith('pubspec.yaml'));
+        },
+      );
 
       test(
-          'emits FD600 when google-services.json exists but firebase_messaging not in deps',
-          () async {
-        final fs = _createProjectWithMain(
-          'void main() {}',
-          withFirebaseMessaging: false,
-          hasAndroidConfig: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD600 when google-services.json exists but firebase_messaging not in deps',
+        () async {
+          final fs = _createProjectWithMain(
+            'void main() {}',
+            withFirebaseMessaging: false,
+            hasAndroidConfig: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD600'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD600');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD600'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD600');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
 
       test('does not emit FD600 when firebase_messaging is in deps', () async {
         final fs = _createProjectWithMain(
@@ -239,103 +246,120 @@ void main() {
           withFirebaseMessaging: true,
           hasIosConfig: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD600'), isEmpty);
       });
 
       test(
-          'does not emit FD600 when no Firebase config files exist and no deps',
-          () async {
-        final fs = _createProjectWithMain(
-          'void main() {}',
-          withFirebaseMessaging: false,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD600 when no Firebase config files exist and no deps',
+        () async {
+          final fs = _createProjectWithMain(
+            'void main() {}',
+            withFirebaseMessaging: false,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD600'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD600'), isEmpty);
+        },
+      );
     });
 
     group('FD601: FCM not used in Dart code', () {
       test(
-          'emits FD601 when firebase_messaging in deps but no FirebaseMessaging reference',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+        'emits FD601 when firebase_messaging in deps but no FirebaseMessaging reference',
+        () async {
+          final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
 }
-''',
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+''', withFirebaseMessaging: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD601'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD601');
-        expect(issue.severity, equals(Severity.warning));
-        expect(issue.filePath, endsWith('pubspec.yaml'));
-      });
-
-      test('does not emit FD601 when FirebaseMessaging is referenced',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.issues.where((i) => i.code == 'FD601'), isEmpty);
-      });
+          expect(result.issues.any((i) => i.code == 'FD601'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD601');
+          expect(issue.severity, equals(Severity.warning));
+          expect(issue.filePath, endsWith('pubspec.yaml'));
+        },
+      );
 
       test(
-          'does not emit FD601 when firebase_messaging not in deps and no config',
-          () async {
-        final fs = _createProjectWithMain(
-          'void main() {}',
-          withFirebaseMessaging: false,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD601 when FirebaseMessaging is referenced',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD601'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD601'), isEmpty);
+        },
+      );
+
+      test(
+        'does not emit FD601 when firebase_messaging not in deps and no config',
+        () async {
+          final fs = _createProjectWithMain(
+            'void main() {}',
+            withFirebaseMessaging: false,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.issues.where((i) => i.code == 'FD601'), isEmpty);
+        },
+      );
     });
 
     group('FD602: notification permission not requested', () {
       test(
-          'emits FD602 when FCM usage found but no requestPermission call',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD602 when FCM usage found but no requestPermission call',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD602'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD602');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD602'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD602');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
 
       test('does not emit FD602 when requestPermission is called', () async {
         final fs = _createProjectWithMain(
           _fcmWithPermission,
           withFirebaseMessaging: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD602'), isEmpty);
@@ -346,8 +370,10 @@ void main() {
           'void main() {}',
           withFirebaseMessaging: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD602'), isEmpty);
@@ -356,42 +382,50 @@ void main() {
 
     group('FD603: background message handler', () {
       test(
-          'emits FD603 when FCM usage found but no onBackgroundMessage handler',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD603 when FCM usage found but no onBackgroundMessage handler',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD603'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD603');
-        expect(issue.severity, equals(Severity.info));
-      });
+          expect(result.issues.any((i) => i.code == 'FD603'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD603');
+          expect(issue.severity, equals(Severity.info));
+        },
+      );
 
       test(
-          'does not emit FD603 when onBackgroundMessage is configured',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmWithBackgroundHandler,
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD603 when onBackgroundMessage is configured',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmWithBackgroundHandler,
+            withFirebaseMessaging: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
+        },
+      );
 
       test('does not emit FD603 when no FCM usage', () async {
         final fs = _createProjectWithMain(
           'void main() {}',
           withFirebaseMessaging: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
@@ -400,81 +434,90 @@ void main() {
 
     group('FD604: FirebaseAppDelegateProxyEnabled set to false', () {
       test(
-          'emits FD604 when Info.plist has FirebaseAppDelegateProxyEnabled set to false',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-          hasIosDir: true,
-          plistFiles: {
-            '/project/ios/Runner/Info.plist':
-                '<?xml version="1.0"?><plist><dict>'
-                '<key>FirebaseAppDelegateProxyEnabled</key><false/>'
-                '</dict></plist>',
-          },
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD604 when Info.plist has FirebaseAppDelegateProxyEnabled set to false',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+            hasIosDir: true,
+            plistFiles: {
+              '/project/ios/Runner/Info.plist':
+                  '<?xml version="1.0"?><plist><dict>'
+                  '<key>FirebaseAppDelegateProxyEnabled</key><false/>'
+                  '</dict></plist>',
+            },
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD604'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD604');
-        expect(issue.severity, equals(Severity.warning));
-        expect(issue.filePath, endsWith('Info.plist'));
-      });
-
-      test(
-          'does not emit FD604 when FirebaseAppDelegateProxyEnabled key is absent',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-          hasIosDir: true,
-          plistFiles: {
-            '/project/ios/Runner/Info.plist':
-                '<?xml version="1.0"?><plist><dict>'
-                '<key>SomeOtherKey</key><string>value</string>'
-                '</dict></plist>',
-          },
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
-      });
+          expect(result.issues.any((i) => i.code == 'FD604'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD604');
+          expect(issue.severity, equals(Severity.warning));
+          expect(issue.filePath, endsWith('Info.plist'));
+        },
+      );
 
       test(
-          'does not emit FD604 when FirebaseAppDelegateProxyEnabled is set to true',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-          hasIosDir: true,
-          plistFiles: {
-            '/project/ios/Runner/Info.plist':
-                '<?xml version="1.0"?><plist><dict>'
-                '<key>FirebaseAppDelegateProxyEnabled</key><true/>'
-                '</dict></plist>',
-          },
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD604 when FirebaseAppDelegateProxyEnabled key is absent',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+            hasIosDir: true,
+            plistFiles: {
+              '/project/ios/Runner/Info.plist':
+                  '<?xml version="1.0"?><plist><dict>'
+                  '<key>SomeOtherKey</key><string>value</string>'
+                  '</dict></plist>',
+            },
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
+        },
+      );
 
       test(
-          'does not emit FD604 when Info.plist does not exist',
-          () async {
+        'does not emit FD604 when FirebaseAppDelegateProxyEnabled is set to true',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+            hasIosDir: true,
+            plistFiles: {
+              '/project/ios/Runner/Info.plist':
+                  '<?xml version="1.0"?><plist><dict>'
+                  '<key>FirebaseAppDelegateProxyEnabled</key><true/>'
+                  '</dict></plist>',
+            },
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
+        },
+      );
+
+      test('does not emit FD604 when Info.plist does not exist', () async {
         final fs = _createProjectWithMain(
           _fcmUsageMain,
           withFirebaseMessaging: true,
           hasIosDir: false,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
@@ -483,28 +526,33 @@ void main() {
 
     group('FD605: token refresh listener', () {
       test(
-          'emits FD605 when FCM usage found but no onTokenRefresh or getToken',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD605 when FCM usage found but no onTokenRefresh or getToken',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD605'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD605');
-        expect(issue.severity, equals(Severity.info));
-      });
+          expect(result.issues.any((i) => i.code == 'FD605'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD605');
+          expect(issue.severity, equals(Severity.info));
+        },
+      );
 
       test('does not emit FD605 when onTokenRefresh is used', () async {
         final fs = _createProjectWithMain(
           _fcmWithTokenRefresh,
           withFirebaseMessaging: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
@@ -515,8 +563,10 @@ void main() {
           _fcmWithGetToken,
           withFirebaseMessaging: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
@@ -527,8 +577,10 @@ void main() {
           'void main() {}',
           withFirebaseMessaging: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
@@ -542,26 +594,31 @@ void main() {
           withFirebaseMessaging: false,
           hasIosConfig: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
       });
 
       test(
-          'returns warning when FD602 present (warning among info issues)',
-          () async {
-        final fs = _createProjectWithMain(
-          _fcmUsageMain,
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'returns warning when FD602 present (warning among info issues)',
+        () async {
+          final fs = _createProjectWithMain(
+            _fcmUsageMain,
+            withFirebaseMessaging: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.status, equals(CheckStatus.warning));
-      });
+          expect(result.status, equals(CheckStatus.warning));
+        },
+      );
 
       test('returns info status when only info issues present', () async {
         final fs = _createProjectWithMain(
@@ -575,8 +632,10 @@ void main() {
                 '</dict></plist>',
           },
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // FD604 is warning (false proxy) -> status should be warning
@@ -584,17 +643,16 @@ void main() {
       });
 
       test('returns passed when no issues', () async {
-        final fs = _createProjectWithMain(
-          '''
+        final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
 }
-''',
-          withFirebaseMessaging: false,
+''', withFirebaseMessaging: false);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -605,12 +663,16 @@ void main() {
     group('edge cases', () {
       test('handles empty lib/ directory gracefully', () async {
         final fs = FakeFileSystem();
-        fs.addFile('/project/pubspec.yaml',
-            'name: test_app\ndependencies:\n  firebase_messaging: ^15.0.0\n  flutter:\n    sdk: flutter\ndev_dependencies: {}\n');
+        fs.addFile(
+          '/project/pubspec.yaml',
+          'name: test_app\ndependencies:\n  firebase_messaging: ^15.0.0\n  flutter:\n    sdk: flutter\ndev_dependencies: {}\n',
+        );
         fs.addDirectory('/project/lib');
 
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // Should have FD601 (FCM not used), but no FD602/603/605 (no FCM usage)
@@ -621,10 +683,9 @@ void main() {
       });
 
       test(
-          'handles FirebaseMessaging in string literals — no false positives for FD602/603/605',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+        'handles FirebaseMessaging in string literals — no false positives for FD602/603/605',
+        () async {
+          final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -636,30 +697,28 @@ void main() {
   final token = "onTokenRefresh is just a comment";
   runApp(const MyApp());
 }
-''',
-          withFirebaseMessaging: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+''', withFirebaseMessaging: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // FirebaseMessaging only appears inside string literals, which are
-        // stripped by the comment/string stripper. The import line uses
-        // lowercase "firebase_messaging" which doesn't match "FirebaseMessaging".
-        // So FD601 fires because no real FirebaseMessaging reference remains.
-        expect(result.issues.any((i) => i.code == 'FD601'), isTrue);
-        // FD602/603/605 require hasFcmUsage (no real usage after stripping),
-        // so they correctly do NOT fire.
-        expect(result.issues.where((i) => i.code == 'FD602'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
-      });
+          // FirebaseMessaging only appears inside string literals, which are
+          // stripped by the comment/string stripper. The import line uses
+          // lowercase "firebase_messaging" which doesn't match "FirebaseMessaging".
+          // So FD601 fires because no real FirebaseMessaging reference remains.
+          expect(result.issues.any((i) => i.code == 'FD601'), isTrue);
+          // FD602/603/605 require hasFcmUsage (no real usage after stripping),
+          // so they correctly do NOT fire.
+          expect(result.issues.where((i) => i.code == 'FD602'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
+        },
+      );
 
-      test(
-          'does not false-positive on FirebaseMessaging in comments',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+      test('does not false-positive on FirebaseMessaging in comments', () async {
+        final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -671,11 +730,11 @@ void main() {
   // onTokenRefresh is commented out
   runApp(const MyApp());
 }
-''',
-          withFirebaseMessaging: true,
+''', withFirebaseMessaging: true);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // All FirebaseMessaging references are in comments (stripped), and the
@@ -690,8 +749,7 @@ void main() {
       });
 
       test('handles case-sensitive detection', () async {
-        final fs = _createProjectWithMain(
-          '''
+        final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 
 void main() {
@@ -699,11 +757,11 @@ void main() {
   requestpermission();
   runApp(const MyApp());
 }
-''',
-          withFirebaseMessaging: true,
+''', withFirebaseMessaging: true);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Lowercase firebasemessaging should NOT match FirebaseMessaging
@@ -737,8 +795,10 @@ void setupFcm() {
 ''',
           },
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // Permission in main.dart, handler setup in listener.dart
@@ -754,8 +814,10 @@ void setupFcm() {
     group('result metadata', () {
       test('result has correct analyzerName', () async {
         final fs = _createProjectWithMain('void main() {}');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.analyzerName, equals('fcm'));
@@ -763,8 +825,10 @@ void setupFcm() {
 
       test('result has non-zero duration', () async {
         final fs = _createProjectWithMain('void main() {}');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.duration.inMicroseconds, greaterThanOrEqualTo(0));
@@ -772,8 +836,10 @@ void setupFcm() {
 
       test('result has a recent timestamp', () async {
         final fs = _createProjectWithMain('void main() {}');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);

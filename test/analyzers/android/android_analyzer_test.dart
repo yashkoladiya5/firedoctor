@@ -41,7 +41,8 @@ String get validGoogleServicesJson => '''
 
 String get invalidJson => 'not valid json';
 
-String googleServicesWithPackage(String packageName) => '''
+String googleServicesWithPackage(String packageName) =>
+    '''
 {
   "project_info": {
     "project_number": "123456789",
@@ -212,8 +213,10 @@ void main() {
     group('no android directory', () {
       test('returns skipped when android/ directory does not exist', () async {
         final fs = FakeFileSystem();
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -223,8 +226,10 @@ void main() {
       test('returns skipped when android is a file not directory', () async {
         final fs = FakeFileSystem();
         fs.addFile('/project/android', 'not a directory');
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -234,14 +239,19 @@ void main() {
 
     group('valid Android project', () {
       test('returns passed when everything is correct (Kotlin DSL)', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -249,14 +259,19 @@ void main() {
       });
 
       test('returns passed with Groovy syntax build.gradle', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': groovyBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': groovyBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -264,14 +279,19 @@ void main() {
       });
 
       test('returns passed with apply plugin style build.gradle', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': buildGradleApplyPlugin,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': buildGradleApplyPlugin,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -281,13 +301,17 @@ void main() {
 
     group('google-services.json checks', () {
       test('emits FD400 when google-services.json is missing', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD400'), isTrue);
@@ -297,14 +321,18 @@ void main() {
       });
 
       test('emits FD401 when google-services.json has invalid JSON', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': invalidJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json': invalidJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD401'), isTrue);
@@ -314,15 +342,19 @@ void main() {
       });
 
       test('emits FD402 when package name mismatches applicationId', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json':
-              googleServicesWithPackage('com.example.other'),
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                googleServicesWithPackage('com.example.other'),
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD402'), isTrue);
@@ -332,25 +364,32 @@ void main() {
       });
 
       test('does not emit FD402 when package name matches', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json':
-              googleServicesWithPackage('com.example.app'),
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                googleServicesWithPackage('com.example.app'),
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD402'), isEmpty);
       });
 
-      test('does not emit FD402 when applicationId is not in build.gradle',
-          () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': '''
+      test(
+        'does not emit FD402 when applicationId is not in build.gradle',
+        () async {
+          final fs = _createProject(
+            files: {
+              '/project/android/app/google-services.json':
+                  validGoogleServicesJson,
+              '/project/android/app/build.gradle': '''
 plugins {
     id "com.android.application" version "8.1.0"
     id "com.google.gms.google-services" version "4.4.0"
@@ -363,22 +402,28 @@ android {
     }
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+              '/project/android/app/src/main/AndroidManifest.xml':
+                  manifestWithPermissions,
+            },
+          );
+          final context = AnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD402'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD402'), isEmpty);
+        },
+      );
     });
 
     group('build.gradle plugin checks', () {
       test('emits FD403 when google-services plugin is missing', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': '''
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': '''
 plugins {
     id "com.android.application" version "8.1.0"
 }
@@ -391,11 +436,14 @@ android {
     }
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD403'), isTrue);
@@ -405,9 +453,11 @@ android {
       });
 
       test('emits FD403 with Groovy apply plugin syntax', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': '''
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': '''
 apply plugin: 'com.android.application'
 android {
     compileSdk 34
@@ -418,11 +468,14 @@ android {
     }
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD403'), isTrue);
@@ -431,14 +484,19 @@ android {
 
     group('AndroidManifest permission checks', () {
       test('emits FD404 when INTERNET permission is missing', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestNoInternet,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestNoInternet,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD404'), isTrue);
@@ -447,32 +505,44 @@ android {
         expect(result.status, equals(CheckStatus.failed));
       });
 
-      test('emits FD405 when POST_NOTIFICATIONS permission is missing',
-          () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestOnlyInternet,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+      test(
+        'emits FD405 when POST_NOTIFICATIONS permission is missing',
+        () async {
+          final fs = _createProject(
+            files: {
+              '/project/android/app/google-services.json':
+                  validGoogleServicesJson,
+              '/project/android/app/build.gradle': validBuildGradle,
+              '/project/android/app/src/main/AndroidManifest.xml':
+                  manifestOnlyInternet,
+            },
+          );
+          final context = AnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD405'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD405');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD405'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD405');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
 
       test('emits FD406 when WAKE_LOCK permission is missing', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestOnlyInternet,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestOnlyInternet,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD406'), isTrue);
@@ -481,14 +551,19 @@ android {
       });
 
       test('no permission issues when all permissions present', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD404'), isEmpty);
@@ -499,14 +574,19 @@ android {
 
     group('SDK version checks', () {
       test('emits FD407 when compileSdk < 34', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': lowSdkBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': lowSdkBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD407'), isTrue);
@@ -515,28 +595,38 @@ android {
       });
 
       test('no FD407 when compileSdk >= 34', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD407'), isEmpty);
       });
 
       test('emits FD408 when minSdk < 21', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': lowSdkBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': lowSdkBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD408'), isTrue);
@@ -545,28 +635,38 @@ android {
       });
 
       test('no FD408 when minSdk >= 21', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD408'), isEmpty);
       });
 
       test('emits FD409 when targetSdk < 34', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': lowSdkBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': lowSdkBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD409'), isTrue);
@@ -575,14 +675,19 @@ android {
       });
 
       test('no FD409 when targetSdk >= 34', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD409'), isEmpty);
@@ -591,9 +696,11 @@ android {
 
     group('Kotlin DSL build.gradle.kts', () {
       test('parses Kotlin DSL SDK versions correctly', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle.kts': '''
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle.kts': '''
 plugins {
     id("com.android.application") version "8.1.0"
     id("com.google.gms.google-services") version "4.4.0"
@@ -607,11 +714,14 @@ android {
     }
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -619,9 +729,11 @@ android {
       });
 
       test('emits FD403 with Kotlin DSL when plugin missing', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle.kts': '''
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle.kts': '''
 plugins {
     id("com.android.application") version "8.1.0"
 }
@@ -634,11 +746,14 @@ android {
     }
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD403'), isTrue);
@@ -647,14 +762,19 @@ android {
 
     group('Groovy build.gradle syntax variants', () {
       test('parses compileSdk with Groovy syntax (no equals)', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': groovyBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': groovyBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -662,14 +782,19 @@ android {
       });
 
       test('parses apply plugin: style correctly', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': buildGradleApplyPlugin,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': buildGradleApplyPlugin,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD403'), isEmpty);
@@ -679,27 +804,36 @@ android {
 
     group('status computation', () {
       test('returns failed when critical/error issues exist', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
       });
 
       test('returns warning when only warning issues exist', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': lowSdkBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': lowSdkBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // FD407 (warning) and FD409 (warning) should yield warning status
@@ -710,14 +844,19 @@ android {
       });
 
       test('returns passed when only info issues or no issues', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -727,10 +866,11 @@ android {
 
     group('combined edge cases', () {
       test('multiple issues simultaneously', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json':
-              googleServicesWithPackage('com.example.wrong'),
-          '/project/android/app/build.gradle': '''
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                googleServicesWithPackage('com.example.wrong'),
+            '/project/android/app/build.gradle': '''
 plugins {
     id "com.android.application" version "8.1.0"
 }
@@ -743,11 +883,14 @@ android {
     }
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestOnlyInternet,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestOnlyInternet,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD402'), isTrue);
@@ -760,37 +903,46 @@ android {
         expect(result.status, equals(CheckStatus.failed));
       });
 
-      test('handles no Android files at all (just android dir exists)',
-          () async {
-        final fs = FakeFileSystem();
-        fs.addDirectory('/project');
-        fs.addDirectory('/project/android');
-        // No files inside android/
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+      test(
+        'handles no Android files at all (just android dir exists)',
+        () async {
+          final fs = FakeFileSystem();
+          fs.addDirectory('/project');
+          fs.addDirectory('/project/android');
+          // No files inside android/
+          final context = AnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // Should find FD400 (no google-services.json)
-        // No build.gradle so no FD403 or SDK checks
-        // No AndroidManifest.xml so no permission checks
-        expect(result.status, equals(CheckStatus.failed));
-        expect(result.issues.any((i) => i.code == 'FD400'), isTrue);
-      });
+          // Should find FD400 (no google-services.json)
+          // No build.gradle so no FD403 or SDK checks
+          // No AndroidManifest.xml so no permission checks
+          expect(result.status, equals(CheckStatus.failed));
+          expect(result.issues.any((i) => i.code == 'FD400'), isTrue);
+        },
+      );
 
       test('handles build.gradle with no SDK versions defined', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': '''
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': '''
 plugins {
     id "com.android.application" version "8.1.0"
     id "com.google.gms.google-services" version "4.4.0"
 }
 ''',
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // No SDK version issues since values are null
@@ -803,42 +955,57 @@ plugins {
 
     group('result metadata', () {
       test('result has correct analyzerName', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.analyzerName, equals('android'));
       });
 
       test('result has non-zero duration', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.duration.inMicroseconds, greaterThanOrEqualTo(0));
       });
 
       test('result has a recent timestamp', () async {
-        final fs = _createProject(files: {
-          '/project/android/app/google-services.json': validGoogleServicesJson,
-          '/project/android/app/build.gradle': validBuildGradle,
-          '/project/android/app/src/main/AndroidManifest.xml':
-              manifestWithPermissions,
-        });
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProject(
+          files: {
+            '/project/android/app/google-services.json':
+                validGoogleServicesJson,
+            '/project/android/app/build.gradle': validBuildGradle,
+            '/project/android/app/src/main/AndroidManifest.xml':
+                manifestWithPermissions,
+          },
+        );
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);

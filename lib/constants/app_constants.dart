@@ -38,9 +38,9 @@ abstract final class AppConstants {
   ///   Returns exit code:  0,        0,         1,
   ///                       2,        3
   static int exitCodeForSeverityRank(int mostSevereRank) {
-    if (mostSevereRank <= 1) return exitNoIssues;   // none or info → 0
+    if (mostSevereRank <= 1) return exitNoIssues; // none or info → 0
     if (mostSevereRank == 2) return exitWarningsOnly; // warning  → 1
-    if (mostSevereRank == 3) return exitErrorsOnly;   // error    → 2
-    return exitCriticalIssues;                         // critical → 3
+    if (mostSevereRank == 3) return exitErrorsOnly; // error    → 2
+    return exitCriticalIssues; // critical → 3
   }
 }

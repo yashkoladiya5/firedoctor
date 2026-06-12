@@ -52,10 +52,7 @@ FakeFileSystem _createProjectWithMain(
 
   return _createProject(
     pubspecContent: buffer.toString(),
-    dartFiles: {
-      '/project/lib/main.dart': mainContent,
-      ...additionalFiles,
-    },
+    dartFiles: {'/project/lib/main.dart': mainContent, ...additionalFiles},
     addFirebaseOptions: addFirebaseOptions,
   );
 }
@@ -75,9 +72,9 @@ void main() {
 
       test('has correct description', () {
         expect(
-            analyzer.description,
-            equals(
-                'Analyzes Firebase Core initialization in Flutter projects'));
+          analyzer.description,
+          equals('Analyzes Firebase Core initialization in Flutter projects'),
+        );
       });
 
       test('has correct category', () {
@@ -88,8 +85,10 @@ void main() {
     group('skipped conditions', () {
       test('returns skipped when pubspec.yaml does not exist', () async {
         final fs = FakeFileSystem();
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -97,11 +96,11 @@ void main() {
       });
 
       test('returns skipped when pubspec.yaml is invalid', () async {
-        final fs = _createProject(
-          pubspecContent: '{{{',
+        final fs = _createProject(pubspecContent: '{{{');
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -114,8 +113,10 @@ void main() {
               'name: test_app\ndependencies: {}\ndev_dependencies: {}\n',
           addLibDir: false,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -145,60 +146,82 @@ class MyApp extends StatelessWidget {
 ''';
 
       test(
-          'returns passed with no FD300/FD302/FD306 when everything is correct',
-          () async {
+        'returns passed with no FD300/FD302/FD306 when everything is correct',
+        () async {
+          final fs = _createProjectWithMain(
+            mainContent,
+            addFirebaseOptions: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.status, equals(CheckStatus.passed));
+          expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD302'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD306'), isEmpty);
+        },
+      );
+
+      test(
+        'does not produce FD300 when Firebase.initializeApp is present',
+        () async {
+          final fs = _createProjectWithMain(
+            mainContent,
+            addFirebaseOptions: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
+        },
+      );
+
+      test(
+        'does not produce FD302 when ensureInitialized is present and before init',
+        () async {
+          final fs = _createProjectWithMain(
+            mainContent,
+            addFirebaseOptions: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.issues.where((i) => i.code == 'FD302'), isEmpty);
+        },
+      );
+
+      test('does not produce FD306 when init is before runApp', () async {
         final fs = _createProjectWithMain(
           mainContent,
           addFirebaseOptions: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.status, equals(CheckStatus.passed));
-        expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD302'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD306'), isEmpty);
-      });
-
-      test('does not produce FD300 when Firebase.initializeApp is present',
-          () async {
-        final fs =
-            _createProjectWithMain(mainContent, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
-      });
-
-      test(
-          'does not produce FD302 when ensureInitialized is present and before init',
-          () async {
-        final fs =
-            _createProjectWithMain(mainContent, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.issues.where((i) => i.code == 'FD302'), isEmpty);
-      });
-
-      test('does not produce FD306 when init is before runApp', () async {
-        final fs =
-            _createProjectWithMain(mainContent, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD306'), isEmpty);
       });
 
       test('does not produce FD305 when init has await', () async {
-        final fs =
-            _createProjectWithMain(mainContent, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final fs = _createProjectWithMain(
+          mainContent,
+          addFirebaseOptions: true,
+        );
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD305'), isEmpty);
@@ -207,24 +230,27 @@ class MyApp extends StatelessWidget {
 
     group('missing initialization (FD300)', () {
       test(
-          'returns critical FD300 when no Firebase.initializeApp found in any file',
-          () async {
-        const noInitContent = '''
+        'returns critical FD300 when no Firebase.initializeApp found in any file',
+        () async {
+          const noInitContent = '''
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(noInitContent);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(noInitContent);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD300'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD300');
-        expect(issue.severity, equals(Severity.critical));
-      });
+          expect(result.issues.any((i) => i.code == 'FD300'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD300');
+          expect(issue.severity, equals(Severity.critical));
+        },
+      );
 
       test('FD300 has filePath pointing to pubspec.yaml', () async {
         const noInitContent = '''
@@ -235,8 +261,10 @@ void main() {
 }
 ''';
         final fs = _createProjectWithMain(noInitContent);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         final issue = result.issues.firstWhere((i) => i.code == 'FD300');
@@ -246,9 +274,9 @@ void main() {
 
     group('missing firebase_options.dart (FD301)', () {
       test(
-          'returns warning FD301 when lib/firebase_options.dart does not exist',
-          () async {
-        const content = '''
+        'returns warning FD301 when lib/firebase_options.dart does not exist',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -257,25 +285,25 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(
-          content,
-          addFirebaseOptions: false,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: false);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD301'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD301');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD301'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD301');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
     });
 
     group('missing ensureInitialized (FD302)', () {
       test(
-          'returns error FD302 when WidgetsFlutterBinding.ensureInitialized is missing',
-          () async {
-        const content = '''
+        'returns error FD302 when WidgetsFlutterBinding.ensureInitialized is missing',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -283,20 +311,23 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD302'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD302');
-        expect(issue.severity, equals(Severity.error));
-      });
+          expect(result.issues.any((i) => i.code == 'FD302'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD302');
+          expect(issue.severity, equals(Severity.error));
+        },
+      );
 
       test(
-          'returns error FD302 when ensureInitialized appears after Firebase.initializeApp in same file',
-          () async {
-        const content = '''
+        'returns error FD302 when ensureInitialized appears after Firebase.initializeApp in same file',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -305,21 +336,24 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD302'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD302');
-        expect(issue.severity, equals(Severity.error));
-      });
+          expect(result.issues.any((i) => i.code == 'FD302'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD302');
+          expect(issue.severity, equals(Severity.error));
+        },
+      );
 
       test(
-          'does not produce FD302 when ensureInitialized is in a different file',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+        'does not produce FD302 when ensureInitialized is in a different file',
+        () async {
+          final fs = _createProjectWithMain(
+            '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -327,30 +361,33 @@ void main() async {
   runApp(const MyApp());
 }
 ''',
-          addFirebaseOptions: true,
-          additionalFiles: {
-            '/project/lib/init.dart': '''
+            addFirebaseOptions: true,
+            additionalFiles: {
+              '/project/lib/init.dart': '''
 import 'package:flutter/material.dart';
 
 void initPlatform() {
   WidgetsFlutterBinding.ensureInitialized();
 }
 ''',
-          },
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+            },
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD302'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD302'), isEmpty);
+        },
+      );
     });
 
     group('DefaultFirebaseOptions not used (FD303)', () {
       test(
-          'returns info FD303 when DefaultFirebaseOptions.currentPlatform is not referenced',
-          () async {
-        const content = '''
+        'returns info FD303 when DefaultFirebaseOptions.currentPlatform is not referenced',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -359,25 +396,25 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(
-          content,
-          addFirebaseOptions: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD303'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD303');
-        expect(issue.severity, equals(Severity.info));
-      });
+          expect(result.issues.any((i) => i.code == 'FD303'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD303');
+          expect(issue.severity, equals(Severity.info));
+        },
+      );
     });
 
     group('multiple init calls (FD304)', () {
       test(
-          'returns warning FD304 when Firebase.initializeApp appears multiple times in one file',
-          () async {
-        const content = '''
+        'returns warning FD304 when Firebase.initializeApp appears multiple times in one file',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -387,52 +424,58 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD304'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD304');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD304'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD304');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
 
       test(
-          'returns warning FD304 when Firebase.initializeApp appears in multiple files',
-          () async {
-        final fs = _createProjectWithMain(
-          '''import 'package:firebase_core/firebase_core.dart';
+        'returns warning FD304 when Firebase.initializeApp appears in multiple files',
+        () async {
+          final fs = _createProjectWithMain(
+            '''import 'package:firebase_core/firebase_core.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
 ''',
-          addFirebaseOptions: true,
-          additionalFiles: {
-            '/project/lib/other.dart': '''
+            addFirebaseOptions: true,
+            additionalFiles: {
+              '/project/lib/other.dart': '''
 import 'package:firebase_core/firebase_core.dart';
 void init() async {
   await Firebase.initializeApp();
 }
 ''',
-          },
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+            },
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD304'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD304');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD304'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD304');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
     });
 
     group('missing await (FD305)', () {
       test(
-          'returns warning FD305 when Firebase.initializeApp is called without await on the same line',
-          () async {
-        const content = '''
+        'returns warning FD305 when Firebase.initializeApp is called without await on the same line',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() {
@@ -441,22 +484,25 @@ void main() {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD305'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD305');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD305'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD305');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
     });
 
     group('init after runApp (FD306)', () {
       test(
-          'returns error FD306 when Firebase.initializeApp appears after runApp in the same file',
-          () async {
-        const content = '''
+        'returns error FD306 when Firebase.initializeApp appears after runApp in the same file',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -465,21 +511,25 @@ void main() async {
   await Firebase.initializeApp();
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD306'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD306');
-        expect(issue.severity, equals(Severity.error));
-      });
+          expect(result.issues.any((i) => i.code == 'FD306'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD306');
+          expect(issue.severity, equals(Severity.error));
+        },
+      );
     });
 
     group('missing firebase_core dependency (FD307)', () {
-      test('returns error FD307 when firebase_core is not in dependencies',
-          () async {
-        const content = '''
+      test(
+        'returns error FD307 when firebase_core is not in dependencies',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -488,22 +538,23 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(
-          content,
-          withFirebaseCore: false,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, withFirebaseCore: false);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD307'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD307');
-        expect(issue.severity, equals(Severity.error));
-      });
+          expect(result.issues.any((i) => i.code == 'FD307'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD307');
+          expect(issue.severity, equals(Severity.error));
+        },
+      );
 
-      test('does not produce FD307 when firebase_core is in dependencies',
-          () async {
-        const content = '''
+      test(
+        'does not produce FD307 when firebase_core is in dependencies',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -512,13 +563,16 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD307'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD307'), isEmpty);
+        },
+      );
     });
 
     group('status computation', () {
@@ -531,12 +585,11 @@ void main() async {
   await Firebase.initializeApp();
 }
 ''';
-        final fs = _createProjectWithMain(
-          content,
-          withFirebaseCore: false,
+        final fs = _createProjectWithMain(content, withFirebaseCore: false);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -553,8 +606,10 @@ void main() {
 }
 ''';
         final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
@@ -570,12 +625,11 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(
-          content,
-          addFirebaseOptions: true,
+        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -584,39 +638,45 @@ void main() async {
 
     group('edge cases', () {
       test(
-          'handles empty lib/ directory with firebase_core dep — produces FD300 + FD301',
-          () async {
-        final fs = _createProject(
-          pubspecContent:
-              'name: test_app\ndependencies:\n  firebase_core: ^3.0.0\ndev_dependencies: {}\n',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'handles empty lib/ directory with firebase_core dep — produces FD300 + FD301',
+        () async {
+          final fs = _createProject(
+            pubspecContent:
+                'name: test_app\ndependencies:\n  firebase_core: ^3.0.0\ndev_dependencies: {}\n',
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD300'), isTrue);
-        expect(result.issues.any((i) => i.code == 'FD301'), isTrue);
-        expect(result.issues.any((i) => i.code == 'FD307'), isFalse);
-      });
-
-      test(
-          'handles empty lib/ directory without firebase_core dep — produces no issues',
-          () async {
-        final fs = _createProject(
-          pubspecContent:
-              'name: test_app\ndependencies: {}\ndev_dependencies: {}\n',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.issues, isEmpty);
-      });
+          expect(result.issues.any((i) => i.code == 'FD300'), isTrue);
+          expect(result.issues.any((i) => i.code == 'FD301'), isTrue);
+          expect(result.issues.any((i) => i.code == 'FD307'), isFalse);
+        },
+      );
 
       test(
-          'handles .dart files with no Firebase references — no FD issues triggered',
-          () async {
-        const content = '''
+        'handles empty lib/ directory without firebase_core dep — produces no issues',
+        () async {
+          final fs = _createProject(
+            pubspecContent:
+                'name: test_app\ndependencies: {}\ndev_dependencies: {}\n',
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.issues, isEmpty);
+        },
+      );
+
+      test(
+        'handles .dart files with no Firebase references — no FD issues triggered',
+        () async {
+          const content = '''
 import 'package:flutter/material.dart';
 
 void main() {
@@ -629,15 +689,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => const MaterialApp(home: Scaffold());
 }
 ''';
-        final fs = _createProjectWithMain(content, withFirebaseCore: false);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, withFirebaseCore: false);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // Neither firebase_core in deps nor Firebase references in dart files
-        expect(result.status, equals(CheckStatus.passed));
-        expect(result.issues, isEmpty);
-      });
+          // Neither firebase_core in deps nor Firebase references in dart files
+          expect(result.status, equals(CheckStatus.passed));
+          expect(result.issues, isEmpty);
+        },
+      );
 
       test('detects multi-line Firebase.initializeApp() call', () async {
         const content = '''
@@ -652,8 +715,10 @@ void main() async {
 }
 ''';
         final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -662,9 +727,9 @@ void main() async {
       });
 
       test(
-          'does not false-positive on Firebase.initializeApp in string literals',
-          () async {
-        const content = '''
+        'does not false-positive on Firebase.initializeApp in string literals',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -674,19 +739,22 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD304'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD304'), isEmpty);
+        },
+      );
 
       test(
-          'does not false-positive on Firebase.initializeApp in block comments',
-          () async {
-        const content = '''
+        'does not false-positive on Firebase.initializeApp in block comments',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -696,19 +764,22 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD304'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD304'), isEmpty);
+        },
+      );
 
       test(
-          'does not false-positive on WidgetsFlutterBinding.ensureInitialized in comments',
-          () async {
-        const content = '''
+        'does not false-positive on WidgetsFlutterBinding.ensureInitialized in comments',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -717,19 +788,22 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // should emit FD302 since the only ensureInitialized is in a comment
-        expect(result.issues.any((i) => i.code == 'FD302'), isTrue);
-      });
+          // should emit FD302 since the only ensureInitialized is in a comment
+          expect(result.issues.any((i) => i.code == 'FD302'), isTrue);
+        },
+      );
 
       test(
-          'handles multiline strings and comments that contain Firebase patterns',
-          () async {
-        const content = '''
+        'handles multiline strings and comments that contain Firebase patterns',
+        () async {
+          const content = '''
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -739,14 +813,17 @@ void main() async {
   runApp(const MyApp());
 }
 ''';
-        final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          final fs = _createProjectWithMain(content, addFirebaseOptions: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // The analyzer should still detect Firebase.initializeApp on the real line
-        expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
-      });
+          // The analyzer should still detect Firebase.initializeApp on the real line
+          expect(result.issues.where((i) => i.code == 'FD300'), isEmpty);
+        },
+      );
 
       test('handles case-sensitive detection', () async {
         const content = '''
@@ -758,8 +835,10 @@ void main() {
 }
 ''';
         final fs = _createProjectWithMain(content);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // Lowercase 'firebase.initializeapp()' should NOT match
@@ -781,8 +860,10 @@ void main() async {
 }
 ''';
         final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.analyzerName, equals('firebase_core'));
@@ -799,8 +880,10 @@ void main() async {
 }
 ''';
         final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.duration.inMicroseconds, greaterThanOrEqualTo(0));
@@ -817,8 +900,10 @@ void main() async {
 }
 ''';
         final fs = _createProjectWithMain(content, addFirebaseOptions: true);
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);

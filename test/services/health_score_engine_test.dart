@@ -82,8 +82,10 @@ void main() {
         expect(score.categoryScores.first.totalWeight, equals(15));
 
         expect(score.priorityGroups[PriorityGroup.high], hasLength(1));
-        expect(score.priorityGroups[PriorityGroup.high]!.first.code,
-            equals('ERR001'));
+        expect(
+          score.priorityGroups[PriorityGroup.high]!.first.code,
+          equals('ERR001'),
+        );
         expect(score.priorityGroups[PriorityGroup.critical], isEmpty);
         expect(score.priorityGroups[PriorityGroup.medium], isEmpty);
         expect(score.priorityGroups[PriorityGroup.low], isEmpty);
@@ -100,8 +102,10 @@ void main() {
         expect(score.maxPossibleWeight, equals(25));
 
         expect(score.priorityGroups[PriorityGroup.critical], hasLength(1));
-        expect(score.priorityGroups[PriorityGroup.critical]!.first.code,
-            equals('CRIT001'));
+        expect(
+          score.priorityGroups[PriorityGroup.critical]!.first.code,
+          equals('CRIT001'),
+        );
         expect(score.priorityGroups[PriorityGroup.high], isEmpty);
         expect(score.priorityGroups[PriorityGroup.medium], isEmpty);
         expect(score.priorityGroups[PriorityGroup.low], isEmpty);
@@ -168,14 +172,16 @@ void main() {
         expect(score.overallScore, closeTo(60.0, 0.01));
         expect(score.categoryScores, hasLength(2));
 
-        final projectCat = score.categoryScores
-            .firstWhere((c) => c.category == 'project');
+        final projectCat = score.categoryScores.firstWhere(
+          (c) => c.category == 'project',
+        );
         expect(projectCat.score, closeTo(40.0, 0.01));
         expect(projectCat.totalIssues, equals(1));
         expect(projectCat.totalWeight, equals(15));
 
-        final androidCat = score.categoryScores
-            .firstWhere((c) => c.category == 'android');
+        final androidCat = score.categoryScores.firstWhere(
+          (c) => c.category == 'android',
+        );
         expect(androidCat.score, closeTo(80.0, 0.01));
         expect(androidCat.totalIssues, equals(1));
         expect(androidCat.totalWeight, equals(5));
@@ -274,12 +280,7 @@ void main() {
     group('custom weights', () {
       test('produces different scores with custom weight values', () {
         const custom = HealthScoreEngine(
-          weights: ScoreWeights(
-            critical: 100,
-            error: 50,
-            warning: 20,
-            info: 5,
-          ),
+          weights: ScoreWeights(critical: 100, error: 50, warning: 20, info: 5),
         );
 
         final defaultScore = engine.computeFromResults([
@@ -365,20 +366,24 @@ void main() {
 
         expect(fromReport.overallScore, equals(fromResults.overallScore));
         expect(fromReport.totalWeight, equals(fromResults.totalWeight));
-        expect(fromReport.maxPossibleWeight,
-            equals(fromResults.maxPossibleWeight));
-        expect(fromReport.categoryScores.length,
-            equals(fromResults.categoryScores.length));
-        expect(fromReport.recommendations.length,
-            equals(fromResults.recommendations.length));
+        expect(
+          fromReport.maxPossibleWeight,
+          equals(fromResults.maxPossibleWeight),
+        );
+        expect(
+          fromReport.categoryScores.length,
+          equals(fromResults.categoryScores.length),
+        );
+        expect(
+          fromReport.recommendations.length,
+          equals(fromResults.recommendations.length),
+        );
       });
     });
 
     group('regression', () {
       test('empty issues yields overall score 100.0', () {
-        final score = engine.computeFromResults([
-          _result('project', []),
-        ]);
+        final score = engine.computeFromResults([_result('project', [])]);
 
         expect(score.overallScore, equals(100.0));
         expect(score.categoryScores.first.score, equals(100.0));
@@ -439,10 +444,7 @@ void main() {
           weights: ScoreWeights(critical: 10, error: 20),
         );
         final score = custom.computeFromResults([
-          _result('project', [
-            _issue(Severity.error),
-            _issue(Severity.error),
-          ]),
+          _result('project', [_issue(Severity.error), _issue(Severity.error)]),
         ]);
 
         expect(score.overallScore, isNonNegative);
@@ -451,10 +453,7 @@ void main() {
 
       test('overflow regression — score never exceeds 100', () {
         final score = engine.computeFromResults([
-          _result('project', [
-            _issue(Severity.info),
-            _issue(Severity.info),
-          ]),
+          _result('project', [_issue(Severity.info), _issue(Severity.info)]),
         ]);
 
         expect(score.overallScore, lessThanOrEqualTo(100.0));

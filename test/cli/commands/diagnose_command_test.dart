@@ -9,10 +9,9 @@ import '../../shared/mocks.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: FakeFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: FakeFileSystem()),
+    );
   });
 
   late MockTerminal terminal;
@@ -41,14 +40,17 @@ void main() {
   });
 
   group('DiagnoseCommand', () {
-    test('returns exitInternalFailure when project path does not exist', () async {
-      when(() => fileSystem.exists('/invalid')).thenReturn(false);
+    test(
+      'returns exitInternalFailure when project path does not exist',
+      () async {
+        when(() => fileSystem.exists('/invalid')).thenReturn(false);
 
-      final exitCode = await command.execute(['/invalid']);
+        final exitCode = await command.execute(['/invalid']);
 
-      expect(exitCode, equals(AppConstants.exitInternalFailure));
-      verify(() => terminal.writeError(any())).called(1);
-    });
+        expect(exitCode, equals(AppConstants.exitInternalFailure));
+        verify(() => terminal.writeError(any())).called(1);
+      },
+    );
 
     test('returns exitInternalFailure when path is not a directory', () async {
       when(() => fileSystem.exists('/file')).thenReturn(true);
@@ -62,15 +64,17 @@ void main() {
     test('returns exitNoIssues when no issues found', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute(['/project']);
 
@@ -80,22 +84,24 @@ void main() {
     test('returns exitWarningsOnly when only warnings present', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.warning,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.warning,
-                  code: 'MISSING_TEST',
-                  title: 'Missing test directory',
-                  description: 'No test/ directory found.',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.warning,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.warning,
+                code: 'MISSING_TEST',
+                title: 'Missing test directory',
+                description: 'No test/ directory found.',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute(['/project']);
 
@@ -105,22 +111,24 @@ void main() {
     test('returns exitErrorsOnly when error issues present', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'dependency',
-              status: CheckStatus.failed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.error,
-                  code: 'FD200',
-                  title: 'Missing dependency',
-                  description: 'firebase_core not found.',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'dependency',
+            status: CheckStatus.failed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.error,
+                code: 'FD200',
+                title: 'Missing dependency',
+                description: 'firebase_core not found.',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute(['/project']);
 
@@ -130,22 +138,24 @@ void main() {
     test('returns exitCriticalIssues when critical issues present', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.failed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.critical,
-                  code: 'MISSING_PUBSPEC',
-                  title: 'pubspec.yaml not found',
-                  description: 'No pubspec.yaml found.',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.failed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.critical,
+                code: 'MISSING_PUBSPEC',
+                title: 'pubspec.yaml not found',
+                description: 'No pubspec.yaml found.',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute(['/project']);
 
@@ -155,48 +165,56 @@ void main() {
     test('returns exitInternalFailure when analyzer service throws', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any()))
-          .thenThrow(Exception('Diagnosis failed'));
+      when(
+        () => analyzerService.runAll(any()),
+      ).thenThrow(Exception('Diagnosis failed'));
 
       final exitCode = await command.execute(['/project']);
 
       expect(exitCode, equals(AppConstants.exitInternalFailure));
-      verify(() => terminal.writeError(
-          'Diagnosis failed: Exception: Diagnosis failed')).called(1);
+      verify(
+        () => terminal.writeError(
+          'Diagnosis failed: Exception: Diagnosis failed',
+        ),
+      ).called(1);
     });
 
     test('uses current directory when no path argument given', () async {
       when(() => fileSystem.currentDirectory).thenReturn('/cwd');
       when(() => fileSystem.exists('/cwd')).thenReturn(true);
       when(() => fileSystem.isDirectory('/cwd')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute([]);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
     });
 
-    test('prints issue details with code, location, and recommendation',
-        () async {
-      final fakeTerminal = FakeTerminal();
-      final cmd = DiagnoseCommand(
-        logger: Logger(terminal: fakeTerminal),
-        terminal: fakeTerminal,
-        fileSystem: fileSystem,
-        analyzerService: analyzerService,
-      );
+    test(
+      'prints issue details with code, location, and recommendation',
+      () async {
+        final fakeTerminal = FakeTerminal();
+        final cmd = DiagnoseCommand(
+          logger: Logger(terminal: fakeTerminal),
+          terminal: fakeTerminal,
+          fileSystem: fileSystem,
+          analyzerService: analyzerService,
+        );
 
-      when(() => fileSystem.exists('/project')).thenReturn(true);
-      when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+        when(() => fileSystem.exists('/project')).thenReturn(true);
+        when(() => fileSystem.isDirectory('/project')).thenReturn(true);
+        when(() => analyzerService.runAll(any())).thenAnswer(
+          (_) async => [
             DiagnosticResult(
               analyzerName: 'firebase_core',
               status: CheckStatus.warning,
@@ -214,16 +232,18 @@ void main() {
               duration: Duration.zero,
               timestamp: DateTime.now(),
             ),
-          ]);
+          ],
+        );
 
-      final exitCode = await cmd.execute(['/project']);
+        final exitCode = await cmd.execute(['/project']);
 
-      expect(exitCode, equals(AppConstants.exitWarningsOnly));
-      final output = fakeTerminal.buffer.toString();
-      expect(output, contains('FD305'));
-      expect(output, contains('lib/main.dart:12'));
-      expect(output, contains('Add await'));
-    });
+        expect(exitCode, equals(AppConstants.exitWarningsOnly));
+        final output = fakeTerminal.buffer.toString();
+        expect(output, contains('FD305'));
+        expect(output, contains('lib/main.dart:12'));
+        expect(output, contains('Add await'));
+      },
+    );
 
     test('prints summary with correct counts', () async {
       final fakeTerminal = FakeTerminal();
@@ -236,43 +256,45 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-            DiagnosticResult(
-              analyzerName: 'dependency',
-              status: CheckStatus.warning,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.warning,
-                  code: 'FD202',
-                  title: 'Loose version',
-                  description: 'Version constraint is too loose.',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-            DiagnosticResult(
-              analyzerName: 'firebase_core',
-              status: CheckStatus.failed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.error,
-                  code: 'FD306',
-                  title: 'Init after runApp',
-                  description: 'Firebase.initializeApp() after runApp().',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+          DiagnosticResult(
+            analyzerName: 'dependency',
+            status: CheckStatus.warning,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.warning,
+                code: 'FD202',
+                title: 'Loose version',
+                description: 'Version constraint is too loose.',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+          DiagnosticResult(
+            analyzerName: 'firebase_core',
+            status: CheckStatus.failed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.error,
+                code: 'FD306',
+                title: 'Init after runApp',
+                description: 'Firebase.initializeApp() after runApp().',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await cmd.execute(['/project']);
 

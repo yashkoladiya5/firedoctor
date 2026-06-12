@@ -6,7 +6,8 @@ final class PodfileParser {
     bool hasFirebasePods,
     List<String> pods,
     bool hasRunnerTarget,
-  })? parse(String content) {
+  })?
+  parse(String content) {
     if (content.trim().isEmpty) return null;
 
     final stripped = _stripComments(content);
@@ -30,8 +31,9 @@ final class PodfileParser {
     ).hasMatch(stripped);
 
     final pods = <String>[];
-    for (final match
-        in RegExp(r'''pod\s+['"]([^'"]*)['"]''').allMatches(stripped)) {
+    for (final match in RegExp(
+      r'''pod\s+['"]([^'"]*)['"]''',
+    ).allMatches(stripped)) {
       pods.add(match.group(1)!);
     }
 

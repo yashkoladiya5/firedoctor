@@ -79,11 +79,14 @@ void main() {
         expect(result.hasBackgroundModes, isTrue);
       });
 
-      test('returns false for capabilities when SystemCapabilities missing', () {
-        final result = parser.parse('{buildSettings = {};}');
-        expect(result.hasPushCapability, isFalse);
-        expect(result.hasBackgroundModes, isFalse);
-      });
+      test(
+        'returns false for capabilities when SystemCapabilities missing',
+        () {
+          final result = parser.parse('{buildSettings = {};}');
+          expect(result.hasPushCapability, isFalse);
+          expect(result.hasBackgroundModes, isFalse);
+        },
+      );
 
       test('parses complete pbxproj structure', () {
         final result = parser.parse('''

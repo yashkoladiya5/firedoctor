@@ -18,8 +18,10 @@ void main() {
       expect(pubspec.name, equals('my_app'));
       expect(pubspec.version, equals('1.0.0'));
       expect(pubspec.description, equals('My Flutter app'));
-      expect(pubspec.dependencies,
-          equals({'flutter': 'sdk', 'firebase_core': '^2.0.0'}));
+      expect(
+        pubspec.dependencies,
+        equals({'flutter': 'sdk', 'firebase_core': '^2.0.0'}),
+      );
       expect(pubspec.devDependencies, equals({'flutter_test': 'sdk'}));
       expect(pubspec.flutterSdkConstraint, equals('>=3.0.0'));
       expect(pubspec.dartSdkConstraint, equals('>=3.0.0'));
@@ -65,18 +67,20 @@ void main() {
       expect(pubspec.hasDevDependency('nonexistent'), isFalse);
     });
 
-    test('dependencyVersion returns correct version for existing dependency',
-        () {
-      const pubspec = Pubspec(
-        name: 'test',
-        dependencies: {'firebase_core': '^2.0.0'},
-        devDependencies: {},
-        isFlutterProject: false,
-      );
+    test(
+      'dependencyVersion returns correct version for existing dependency',
+      () {
+        const pubspec = Pubspec(
+          name: 'test',
+          dependencies: {'firebase_core': '^2.0.0'},
+          devDependencies: {},
+          isFlutterProject: false,
+        );
 
-      expect(pubspec.dependencyVersion('firebase_core'), equals('^2.0.0'));
-      expect(pubspec.dependencyVersion('nonexistent'), isNull);
-    });
+        expect(pubspec.dependencyVersion('firebase_core'), equals('^2.0.0'));
+        expect(pubspec.dependencyVersion('nonexistent'), isNull);
+      },
+    );
 
     test('isFlutterProject is false for non-Flutter project', () {
       const pubspec = Pubspec(

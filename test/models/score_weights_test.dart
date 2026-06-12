@@ -68,20 +68,10 @@ void main() {
     });
 
     group('copyWith', () {
-      const base = ScoreWeights(
-        critical: 10,
-        error: 8,
-        warning: 4,
-        info: 2,
-      );
+      const base = ScoreWeights(critical: 10, error: 8, warning: 4, info: 2);
 
       test('produces new instance with all overridden fields', () {
-        final copy = base.copyWith(
-          critical: 1,
-          error: 2,
-          warning: 3,
-          info: 4,
-        );
+        final copy = base.copyWith(critical: 1, error: 2, warning: 3, info: 4);
         expect(copy.critical, equals(1));
         expect(copy.error, equals(2));
         expect(copy.warning, equals(3));

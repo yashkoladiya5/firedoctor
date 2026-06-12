@@ -39,7 +39,8 @@ final class DoctorCommand extends Command {
           final parsed = _tryParseSeverity(args[++i]);
           if (parsed == null) {
             terminal.writeError(
-                'Invalid --fail-on value. Must be one of: warning, error, critical.');
+              'Invalid --fail-on value. Must be one of: warning, error, critical.',
+            );
             return AppConstants.exitInternalFailure;
           }
           failOn = parsed;
@@ -52,7 +53,8 @@ final class DoctorCommand extends Command {
           final parsed = double.tryParse(args[++i]);
           if (parsed == null || parsed < 0 || parsed > 100) {
             terminal.writeError(
-                'Invalid --min-score value. Must be a number between 0 and 100.');
+              'Invalid --min-score value. Must be a number between 0 and 100.',
+            );
             return AppConstants.exitInternalFailure;
           }
           minScore = parsed;
@@ -109,7 +111,8 @@ final class DoctorCommand extends Command {
       final score = report.healthScore?.overallScore ?? report.score;
       if (score < minScore) {
         terminal.writeWarning(
-            'Score ${score.toStringAsFixed(1)} is below threshold $minScore');
+          'Score ${score.toStringAsFixed(1)} is below threshold $minScore',
+        );
         return AppConstants.exitInternalFailure;
       }
     }

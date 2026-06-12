@@ -17,10 +17,7 @@ FakeFileSystem _createProject({
   if (androidBuildGradleContent != null) {
     fs.addDirectory('/project/android');
     fs.addDirectory('/project/android/app');
-    fs.addFile(
-      '/project/android/app/build.gradle',
-      androidBuildGradleContent,
-    );
+    fs.addFile('/project/android/app/build.gradle', androidBuildGradleContent);
   }
 
   if (iosPodfileContent != null || iosPodfileLockContent != null) {
@@ -59,10 +56,7 @@ FakeFileSystem _createProjectWithMain(
 
   return _createProject(
     pubspecContent: buffer.toString(),
-    dartFiles: {
-      '/project/lib/main.dart': mainContent,
-      ...additionalFiles,
-    },
+    dartFiles: {'/project/lib/main.dart': mainContent, ...additionalFiles},
     androidBuildGradleContent: androidBuildGradleContent,
     iosPodfileContent: iosPodfileContent,
     iosPodfileLockContent: iosPodfileLockContent,
@@ -181,8 +175,10 @@ void main() {
     group('skipped conditions', () {
       test('returns skipped when pubspec.yaml does not exist', () async {
         final fs = FakeFileSystem();
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -192,8 +188,10 @@ void main() {
       test('returns skipped when pubspec.yaml is invalid', () async {
         final fs = FakeFileSystem();
         fs.addFile('/project/pubspec.yaml', '{{{');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -204,11 +202,13 @@ void main() {
     group('FD700: missing firebase_crashlytics dependency', () {
       test('emits FD700 when firebase_crashlytics not in deps', () async {
         final fs = _createProjectWithMain(
-          'void main() {}',
+          _basicCrashlyticsMain,
           withCrashlytics: false,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD700'), isTrue);
@@ -217,95 +217,111 @@ void main() {
         expect(issue.filePath, endsWith('pubspec.yaml'));
       });
 
-      test('does not emit FD700 when firebase_crashlytics is in deps',
-          () async {
-        final fs = _createProjectWithMain(
-          'void main() {}',
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+      test(
+        'does not emit FD700 when firebase_crashlytics is in deps',
+        () async {
+          final fs = _createProjectWithMain(
+            'void main() {}',
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD700'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD700'), isEmpty);
+        },
+      );
     });
 
     group('FD701: Crashlytics not used in Dart code', () {
       test(
-          'emits FD701 when firebase_crashlytics in deps but no FirebaseCrashlytics reference',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+        'emits FD701 when firebase_crashlytics in deps but no FirebaseCrashlytics reference',
+        () async {
+          final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
 }
-''',
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+''', withCrashlytics: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD701');
-        expect(issue.severity, equals(Severity.warning));
-        expect(issue.filePath, endsWith('pubspec.yaml'));
-      });
+          expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD701');
+          expect(issue.severity, equals(Severity.warning));
+          expect(issue.filePath, endsWith('pubspec.yaml'));
+        },
+      );
 
-      test('does not emit FD701 when FirebaseCrashlytics is referenced',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+      test(
+        'does not emit FD701 when FirebaseCrashlytics is referenced',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD701'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD701'), isEmpty);
+        },
+      );
     });
 
     group('FD702: FlutterError.onError not forwarded', () {
       test(
-          'emits FD702 when Crashlytics used but no FlutterError.onError',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD702 when Crashlytics used but no FlutterError.onError',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD702'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD702');
-        expect(issue.severity, equals(Severity.error));
-      });
+          expect(result.issues.any((i) => i.code == 'FD702'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD702');
+          expect(issue.severity, equals(Severity.error));
+        },
+      );
 
       test(
-          'does not emit FD702 when FlutterError.onError is configured',
-          () async {
-        final fs = _createProjectWithMain(
-          _fullErrorReportingMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD702 when FlutterError.onError is configured',
+        () async {
+          final fs = _createProjectWithMain(
+            _fullErrorReportingMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
+        },
+      );
 
       test('does not emit FD702 when no Crashlytics usage', () async {
         final fs = _createProjectWithMain(
           'void main() {}',
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
@@ -314,60 +330,71 @@ void main() {
 
     group('FD703: PlatformDispatcher.onError not configured', () {
       test(
-          'emits FD703 when Crashlytics used but no PlatformDispatcher.onError',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD703 when Crashlytics used but no PlatformDispatcher.onError',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD703'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD703');
-        expect(issue.severity, equals(Severity.error));
-      });
+          expect(result.issues.any((i) => i.code == 'FD703'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD703');
+          expect(issue.severity, equals(Severity.error));
+        },
+      );
 
       test(
-          'does not emit FD703 when PlatformDispatcher.onError is configured',
-          () async {
-        final fs = _createProjectWithMain(
-          _fullErrorReportingMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD703 when PlatformDispatcher.onError is configured',
+        () async {
+          final fs = _createProjectWithMain(
+            _fullErrorReportingMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD703'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD703'), isEmpty);
+        },
+      );
     });
 
     group('FD704: Missing runZonedGuarded', () {
       test(
-          'emits FD704 when Crashlytics used but no runZonedGuarded',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD704 when Crashlytics used but no runZonedGuarded',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD704'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD704');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD704'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD704');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
 
       test('does not emit FD704 when runZonedGuarded is used', () async {
         final fs = _createProjectWithMain(
           _zonedCrashlyticsMain,
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD704'), isEmpty);
@@ -376,120 +403,142 @@ void main() {
 
     group('FD705: Crashlytics collection explicitly configured', () {
       test(
-          'emits FD705 when setCrashlyticsCollectionEnabled is called',
-          () async {
-        final fs = _createProjectWithMain(
-          _collectionEnabledMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD705 when setCrashlyticsCollectionEnabled is called',
+        () async {
+          final fs = _createProjectWithMain(
+            _collectionEnabledMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD705'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD705');
-        expect(issue.severity, equals(Severity.info));
-      });
+          expect(result.issues.any((i) => i.code == 'FD705'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD705');
+          expect(issue.severity, equals(Severity.info));
+        },
+      );
 
       test(
-          'does not emit FD705 when setCrashlyticsCollectionEnabled is not called',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD705 when setCrashlyticsCollectionEnabled is not called',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD705'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD705'), isEmpty);
+        },
+      );
     });
 
     group('FD706: recordError usage not detected', () {
       test(
-          'emits FD706 when Crashlytics used but no recordError call',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD706 when Crashlytics used but no recordError call',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD706'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD706');
-        expect(issue.severity, equals(Severity.warning));
-      });
+          expect(result.issues.any((i) => i.code == 'FD706'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD706');
+          expect(issue.severity, equals(Severity.warning));
+        },
+      );
 
       test('does not emit FD706 when recordError is used', () async {
         final fs = _createProjectWithMain(
           _recordErrorMain,
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
       });
 
       test(
-          'does not emit FD706 when recordError is used in full reporting setup',
-          () async {
-        final fs = _createProjectWithMain(
-          _fullErrorReportingMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD706 when recordError is used in full reporting setup',
+        () async {
+          final fs = _createProjectWithMain(
+            _fullErrorReportingMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // _fullErrorReportingMain includes recordError via
-        // PlatformDispatcher.instance.onError callback
-        expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
-      });
+          // _fullErrorReportingMain includes recordError via
+          // PlatformDispatcher.instance.onError callback
+          expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
+        },
+      );
     });
 
     group('FD707: No fatal error reporting strategy', () {
       test(
-          'emits FD707 when Crashlytics used but no error reporting strategy',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD707 when Crashlytics used but no error reporting strategy',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD707'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD707');
-        expect(issue.severity, equals(Severity.info));
-      });
+          expect(result.issues.any((i) => i.code == 'FD707'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD707');
+          expect(issue.severity, equals(Severity.info));
+        },
+      );
 
       test(
-          'does not emit FD707 when FlutterError.onError is configured',
-          () async {
-        final fs = _createProjectWithMain(
-          _fullErrorReportingMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'does not emit FD707 when FlutterError.onError is configured',
+        () async {
+          final fs = _createProjectWithMain(
+            _fullErrorReportingMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD707'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD707'), isEmpty);
+        },
+      );
 
       test('does not emit FD707 when recordError is used', () async {
         final fs = _createProjectWithMain(
           _recordErrorMain,
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD707'), isEmpty);
@@ -497,8 +546,7 @@ void main() {
     });
 
     group('FD708: Missing Crashlytics Gradle plugin', () {
-      test('emits FD708 when Crashlytics Gradle plugin is missing',
-          () async {
+      test('emits FD708 when Crashlytics Gradle plugin is missing', () async {
         final fs = _createProjectWithMain(
           _basicCrashlyticsMain,
           withCrashlytics: true,
@@ -512,8 +560,10 @@ android {
 }
 ''',
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD708'), isTrue);
@@ -522,12 +572,12 @@ android {
       });
 
       test(
-          'does not emit FD708 when Crashlytics plugin is present (Kotlin DSL)',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-          androidBuildGradleContent: '''
+        'does not emit FD708 when Crashlytics plugin is present (Kotlin DSL)',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+            androidBuildGradleContent: '''
 plugins {
     id "com.android.application"
     id "com.google.firebase.crashlytics"
@@ -536,40 +586,44 @@ android {
     compileSdk 34
 }
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD708'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD708'), isEmpty);
+        },
+      );
 
       test(
-          'does not emit FD708 when Crashlytics plugin is present (Groovy DSL)',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-          androidBuildGradleContent: '''
+        'does not emit FD708 when Crashlytics plugin is present (Groovy DSL)',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+            androidBuildGradleContent: '''
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdk 34
 }
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD708'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD708'), isEmpty);
+        },
+      );
     });
 
     group('FD709: Missing Crashlytics build configuration', () {
-      test(
-          'emits FD709 when firebaseCrashlytics block is missing',
-          () async {
+      test('emits FD709 when firebaseCrashlytics block is missing', () async {
         final fs = _createProjectWithMain(
           _basicCrashlyticsMain,
           withCrashlytics: true,
@@ -583,8 +637,10 @@ android {
 }
 ''',
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD709'), isTrue);
@@ -593,12 +649,12 @@ android {
       });
 
       test(
-          'does not emit FD709 when firebaseCrashlytics block is present',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-          androidBuildGradleContent: '''
+        'does not emit FD709 when firebaseCrashlytics block is present',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+            androidBuildGradleContent: '''
 plugins {
     id "com.android.application"
     id "com.google.firebase.crashlytics"
@@ -610,13 +666,16 @@ firebaseCrashlytics {
     nativeSymbolUploadEnabled true
 }
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD709'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD709'), isEmpty);
+        },
+      );
     });
 
     group('FD710: Missing Crashlytics CocoaPods pod', () {
@@ -630,8 +689,10 @@ firebaseCrashlytics {
         // Manually add iOS directory since _createProjectWithMain won't add
         // ios dir when iosPodfileContent is null
         fs.addDirectory('/project/ios');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD710'), isTrue);
@@ -640,9 +701,7 @@ firebaseCrashlytics {
         expect(issue.filePath, endsWith('Podfile'));
       });
 
-      test(
-          'emits FD710 when Podfile exists but no Crashlytics pod',
-          () async {
+      test('emits FD710 when Podfile exists but no Crashlytics pod', () async {
         final fs = _createProjectWithMain(
           _basicCrashlyticsMain,
           withCrashlytics: true,
@@ -653,57 +712,65 @@ target 'Runner' do
 end
 ''',
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD710'), isTrue);
       });
 
       test(
-          'does not emit FD710 when Firebase/Crashlytics pod is in Podfile',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-          iosPodfileContent: '''
+        'does not emit FD710 when Firebase/Crashlytics pod is in Podfile',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+            iosPodfileContent: '''
 platform :ios, '12.0'
 target 'Runner' do
   pod 'Firebase/Crashlytics'
 end
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD710'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD710'), isEmpty);
+        },
+      );
 
       test(
-          'does not emit FD710 when FirebaseCrashlytics is in Podfile.lock',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-          iosPodfileContent: '''
+        'does not emit FD710 when FirebaseCrashlytics is in Podfile.lock',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+            iosPodfileContent: '''
 platform :ios, '12.0'
 target 'Runner' do
   pod 'Firebase/Crashlytics'
 end
 ''',
-          iosPodfileLockContent: '''
+            iosPodfileLockContent: '''
 PODS:
   - Firebase/Crashlytics
   - FirebaseCrashlytics
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD710'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD710'), isEmpty);
+        },
+      );
     });
 
     group('FD711: Missing dSYM upload configuration', () {
@@ -722,8 +789,10 @@ PODS:
   - Firebase/Crashlytics (10.0.0)
 ''',
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD711'), isTrue);
@@ -731,29 +800,33 @@ PODS:
         expect(issue.severity, equals(Severity.info));
       });
 
-      test('does not emit FD711 when dSYM upload is configured in Podfile.lock',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-          iosPodfileContent: '''
+      test(
+        'does not emit FD711 when dSYM upload is configured in Podfile.lock',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+            iosPodfileContent: '''
 platform :ios, '12.0'
 target 'Runner' do
   pod 'Firebase/Crashlytics'
 end
 ''',
-          iosPodfileLockContent: '''
+            iosPodfileLockContent: '''
 PODS:
   - Firebase/Crashlytics (10.0.0)
   - FirebaseCrashlytics (10.0.0)
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.where((i) => i.code == 'FD711'), isEmpty);
-      });
+          expect(result.issues.where((i) => i.code == 'FD711'), isEmpty);
+        },
+      );
     });
 
     group('FD712: No custom keys usage', () {
@@ -762,8 +835,10 @@ PODS:
           _basicCrashlyticsMain,
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD712'), isTrue);
@@ -776,8 +851,10 @@ PODS:
           _crashlyticsWithKeys,
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD712'), isEmpty);
@@ -786,28 +863,33 @@ PODS:
 
     group('FD713: No user identification strategy', () {
       test(
-          'emits FD713 when Crashlytics used but no setUserIdentifier',
-          () async {
-        final fs = _createProjectWithMain(
-          _basicCrashlyticsMain,
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+        'emits FD713 when Crashlytics used but no setUserIdentifier',
+        () async {
+          final fs = _createProjectWithMain(
+            _basicCrashlyticsMain,
+            withCrashlytics: true,
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD713'), isTrue);
-        final issue = result.issues.firstWhere((i) => i.code == 'FD713');
-        expect(issue.severity, equals(Severity.info));
-      });
+          expect(result.issues.any((i) => i.code == 'FD713'), isTrue);
+          final issue = result.issues.firstWhere((i) => i.code == 'FD713');
+          expect(issue.severity, equals(Severity.info));
+        },
+      );
 
       test('does not emit FD713 when setUserIdentifier is used', () async {
         final fs = _createProjectWithMain(
           _crashlyticsWithKeys,
           withCrashlytics: true,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD713'), isEmpty);
@@ -825,8 +907,10 @@ plugins {
 }
 ''',
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -834,33 +918,38 @@ plugins {
 
       test('returns warning when only warning issues present', () async {
         final fs = _createProjectWithMain(
-          'void main() {}',
+          _fullErrorReportingMain,
           withCrashlytics: false,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
-
-        expect(result.status, equals(CheckStatus.warning));
-      });
-
-      test('returns passed when no crash-related dependencies or configs exist',
-          () async {
-        // Create a project with no crashlytics dependency, no android, no ios
-        final fs = FakeFileSystem();
-        fs.addFile(
-          '/project/pubspec.yaml',
-          'name: test_app\ndependencies:\n  flutter:\n    sdk: flutter\ndev_dependencies: {}\n',
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        fs.addDirectory('/project/lib');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
-        // FD700 fires (warning) since crashlytics is not in deps
         expect(result.status, equals(CheckStatus.warning));
-        expect(result.issues.any((i) => i.code == 'FD700'), isTrue);
       });
+
+      test(
+        'returns passed when no crash-related dependencies or configs exist',
+        () async {
+          // Create a project with no crashlytics dependency, no android, no ios
+          final fs = FakeFileSystem();
+          fs.addFile(
+            '/project/pubspec.yaml',
+            'name: test_app\ndependencies:\n  flutter:\n    sdk: flutter\ndev_dependencies: {}\n',
+          );
+          fs.addDirectory('/project/lib');
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
+
+          expect(result.status, equals(CheckStatus.passed));
+          expect(result.issues, isEmpty);
+        },
+      );
     });
 
     group('edge cases', () {
@@ -872,8 +961,10 @@ plugins {
         );
         fs.addDirectory('/project/lib');
 
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
@@ -887,10 +978,9 @@ plugins {
       });
 
       test(
-          'does not false-positive on FirebaseCrashlytics in string literals',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+        'does not false-positive on FirebaseCrashlytics in string literals',
+        () async {
+          final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 
 void main() {
@@ -898,22 +988,23 @@ void main() {
   final r = "recordError is in a string";
   runApp(const MyApp());
 }
-''',
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+''', withCrashlytics: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
-        expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
-      });
+          expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
+          expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
+        },
+      );
 
-      test('does not false-positive on Crashlytics references in comments',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+      test(
+        'does not false-positive on Crashlytics references in comments',
+        () async {
+          final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 
 void main() {
@@ -922,21 +1013,21 @@ void main() {
   // recordError is commented out
   runApp(const MyApp());
 }
-''',
-          withCrashlytics: true,
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+''', withCrashlytics: true);
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
-        expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
-        expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
-      });
+          expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
+          expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
+          expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
+        },
+      );
 
       test('handles case-sensitive detection', () async {
-        final fs = _createProjectWithMain(
-          '''
+        final fs = _createProjectWithMain('''
 import 'package:flutter/material.dart';
 
 void main() {
@@ -946,11 +1037,11 @@ void main() {
   runzonedguarded(() {});
   runApp(const MyApp());
 }
-''',
-          withCrashlytics: true,
+''', withCrashlytics: true);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
         );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Lowercase should NOT match, so FD701 fires
@@ -961,10 +1052,10 @@ void main() {
       });
 
       test(
-          'handles multiple Dart files with distributed Crashlytics setup',
-          () async {
-        final fs = _createProjectWithMain(
-          '''
+        'handles multiple Dart files with distributed Crashlytics setup',
+        () async {
+          final fs = _createProjectWithMain(
+            '''
 import 'package:flutter/material.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
@@ -974,9 +1065,9 @@ void main() {
   runApp(const MyApp());
 }
 ''',
-          withCrashlytics: true,
-          additionalFiles: {
-            '/project/lib/errors.dart': '''
+            withCrashlytics: true,
+            additionalFiles: {
+              '/project/lib/errors.dart': '''
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void setupErrorHandling() {
@@ -985,15 +1076,15 @@ void setupErrorHandling() {
   };
 }
 ''',
-            '/project/lib/catch.dart': '''
+              '/project/lib/catch.dart': '''
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void handleError(Object error, StackTrace stack) {
   FirebaseCrashlytics.instance.recordError(error, stack);
 }
 ''',
-          },
-          androidBuildGradleContent: '''
+            },
+            androidBuildGradleContent: '''
 plugins {
     id "com.android.application"
     id "com.google.firebase.crashlytics"
@@ -1002,32 +1093,35 @@ firebaseCrashlytics {
     nativeSymbolUploadEnabled true
 }
 ''',
-          iosPodfileContent: '''
+            iosPodfileContent: '''
 platform :ios, '12.0'
 target 'Runner' do
   pod 'Firebase/Crashlytics'
 end
 ''',
-          iosPodfileLockContent: '''
+            iosPodfileLockContent: '''
 PODS:
   - Firebase/Crashlytics (10.0.0)
   - FirebaseCrashlytics (10.0.0)
 ''',
-        );
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+          );
+          final context = createAnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        expect(result.issues.any((i) => i.code == 'FD700'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD701'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD702'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD706'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD708'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD709'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD710'), isFalse);
-        expect(result.issues.any((i) => i.code == 'FD711'), isFalse);
-        // FD703, FD704, FD712, FD713 may still fire (not configured)
-      });
+          expect(result.issues.any((i) => i.code == 'FD700'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD701'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD702'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD706'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD708'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD709'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD710'), isFalse);
+          expect(result.issues.any((i) => i.code == 'FD711'), isFalse);
+          // FD703, FD704, FD712, FD713 may still fire (not configured)
+        },
+      );
 
       test('handles android/build.gradle.kts (Kotlin DSL)', () async {
         final fs = FakeFileSystem();
@@ -1036,15 +1130,10 @@ PODS:
           'name: test_app\ndependencies:\n  firebase_crashlytics: ^4.0.0\n  flutter:\n    sdk: flutter\ndev_dependencies: {}\n',
         );
         fs.addDirectory('/project/lib');
-        fs.addFile(
-          '/project/lib/main.dart',
-          _basicCrashlyticsMain,
-        );
+        fs.addFile('/project/lib/main.dart', _basicCrashlyticsMain);
         fs.addDirectory('/project/android');
         fs.addDirectory('/project/android/app');
-        fs.addFile(
-          '/project/android/app/build.gradle.kts',
-          '''
+        fs.addFile('/project/android/app/build.gradle.kts', '''
 plugins {
     id("com.android.application")
     id("com.google.firebase.crashlytics")
@@ -1055,11 +1144,12 @@ android {
 firebaseCrashlytics {
     nativeSymbolUploadEnabled = true
 }
-''',
-        );
+''');
 
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         // Should find the plugin in Kotlin DSL format
@@ -1071,8 +1161,10 @@ firebaseCrashlytics {
     group('result metadata', () {
       test('result has correct analyzerName', () async {
         final fs = _createProjectWithMain('void main() {}');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.analyzerName, equals('crashlytics'));
@@ -1080,8 +1172,10 @@ firebaseCrashlytics {
 
       test('result has non-zero duration', () async {
         final fs = _createProjectWithMain('void main() {}');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.duration.inMicroseconds, greaterThanOrEqualTo(0));
@@ -1089,8 +1183,10 @@ firebaseCrashlytics {
 
       test('result has a recent timestamp', () async {
         final fs = _createProjectWithMain('void main() {}');
-        final context =
-            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);

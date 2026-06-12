@@ -7,15 +7,17 @@ final class PlistParser {
       return null;
     }
 
-    final dict = _parseDict(content, content.indexOf('<dict>') + '<dict>'.length);
+    final dict = _parseDict(
+      content,
+      content.indexOf('<dict>') + '<dict>'.length,
+    );
     if (dict == null || dict.isEmpty) return null;
 
     return dict.map((key, value) => MapEntry(key, value.toString()));
   }
 
-  ({List<String> backgroundModes, bool hasFirebaseAppDelegateProxy}) parseInfoPlist(
-    String content,
-  ) {
+  ({List<String> backgroundModes, bool hasFirebaseAppDelegateProxy})
+  parseInfoPlist(String content) {
     final backgroundModes = <String>[];
     var hasFirebaseAppDelegateProxy = false;
 
@@ -25,8 +27,9 @@ final class PlistParser {
     final bgModesMatch = bgModesRegex.firstMatch(content);
     if (bgModesMatch != null) {
       final arrayContent = bgModesMatch.group(1)!;
-      for (final match
-          in RegExp(r'<string>([^<]+)</string>').allMatches(arrayContent)) {
+      for (final match in RegExp(
+        r'<string>([^<]+)</string>',
+      ).allMatches(arrayContent)) {
         backgroundModes.add(match.group(1)!);
       }
     }
@@ -63,7 +66,9 @@ final class PlistParser {
           break;
         }
 
-        final keyMatch = RegExp(r'<key>([^<]+)</key>').matchAsPrefix(content, i);
+        final keyMatch = RegExp(
+          r'<key>([^<]+)</key>',
+        ).matchAsPrefix(content, i);
         if (keyMatch != null) {
           final key = keyMatch.group(1)!;
           i = keyMatch.end;
@@ -73,7 +78,9 @@ final class PlistParser {
           }
 
           if (i < content.length) {
-            final stringMatch = RegExp(r'<string>([^<]*)</string>').matchAsPrefix(content, i);
+            final stringMatch = RegExp(
+              r'<string>([^<]*)</string>',
+            ).matchAsPrefix(content, i);
             if (stringMatch != null) {
               result[key] = stringMatch.group(1)!;
               i = stringMatch.end;
@@ -94,14 +101,18 @@ final class PlistParser {
               continue;
             }
 
-            final integerMatch = RegExp(r'<integer>([^<]+)</integer>').matchAsPrefix(content, i);
+            final integerMatch = RegExp(
+              r'<integer>([^<]+)</integer>',
+            ).matchAsPrefix(content, i);
             if (integerMatch != null) {
               result[key] = int.tryParse(integerMatch.group(1)!);
               i = integerMatch.end;
               continue;
             }
 
-            final realMatch = RegExp(r'<real>([^<]+)</real>').matchAsPrefix(content, i);
+            final realMatch = RegExp(
+              r'<real>([^<]+)</real>',
+            ).matchAsPrefix(content, i);
             if (realMatch != null) {
               result[key] = double.tryParse(realMatch.group(1)!);
               i = realMatch.end;
@@ -114,7 +125,9 @@ final class PlistParser {
               if (nested != null) {
                 result[key] = nested;
               }
-              final closeDictMatch = RegExp(r'</dict>').firstMatch(content.substring(i));
+              final closeDictMatch = RegExp(
+                r'</dict>',
+              ).firstMatch(content.substring(i));
               if (closeDictMatch != null) {
                 i += closeDictMatch.end;
               } else {
@@ -126,7 +139,9 @@ final class PlistParser {
             final arrayMatch = RegExp(r'<array>').matchAsPrefix(content, i);
             if (arrayMatch != null) {
               result[key] = _parseArray(content, i + '<array>'.length);
-              final closeArrayMatch = RegExp(r'</array>').firstMatch(content.substring(i));
+              final closeArrayMatch = RegExp(
+                r'</array>',
+              ).firstMatch(content.substring(i));
               if (closeArrayMatch != null) {
                 i += closeArrayMatch.end;
               } else {
@@ -159,7 +174,9 @@ final class PlistParser {
           break;
         }
 
-        final stringMatch = RegExp(r'<string>([^<]*)</string>').matchAsPrefix(content, i);
+        final stringMatch = RegExp(
+          r'<string>([^<]*)</string>',
+        ).matchAsPrefix(content, i);
         if (stringMatch != null) {
           result.add(stringMatch.group(1)!);
           i = stringMatch.end;

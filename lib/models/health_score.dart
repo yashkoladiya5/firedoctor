@@ -36,12 +36,12 @@ final class CategoryScore {
   });
 
   Map<String, dynamic> toJson() => {
-        'category': category,
-        'displayName': displayName,
-        'score': score,
-        'totalIssues': totalIssues,
-        'totalWeight': totalWeight,
-      };
+    'category': category,
+    'displayName': displayName,
+    'score': score,
+    'totalIssues': totalIssues,
+    'totalWeight': totalWeight,
+  };
 }
 
 final class Recommendation {
@@ -60,11 +60,11 @@ final class Recommendation {
   String get formatted => 'Fix $code: $title';
 
   Map<String, dynamic> toJson() => {
-        'code': code,
-        'title': title,
-        'severity': severity,
-        'weight': weight,
-      };
+    'code': code,
+    'title': title,
+    'severity': severity,
+    'weight': weight,
+  };
 }
 
 final class HealthScore {
@@ -105,22 +105,25 @@ final class HealthScore {
       lowPriorityIssues.length;
 
   Map<String, dynamic> toJson() => {
-        'overallScore': overallScore,
-        'totalIssues': totalIssues,
-        'totalWeight': totalWeight,
-        'maxPossibleWeight': maxPossibleWeight,
-        'categoryScores': categoryScores.map((c) => c.toJson()).toList(),
-        'priorityGroups': {
-          for (final group in PriorityGroup.values)
-            group.name: (priorityGroups[group] ?? []).map((issue) => {
-                  'code': issue.code,
-                  'severity': issue.severity.name,
-                  'title': issue.title,
-                  if (issue.filePath != null) 'filePath': issue.filePath,
-                  if (issue.lineNumber != null)
-                    'lineNumber': issue.lineNumber,
-                }).toList(),
-        },
-        'recommendations': recommendations.map((r) => r.toJson()).toList(),
-      };
+    'overallScore': overallScore,
+    'totalIssues': totalIssues,
+    'totalWeight': totalWeight,
+    'maxPossibleWeight': maxPossibleWeight,
+    'categoryScores': categoryScores.map((c) => c.toJson()).toList(),
+    'priorityGroups': {
+      for (final group in PriorityGroup.values)
+        group.name: (priorityGroups[group] ?? [])
+            .map(
+              (issue) => {
+                'code': issue.code,
+                'severity': issue.severity.name,
+                'title': issue.title,
+                if (issue.filePath != null) 'filePath': issue.filePath,
+                if (issue.lineNumber != null) 'lineNumber': issue.lineNumber,
+              },
+            )
+            .toList(),
+    },
+    'recommendations': recommendations.map((r) => r.toJson()).toList(),
+  };
 }

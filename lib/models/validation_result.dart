@@ -13,10 +13,10 @@ final class ExpectedFinding {
   });
 
   Map<String, dynamic> toJson() => {
-        'analyzerName': analyzerName,
-        'code': code,
-        'shouldBeFound': shouldBeFound,
-      };
+    'analyzerName': analyzerName,
+    'code': code,
+    'shouldBeFound': shouldBeFound,
+  };
 
   factory ExpectedFinding.fromJson(Map<String, dynamic> json) =>
       ExpectedFinding(
@@ -53,35 +53,34 @@ final class ValidationEntry {
   int get totalActual => truePositives.length + falsePositives.length;
 
   Map<String, dynamic> toJson() => {
-        'projectName': projectName,
-        'projectPath': projectPath,
-        'totalChecks': totalChecks,
-        'totalExpected': totalExpected,
-        'totalActual': totalActual,
-        'truePositives': truePositives.map((e) => e.toJson()).toList(),
-        'falseNegatives': falseNegatives.map((e) => e.toJson()).toList(),
-        'falsePositives': falsePositives
-            .map((i) => {
-                  'code': i.code,
-                  'title': i.title,
-                  'severity': i.severity.name,
-                  'analyzerName': i.code.substring(0, 2),
-                })
-            .toList(),
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall,
-      };
+    'projectName': projectName,
+    'projectPath': projectPath,
+    'totalChecks': totalChecks,
+    'totalExpected': totalExpected,
+    'totalActual': totalActual,
+    'truePositives': truePositives.map((e) => e.toJson()).toList(),
+    'falseNegatives': falseNegatives.map((e) => e.toJson()).toList(),
+    'falsePositives': falsePositives
+        .map(
+          (i) => {
+            'code': i.code,
+            'title': i.title,
+            'severity': i.severity.name,
+            'analyzerName': i.code.substring(0, 2),
+          },
+        )
+        .toList(),
+    'accuracy': accuracy,
+    'precision': precision,
+    'recall': recall,
+  };
 }
 
 final class ValidationReport {
   final List<ValidationEntry> entries;
   final DateTime generatedAt;
 
-  const ValidationReport({
-    required this.entries,
-    required this.generatedAt,
-  });
+  const ValidationReport({required this.entries, required this.generatedAt});
 
   int get totalTruePositives =>
       entries.fold(0, (sum, e) => sum + e.truePositives.length);
@@ -98,6 +97,7 @@ final class ValidationReport {
     final totalCorrect = totalTP + (totalChecks - totalTP - totalFP);
     return totalChecks > 0 ? totalCorrect / totalChecks : 0.0;
   }
+
   double get overallPrecision => _safeAvg(entries.map((e) => e.precision));
   double get overallRecall => _safeAvg(entries.map((e) => e.recall));
 
@@ -123,8 +123,7 @@ final class ValidationReport {
         trueMap[tp.analyzerName] = (trueMap[tp.analyzerName] ?? 0) + 1;
       }
       for (final fn in entry.falseNegatives) {
-        falseNegMap[fn.analyzerName] =
-            (falseNegMap[fn.analyzerName] ?? 0) + 1;
+        falseNegMap[fn.analyzerName] = (falseNegMap[fn.analyzerName] ?? 0) + 1;
       }
     }
     final result = <String, double>{};
@@ -145,10 +144,12 @@ final class ValidationReport {
       'totalTruePositives': totalTruePositives,
       'totalFalsePositives': totalFalsePositives,
       'totalFalseNegatives': totalFalseNegatives,
-      'analyzerPrecision':
-          analyzerPrecision.map((k, v) => MapEntry(k, v.toStringAsFixed(4))),
-      'analyzerRecall':
-          analyzerRecall.map((k, v) => MapEntry(k, v.toStringAsFixed(4))),
+      'analyzerPrecision': analyzerPrecision.map(
+        (k, v) => MapEntry(k, v.toStringAsFixed(4)),
+      ),
+      'analyzerRecall': analyzerRecall.map(
+        (k, v) => MapEntry(k, v.toStringAsFixed(4)),
+      ),
       'entries': entries.map((e) => e.toJson()).toList(),
     };
     return const JsonEncoder.withIndent('  ').convert(map);

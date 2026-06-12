@@ -88,15 +88,17 @@ void main() {
       int? capturedExitCode;
 
       try {
-        await IOOverrides.runZoned(() async {
-          await runFireDoctor(['help']);
-        },
-            stdout: () => _CaptureStdout(stdoutBuffer),
-            stderr: () => _CaptureStdout(StringBuffer()),
-            exit: (code) {
-              capturedExitCode = code;
-              throw _ExitException(code);
-            });
+        await IOOverrides.runZoned(
+          () async {
+            await runFireDoctor(['help']);
+          },
+          stdout: () => _CaptureStdout(stdoutBuffer),
+          stderr: () => _CaptureStdout(StringBuffer()),
+          exit: (code) {
+            capturedExitCode = code;
+            throw _ExitException(code);
+          },
+        );
       } on _ExitException {
         // expected — exit() throws to prevent process termination
       }
@@ -115,14 +117,16 @@ void main() {
       int? capturedExitCode;
 
       try {
-        await IOOverrides.runZoned(() async {
-          await runFireDoctor(['help']);
-        },
-            stderr: () => _CaptureStdout(StringBuffer()),
-            exit: (code) {
-              capturedExitCode = code;
-              throw _ExitException(code);
-            });
+        await IOOverrides.runZoned(
+          () async {
+            await runFireDoctor(['help']);
+          },
+          stderr: () => _CaptureStdout(StringBuffer()),
+          exit: (code) {
+            capturedExitCode = code;
+            throw _ExitException(code);
+          },
+        );
       } on _ExitException {
         // expected
       }
@@ -134,15 +138,17 @@ void main() {
       int? capturedExitCode;
 
       try {
-        await IOOverrides.runZoned(() async {
-          await runFireDoctor(['unknown']);
-        },
-            stdout: () => _CaptureStdout(StringBuffer()),
-            stderr: () => _CaptureStdout(StringBuffer()),
-            exit: (code) {
-              capturedExitCode = code;
-              throw _ExitException(code);
-            });
+        await IOOverrides.runZoned(
+          () async {
+            await runFireDoctor(['unknown']);
+          },
+          stdout: () => _CaptureStdout(StringBuffer()),
+          stderr: () => _CaptureStdout(StringBuffer()),
+          exit: (code) {
+            capturedExitCode = code;
+            throw _ExitException(code);
+          },
+        );
       } on _ExitException {
         // expected
       }

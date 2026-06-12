@@ -14,12 +14,12 @@ sealed class Severity implements Comparable<Severity> {
   static const critical = _SeverityCritical();
 
   static Severity fromValue(int value) => switch (value) {
-        0 => info,
-        1 => warning,
-        2 => error,
-        3 => critical,
-        _ => throw ArgumentError('Invalid severity value: $value'),
-      };
+    0 => info,
+    1 => warning,
+    2 => error,
+    3 => critical,
+    _ => throw ArgumentError('Invalid severity value: $value'),
+  };
 }
 
 final class _SeverityInfo extends Severity {

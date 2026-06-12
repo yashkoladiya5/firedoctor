@@ -8,10 +8,9 @@ import '../shared/mocks.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: FakeFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: FakeFileSystem()),
+    );
   });
 
   group('ValidationService', () {

@@ -6,7 +6,8 @@ final class PbxprojParser {
     String? runnerTargetName,
     bool hasPushCapability,
     bool hasBackgroundModes,
-  }) parse(String content) {
+  })
+  parse(String content) {
     String? bundleIdentifier;
     String? runnerTargetName;
     var hasPushCapability = false;
@@ -16,15 +17,16 @@ final class PbxprojParser {
       r'PRODUCT_BUNDLE_IDENTIFIER\s*=\s*([^;]+)',
     ).firstMatch(content);
     if (bundleIdMatch != null) {
-      bundleIdentifier =
-          bundleIdMatch.group(1)?.trim().replaceAll('"', '');
+      bundleIdentifier = bundleIdMatch.group(1)?.trim().replaceAll('"', '');
     }
 
     if (RegExp(r'''name\s*=\s*"?Runner"?\s*;''').hasMatch(content)) {
       runnerTargetName = 'Runner';
     }
 
-    final sysCapMatch = RegExp(r'SystemCapabilities\s*=\s*\{').firstMatch(content);
+    final sysCapMatch = RegExp(
+      r'SystemCapabilities\s*=\s*\{',
+    ).firstMatch(content);
     if (sysCapMatch != null) {
       final start = sysCapMatch.end;
       var depth = 1;

@@ -24,7 +24,10 @@ void main() {
     fileSystem = MockFileSystem();
     logger = Logger(terminal: terminal);
     runner = CommandRunner(
-        logger: logger, terminal: terminal, fileSystem: fileSystem);
+      logger: logger,
+      terminal: terminal,
+      fileSystem: fileSystem,
+    );
   });
 
   group('CommandRunner', () {
@@ -79,8 +82,9 @@ void main() {
       test('with no args calls printUsage and returns exitNoIssues', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
         final exitCode = await runner.run([]);
-        verify(() => terminal.writeLine(any(that: contains('Usage'))))
-            .called(1);
+        verify(
+          () => terminal.writeLine(any(that: contains('Usage'))),
+        ).called(1);
         expect(exitCode, equals(AppConstants.exitNoIssues));
       });
 
@@ -95,8 +99,9 @@ void main() {
         final command = MockCommand();
         when(() => command.name).thenReturn('testcmd');
         when(() => command.aliases).thenReturn([]);
-        when(() => command.execute(any()))
-            .thenAnswer((_) async => AppConstants.exitNoIssues);
+        when(
+          () => command.execute(any()),
+        ).thenAnswer((_) async => AppConstants.exitNoIssues);
         when(() => terminal.writeLine(any())).thenReturn(null);
 
         runner.register(command);

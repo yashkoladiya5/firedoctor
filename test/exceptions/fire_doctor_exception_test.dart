@@ -29,8 +29,10 @@ void main() {
 
       test('formats with message and code', () {
         const ex = FireDoctorException('config error', code: 'CFG_ERR');
-        expect(ex.toString(),
-            equals('FireDoctorException: config error (code: CFG_ERR)'));
+        expect(
+          ex.toString(),
+          equals('FireDoctorException: config error (code: CFG_ERR)'),
+        );
       });
     });
   });

@@ -11,7 +11,8 @@ final class ValidateCommand extends Command {
   @override
   String get name => 'validate';
   @override
-  String get description => 'Run validation suite against test projects and report accuracy metrics';
+  String get description =>
+      'Run validation suite against test projects and report accuracy metrics';
   @override
   List<String> get aliases => ['val'];
 
@@ -42,16 +43,27 @@ final class ValidateCommand extends Command {
     }
 
     // Default: look for validation/projects/ relative to cwd
-    projectsDir ??= fileSystem.join(fileSystem.currentDirectory, 'validation', 'projects');
+    projectsDir ??= fileSystem.join(
+      fileSystem.currentDirectory,
+      'validation',
+      'projects',
+    );
 
     // Also try as relative to the package root
     if (!fileSystem.exists(projectsDir)) {
       // Try relative to current directory
-      projectsDir = fileSystem.join(fileSystem.currentDirectory, 'validation', 'projects');
+      projectsDir = fileSystem.join(
+        fileSystem.currentDirectory,
+        'validation',
+        'projects',
+      );
     }
 
-    if (!fileSystem.exists(projectsDir) || !fileSystem.isDirectory(projectsDir)) {
-      terminal.writeError('Validation projects directory not found: $projectsDir');
+    if (!fileSystem.exists(projectsDir) ||
+        !fileSystem.isDirectory(projectsDir)) {
+      terminal.writeError(
+        'Validation projects directory not found: $projectsDir',
+      );
       terminal.writeLine('Run this from the package root or specify a path.');
       return AppConstants.exitInternalFailure;
     }
@@ -84,10 +96,18 @@ final class ValidateCommand extends Command {
 
     for (final entry in report.entries) {
       terminal.writeLine('  ${entry.projectName}');
-      terminal.writeLine('    Accuracy:  ${(entry.accuracy * 100).toStringAsFixed(1)}%');
-      terminal.writeLine('    Precision: ${(entry.precision * 100).toStringAsFixed(1)}%');
-      terminal.writeLine('    Recall:    ${(entry.recall * 100).toStringAsFixed(1)}%');
-      terminal.writeLine('    TP: ${entry.truePositives.length}  FP: ${entry.falsePositives.length}  FN: ${entry.falseNegatives.length}');
+      terminal.writeLine(
+        '    Accuracy:  ${(entry.accuracy * 100).toStringAsFixed(1)}%',
+      );
+      terminal.writeLine(
+        '    Precision: ${(entry.precision * 100).toStringAsFixed(1)}%',
+      );
+      terminal.writeLine(
+        '    Recall:    ${(entry.recall * 100).toStringAsFixed(1)}%',
+      );
+      terminal.writeLine(
+        '    TP: ${entry.truePositives.length}  FP: ${entry.falsePositives.length}  FN: ${entry.falseNegatives.length}',
+      );
       if (entry.falsePositives.isNotEmpty) {
         terminal.writeLine('    False Positives:');
         for (final fp in entry.falsePositives) {
@@ -105,9 +125,15 @@ final class ValidateCommand extends Command {
 
     terminal.writeLine('Overall Metrics');
     terminal.writeLine('───────────────');
-    terminal.writeLine('  Accuracy:      ${(report.overallAccuracy * 100).toStringAsFixed(1)}%');
-    terminal.writeLine('  Precision:     ${(report.overallPrecision * 100).toStringAsFixed(1)}%');
-    terminal.writeLine('  Recall:        ${(report.overallRecall * 100).toStringAsFixed(1)}%');
+    terminal.writeLine(
+      '  Accuracy:      ${(report.overallAccuracy * 100).toStringAsFixed(1)}%',
+    );
+    terminal.writeLine(
+      '  Precision:     ${(report.overallPrecision * 100).toStringAsFixed(1)}%',
+    );
+    terminal.writeLine(
+      '  Recall:        ${(report.overallRecall * 100).toStringAsFixed(1)}%',
+    );
     terminal.writeLine('  True Positives:   ${report.totalTruePositives}');
     terminal.writeLine('  False Positives:  ${report.totalFalsePositives}');
     terminal.writeLine('  False Negatives:  ${report.totalFalseNegatives}');
@@ -115,13 +141,17 @@ final class ValidateCommand extends Command {
     terminal.writeLine('');
     terminal.writeLine('Per-Analyzer Precision');
     for (final entry in report.analyzerPrecision.entries) {
-      terminal.writeLine('  ${entry.key.padRight(16)} ${(entry.value * 100).toStringAsFixed(1)}%');
+      terminal.writeLine(
+        '  ${entry.key.padRight(16)} ${(entry.value * 100).toStringAsFixed(1)}%',
+      );
     }
 
     terminal.writeLine('');
     terminal.writeLine('Per-Analyzer Recall');
     for (final entry in report.analyzerRecall.entries) {
-      terminal.writeLine('  ${entry.key.padRight(16)} ${(entry.value * 100).toStringAsFixed(1)}%');
+      terminal.writeLine(
+        '  ${entry.key.padRight(16)} ${(entry.value * 100).toStringAsFixed(1)}%',
+      );
     }
 
     // Save report

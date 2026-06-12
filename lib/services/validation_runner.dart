@@ -16,7 +16,8 @@ final class ValidationRunner {
   });
 
   Future<ValidationReport> runAll({String? projectsDir}) async {
-    final dir = projectsDir ??
+    final dir =
+        projectsDir ??
         fileSystem.join(fileSystem.currentDirectory, 'validation', 'projects');
 
     final service = ValidationService(
@@ -46,10 +47,9 @@ final class ValidationRunner {
       final category = _categoryForCode(entry.key);
       byCategory.putIfAbsent(category, () => []).add(entry.value.confidence);
     }
-    return byCategory.map((k, v) => MapEntry(
-      k,
-      v.reduce((a, b) => a + b) / v.length,
-    ));
+    return byCategory.map(
+      (k, v) => MapEntry(k, v.reduce((a, b) => a + b) / v.length),
+    );
   }
 
   String _categoryForCode(String code) {

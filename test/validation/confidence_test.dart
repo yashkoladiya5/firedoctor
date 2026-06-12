@@ -28,8 +28,11 @@ void main() {
 
       expect(confidences.length, equals(expectedCodes.length));
       for (final code in expectedCodes) {
-        expect(confidences.containsKey(code), isTrue,
-            reason: 'Missing confidence entry for $code');
+        expect(
+          confidences.containsKey(code),
+          isTrue,
+          reason: 'Missing confidence entry for $code',
+        );
       }
     });
 
@@ -50,8 +53,11 @@ void main() {
 
     test('all entries have reasoning', () {
       for (final entry in AnalyzerConfidence.defaults.entries) {
-        expect(entry.value.reasoning, isNotEmpty,
-            reason: '${entry.key} has empty reasoning');
+        expect(
+          entry.value.reasoning,
+          isNotEmpty,
+          reason: '${entry.key} has empty reasoning',
+        );
       }
     });
 

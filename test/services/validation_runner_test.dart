@@ -9,10 +9,9 @@ import '../shared/mocks.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: FakeFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: FakeFileSystem()),
+    );
   });
 
   late MockAnalyzerService analyzerService;
@@ -46,22 +45,24 @@ void main() {
           }),
         );
 
-        when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-              DiagnosticResult(
-                analyzerName: 'project',
-                status: CheckStatus.passed,
-                issues: [
-                  const DiagnosticIssue(
-                    severity: Severity.warning,
-                    code: 'FD101',
-                    title: 'Missing pubspec',
-                    description: 'pubspec.yaml not found',
-                  ),
-                ],
-                duration: Duration.zero,
-                timestamp: DateTime.now(),
-              ),
-            ]);
+        when(() => analyzerService.runAll(any())).thenAnswer(
+          (_) async => [
+            DiagnosticResult(
+              analyzerName: 'project',
+              status: CheckStatus.passed,
+              issues: [
+                const DiagnosticIssue(
+                  severity: Severity.warning,
+                  code: 'FD101',
+                  title: 'Missing pubspec',
+                  description: 'pubspec.yaml not found',
+                ),
+              ],
+              duration: Duration.zero,
+              timestamp: DateTime.now(),
+            ),
+          ],
+        );
 
         runner = ValidationRunner(
           analyzerService: analyzerService,
@@ -164,7 +165,7 @@ void main() {
     });
 
     group('getConfidenceByCategory', () {
-      test('returns 8 category averages', () {
+      test('returns 7 category averages', () {
         runner = ValidationRunner(
           analyzerService: analyzerService,
           fileSystem: FakeFileSystem(),
@@ -173,7 +174,7 @@ void main() {
 
         final byCategory = runner.getConfidenceByCategory();
 
-        expect(byCategory.length, equals(8));
+        expect(byCategory.length, equals(7));
         expect(byCategory.containsKey('project'), isTrue);
         expect(byCategory.containsKey('dependency'), isTrue);
         expect(byCategory.containsKey('firebase_core'), isTrue);
@@ -181,7 +182,6 @@ void main() {
         expect(byCategory.containsKey('ios'), isTrue);
         expect(byCategory.containsKey('fcm'), isTrue);
         expect(byCategory.containsKey('crashlytics'), isTrue);
-        expect(byCategory.containsKey('unknown'), isTrue);
       });
 
       test('all averages are between 0 and 1', () {

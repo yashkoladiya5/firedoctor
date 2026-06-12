@@ -133,9 +133,7 @@ void main() {
           metadata: {'err': 'true'},
         );
 
-        final copy = issue.copyWith(
-          severity: Severity.warning,
-        );
+        final copy = issue.copyWith(severity: Severity.warning);
 
         expect(copy.recommendation, equals('Fix this'));
         expect(copy.filePath, equals('lib/error.dart'));

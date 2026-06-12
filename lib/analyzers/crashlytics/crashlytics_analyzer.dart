@@ -44,7 +44,7 @@ final class CrashlyticsAnalyzer extends Analyzer {
 
     final hasCrashlyticsDependency =
         pubspec.hasDependency('firebase_crashlytics') ||
-            pubspec.hasDevDependency('firebase_crashlytics');
+        pubspec.hasDevDependency('firebase_crashlytics');
 
     // Dart analysis
     bool hasCrashlyticsUsage = false;
@@ -93,118 +93,132 @@ final class CrashlyticsAnalyzer extends Analyzer {
 
     // FD700: firebase_crashlytics dependency missing
     if (!hasCrashlyticsDependency && hasCrashlyticsUsage) {
-      issues.add(DiagnosticIssue(
-        severity: Severity.warning,
-        code: 'FD700',
-        title: 'Missing firebase_crashlytics dependency',
-        description:
-            'firebase_crashlytics is not declared in pubspec.yaml. '
-            'Crashlytics requires this package for crash reporting.',
-        recommendation:
-            'Add firebase_crashlytics to your dependencies:\n'
-            '  firebase_crashlytics: ^4.0.0',
-        filePath: pubspecPath,
-      ));
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: 'FD700',
+          title: 'Missing firebase_crashlytics dependency',
+          description:
+              'firebase_crashlytics is not declared in pubspec.yaml. '
+              'Crashlytics requires this package for crash reporting.',
+          recommendation:
+              'Add firebase_crashlytics to your dependencies:\n'
+              '  firebase_crashlytics: ^4.0.0',
+          filePath: pubspecPath,
+        ),
+      );
     }
 
     // FD701: firebase_crashlytics installed but no usage detected
     if (hasCrashlyticsDependency && !hasCrashlyticsUsage) {
-      issues.add(DiagnosticIssue(
-        severity: Severity.warning,
-        code: 'FD701',
-        title: 'Crashlytics not initialized in Dart code',
-        description:
-            'firebase_crashlytics is declared as a dependency but no '
-            'FirebaseCrashlytics references were found in Dart files under lib/.',
-        recommendation:
-            'Import and use firebase_crashlytics in your Dart code:\n'
-            "  import 'package:firebase_crashlytics/firebase_crashlytics.dart';",
-        filePath: pubspecPath,
-      ));
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: 'FD701',
+          title: 'Crashlytics not initialized in Dart code',
+          description:
+              'firebase_crashlytics is declared as a dependency but no '
+              'FirebaseCrashlytics references were found in Dart files under lib/.',
+          recommendation:
+              'Import and use firebase_crashlytics in your Dart code:\n'
+              "  import 'package:firebase_crashlytics/firebase_crashlytics.dart';",
+          filePath: pubspecPath,
+        ),
+      );
     }
 
     // FD702: FlutterError.onError not forwarded to Crashlytics
     if (hasCrashlyticsUsage && !hasFlutterErrorOnError) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.error,
-        code: 'FD702',
-        title: 'FlutterError.onError not forwarded to Crashlytics',
-        description:
-            'FlutterError.onError is not configured to forward errors to '
-            'Crashlytics. Unhandled Flutter errors will not be captured.',
-        recommendation:
-            'Configure FlutterError.onError to report to Crashlytics:\n'
-            '  FlutterError.onError = (errorDetails) {\n'
-            '    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);\n'
-            '  };',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.error,
+          code: 'FD702',
+          title: 'FlutterError.onError not forwarded to Crashlytics',
+          description:
+              'FlutterError.onError is not configured to forward errors to '
+              'Crashlytics. Unhandled Flutter errors will not be captured.',
+          recommendation:
+              'Configure FlutterError.onError to report to Crashlytics:\n'
+              '  FlutterError.onError = (errorDetails) {\n'
+              '    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);\n'
+              '  };',
+        ),
+      );
     }
 
     // FD703: PlatformDispatcher.instance.onError not configured
     if (hasCrashlyticsUsage && !hasPlatformDispatcherOnError) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.error,
-        code: 'FD703',
-        title: 'PlatformDispatcher.onError not configured',
-        description:
-            'PlatformDispatcher.instance.onError is not configured to forward '
-            'errors to Crashlytics. Unhandled platform errors will not be captured.',
-        recommendation:
-            'Configure PlatformDispatcher.instance.onError to report to Crashlytics:\n'
-            '  PlatformDispatcher.instance.onError = (error, stack) {\n'
-            '    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);\n'
-            '    return true;\n'
-            '  };',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.error,
+          code: 'FD703',
+          title: 'PlatformDispatcher.onError not configured',
+          description:
+              'PlatformDispatcher.instance.onError is not configured to forward '
+              'errors to Crashlytics. Unhandled platform errors will not be captured.',
+          recommendation:
+              'Configure PlatformDispatcher.instance.onError to report to Crashlytics:\n'
+              '  PlatformDispatcher.instance.onError = (error, stack) {\n'
+              '    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);\n'
+              '    return true;\n'
+              '  };',
+        ),
+      );
     }
 
     // FD704: runZonedGuarded missing
     if (hasCrashlyticsUsage && !hasRunZonedGuarded) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.warning,
-        code: 'FD704',
-        title: 'Missing runZonedGuarded for error zone',
-        description:
-            'No runZonedGuarded call found. Without a guarded zone, '
-            'unhandled async errors may not be captured by Crashlytics.',
-        recommendation:
-            'Wrap your main() with runZonedGuarded:\n'
-            '  runZonedGuarded(() async {\n'
-            '    runApp(const MyApp());\n'
-            '  }, (error, stack) {\n'
-            '    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);\n'
-            '  });',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.warning,
+          code: 'FD704',
+          title: 'Missing runZonedGuarded for error zone',
+          description:
+              'No runZonedGuarded call found. Without a guarded zone, '
+              'unhandled async errors may not be captured by Crashlytics.',
+          recommendation:
+              'Wrap your main() with runZonedGuarded:\n'
+              '  runZonedGuarded(() async {\n'
+              '    runApp(const MyApp());\n'
+              '  }, (error, stack) {\n'
+              '    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);\n'
+              '  });',
+        ),
+      );
     }
 
     // FD705: Crashlytics collection disabled
     if (hasCrashlyticsUsage && hasCollectionEnabled) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.info,
-        code: 'FD705',
-        title: 'Crashlytics collection explicitly configured',
-        description:
-            'setCrashlyticsCollectionEnabled is explicitly called. '
-            'Verify that collection is enabled for production builds.',
-        recommendation:
-            'Ensure crash reporting is enabled in production:\n'
-            '  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.info,
+          code: 'FD705',
+          title: 'Crashlytics collection explicitly configured',
+          description:
+              'setCrashlyticsCollectionEnabled is explicitly called. '
+              'Verify that collection is enabled for production builds.',
+          recommendation:
+              'Ensure crash reporting is enabled in production:\n'
+              '  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);',
+        ),
+      );
     }
 
     // FD706: recordError usage not detected
     if (hasCrashlyticsUsage && !hasRecordError) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.warning,
-        code: 'FD706',
-        title: 'No recordError usage detected',
-        description:
-            'Crashlytics is used but no recordError call was found. '
-            'Errors may not be explicitly reported to Crashlytics.',
-        recommendation:
-            'Use recordError to report caught exceptions:\n'
-            '  FirebaseCrashlytics.instance.recordError(error, stack);',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.warning,
+          code: 'FD706',
+          title: 'No recordError usage detected',
+          description:
+              'Crashlytics is used but no recordError call was found. '
+              'Errors may not be explicitly reported to Crashlytics.',
+          recommendation:
+              'Use recordError to report caught exceptions:\n'
+              '  FirebaseCrashlytics.instance.recordError(error, stack);',
+        ),
+      );
     }
 
     // FD707: No fatal error reporting strategy detected
@@ -212,52 +226,58 @@ final class CrashlyticsAnalyzer extends Analyzer {
         !hasFlutterErrorOnError &&
         !hasPlatformDispatcherOnError &&
         !hasRecordError) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.info,
-        code: 'FD707',
-        title: 'No fatal error reporting strategy detected',
-        description:
-            'No FlutterError.onError, PlatformDispatcher.onError, or recordError '
-            'usage found. Crashlytics may not capture any errors.',
-        recommendation:
-            'Implement at least one error reporting strategy:\n'
-            '  // Option 1: FlutterError.onError\n'
-            '  FlutterError.onError = (errorDetails) {\n'
-            '    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);\n'
-            '  };\n'
-            '  // Option 2: PlatformDispatcher.instance.onError\n'
-            '  // Option 3: try/catch with recordError',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.info,
+          code: 'FD707',
+          title: 'No fatal error reporting strategy detected',
+          description:
+              'No FlutterError.onError, PlatformDispatcher.onError, or recordError '
+              'usage found. Crashlytics may not capture any errors.',
+          recommendation:
+              'Implement at least one error reporting strategy:\n'
+              '  // Option 1: FlutterError.onError\n'
+              '  FlutterError.onError = (errorDetails) {\n'
+              '    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);\n'
+              '  };\n'
+              '  // Option 2: PlatformDispatcher.instance.onError\n'
+              '  // Option 3: try/catch with recordError',
+        ),
+      );
     }
 
     // FD712: No custom keys usage detected
     if (hasCrashlyticsUsage && !hasCustomKey) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.info,
-        code: 'FD712',
-        title: 'No custom keys usage detected',
-        description:
-            'Crashlytics is used but no setCustomKey calls were found. '
-            'Custom keys help provide context for debugging crashes.',
-        recommendation:
-            'Add custom keys to provide crash context:\n'
-            '  FirebaseCrashlytics.instance.setCustomKey("key_name", "value");',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.info,
+          code: 'FD712',
+          title: 'No custom keys usage detected',
+          description:
+              'Crashlytics is used but no setCustomKey calls were found. '
+              'Custom keys help provide context for debugging crashes.',
+          recommendation:
+              'Add custom keys to provide crash context:\n'
+              '  FirebaseCrashlytics.instance.setCustomKey("key_name", "value");',
+        ),
+      );
     }
 
     // FD713: No user identification strategy detected
     if (hasCrashlyticsUsage && !hasUserIdentifier) {
-      issues.add(const DiagnosticIssue(
-        severity: Severity.info,
-        code: 'FD713',
-        title: 'No user identification strategy detected',
-        description:
-            'No setUserIdentifier call was found. User identification '
-            'helps associate crashes with specific users.',
-        recommendation:
-            'Set a user identifier for crash context:\n'
-            '  FirebaseCrashlytics.instance.setUserIdentifier("user_id");',
-      ));
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.info,
+          code: 'FD713',
+          title: 'No user identification strategy detected',
+          description:
+              'No setUserIdentifier call was found. User identification '
+              'helps associate crashes with specific users.',
+          recommendation:
+              'Set a user identifier for crash context:\n'
+              '  FirebaseCrashlytics.instance.setUserIdentifier("user_id");',
+        ),
+      );
     }
 
     // Android checks
@@ -283,7 +303,8 @@ final class CrashlyticsAnalyzer extends Analyzer {
       final pluginPatterns = [
         RegExp(r'''id\s*\(?["']com\.google\.firebase\.crashlytics["']\)?'''),
         RegExp(
-            r'''apply\s+plugin:\s*["']com\.google\.firebase\.crashlytics["']'''),
+          r'''apply\s+plugin:\s*["']com\.google\.firebase\.crashlytics["']''',
+        ),
       ];
       for (final pattern in pluginPatterns) {
         if (pattern.hasMatch(gradleContent)) {
@@ -300,37 +321,41 @@ final class CrashlyticsAnalyzer extends Analyzer {
 
     if (gradleContent != null && hasCrashlyticsUsage) {
       if (!hasCrashlyticsGradlePlugin) {
-        issues.add(DiagnosticIssue(
-          severity: Severity.error,
-          code: 'FD708',
-          title: 'Missing Crashlytics Gradle plugin',
-          description:
-              'The com.google.firebase.crashlytics Gradle plugin is not applied '
-              'in the app-level build.gradle.',
-          recommendation:
-              'Add the Crashlytics Gradle plugin:\n'
-              '  plugins {\n'
-              '    id "com.google.firebase.crashlytics" version "3.0.0"\n'
-              '  }',
-          filePath: gradlePath!,
-        ));
+        issues.add(
+          DiagnosticIssue(
+            severity: Severity.error,
+            code: 'FD708',
+            title: 'Missing Crashlytics Gradle plugin',
+            description:
+                'The com.google.firebase.crashlytics Gradle plugin is not applied '
+                'in the app-level build.gradle.',
+            recommendation:
+                'Add the Crashlytics Gradle plugin:\n'
+                '  plugins {\n'
+                '    id "com.google.firebase.crashlytics" version "3.0.0"\n'
+                '  }',
+            filePath: gradlePath!,
+          ),
+        );
       }
 
       if (!hasCrashlyticsBuildConfig) {
-        issues.add(DiagnosticIssue(
-          severity: Severity.info,
-          code: 'FD709',
-          title: 'Missing Crashlytics build configuration',
-          description:
-              'No firebaseCrashlytics block found in build.gradle. '
-              'Build configuration may not be optimized for Crashlytics.',
-          recommendation:
-              'Add Crashlytics build configuration:\n'
-              '  firebaseCrashlytics {\n'
-              '    nativeSymbolUploadEnabled = true\n'
-              '  }',
-          filePath: gradlePath!,
-        ));
+        issues.add(
+          DiagnosticIssue(
+            severity: Severity.info,
+            code: 'FD709',
+            title: 'Missing Crashlytics build configuration',
+            description:
+                'No firebaseCrashlytics block found in build.gradle. '
+                'Build configuration may not be optimized for Crashlytics.',
+            recommendation:
+                'Add Crashlytics build configuration:\n'
+                '  firebaseCrashlytics {\n'
+                '    nativeSymbolUploadEnabled = true\n'
+                '  }',
+            filePath: gradlePath!,
+          ),
+        );
       }
     }
 
@@ -346,8 +371,9 @@ final class CrashlyticsAnalyzer extends Analyzer {
       if (fs.exists(podfilePath)) {
         final podfileContent = fs.readAsString(podfilePath);
         // FD710: Check for Crashlytics pod
-        if (RegExp(r'''pod\s+['"](Firebase/Crashlytics|FirebaseCrashlytics)['"]''')
-            .hasMatch(podfileContent)) {
+        if (RegExp(
+          r'''pod\s+['"](Firebase/Crashlytics|FirebaseCrashlytics)['"]''',
+        ).hasMatch(podfileContent)) {
           hasCrashlyticsPod = true;
         }
       }
@@ -367,35 +393,39 @@ final class CrashlyticsAnalyzer extends Analyzer {
 
       if (hasCrashlyticsUsage) {
         if (!hasCrashlyticsPod) {
-          issues.add(DiagnosticIssue(
-            severity: Severity.error,
-            code: 'FD710',
-            title: 'Missing Crashlytics CocoaPods pod',
-            description:
-                'The Firebase/Crashlytics pod is not found in Podfile or Podfile.lock. '
-                'Crashlytics requires this pod for iOS crash reporting.',
-            recommendation:
-                'Add the Crashlytics pod to your Podfile:\n'
-                "  pod 'Firebase/Crashlytics'",
-            filePath: podfilePath,
-          ));
+          issues.add(
+            DiagnosticIssue(
+              severity: Severity.error,
+              code: 'FD710',
+              title: 'Missing Crashlytics CocoaPods pod',
+              description:
+                  'The Firebase/Crashlytics pod is not found in Podfile or Podfile.lock. '
+                  'Crashlytics requires this pod for iOS crash reporting.',
+              recommendation:
+                  'Add the Crashlytics pod to your Podfile:\n'
+                  "  pod 'Firebase/Crashlytics'",
+              filePath: podfilePath,
+            ),
+          );
         }
 
         if (!hasDsymConfig) {
-          issues.add(DiagnosticIssue(
-            severity: Severity.info,
-            code: 'FD711',
-            title: 'Missing dSYM upload configuration',
-            description:
-                'dSYM upload script for Crashlytics not detected. '
-                'Without dSYM uploads, crash reports may not be symbolicated.',
-            recommendation:
-                'Ensure dSYM upload is configured in your Xcode build phases:\n'
-                '  "\${PODS_ROOT}/FirebaseCrashlytics/upload-symbols" '
-                '-gsp "\${PROJECT_DIR}/Runner/GoogleService-Info.plist" '
-                '-p ios "\${DWARF_DSYM_FOLDER_PATH}/\${DWARF_DSYM_FILE_NAME}"',
-            filePath: podfileLockPath,
-          ));
+          issues.add(
+            DiagnosticIssue(
+              severity: Severity.info,
+              code: 'FD711',
+              title: 'Missing dSYM upload configuration',
+              description:
+                  'dSYM upload script for Crashlytics not detected. '
+                  'Without dSYM uploads, crash reports may not be symbolicated.',
+              recommendation:
+                  'Ensure dSYM upload is configured in your Xcode build phases:\n'
+                  '  "\${PODS_ROOT}/FirebaseCrashlytics/upload-symbols" '
+                  '-gsp "\${PROJECT_DIR}/Runner/GoogleService-Info.plist" '
+                  '-p ios "\${DWARF_DSYM_FOLDER_PATH}/\${DWARF_DSYM_FILE_NAME}"',
+              filePath: podfileLockPath,
+            ),
+          );
         }
       }
     }

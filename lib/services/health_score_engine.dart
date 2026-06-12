@@ -71,8 +71,10 @@ final class HealthScoreEngine {
       final category = result.analyzerName;
       analyzedCategories.add(category);
       final issues = analyzerIssues[category] ?? [];
-      final totalWeight =
-          issues.fold(0, (sum, i) => sum + weights.weightFor(i.severity));
+      final totalWeight = issues.fold(
+        0,
+        (sum, i) => sum + weights.weightFor(i.severity),
+      );
 
       double score;
       if (issues.isEmpty) {
@@ -82,19 +84,20 @@ final class HealthScoreEngine {
         if (categoryMaxWeight <= 0) {
           score = 100.0;
         } else {
-          score =
-              ((categoryMaxWeight - totalWeight) / categoryMaxWeight * 100)
-                  .clamp(0.0, 100.0);
+          score = ((categoryMaxWeight - totalWeight) / categoryMaxWeight * 100)
+              .clamp(0.0, 100.0);
         }
       }
 
-      scores.add(CategoryScore(
-        category: category,
-        displayName: categoryDisplayNames[category] ?? _titleCase(category),
-        score: score,
-        totalIssues: issues.length,
-        totalWeight: totalWeight,
-      ));
+      scores.add(
+        CategoryScore(
+          category: category,
+          displayName: categoryDisplayNames[category] ?? _titleCase(category),
+          score: score,
+          totalIssues: issues.length,
+          totalWeight: totalWeight,
+        ),
+      );
     }
 
     return scores;
@@ -127,8 +130,10 @@ final class HealthScoreEngine {
 
   double _computeOverallScore(int totalWeight, int maxPossibleWeight) {
     if (maxPossibleWeight == 0) return 100.0;
-    return ((maxPossibleWeight - totalWeight) / maxPossibleWeight * 100)
-        .clamp(0.0, 100.0);
+    return ((maxPossibleWeight - totalWeight) / maxPossibleWeight * 100).clamp(
+      0.0,
+      100.0,
+    );
   }
 
   List<Recommendation> _generateRecommendations(
@@ -137,8 +142,9 @@ final class HealthScoreEngine {
   ) {
     final sorted = List<DiagnosticIssue>.from(issues)
       ..sort((a, b) {
-        final weightCompare =
-            weights.weightFor(b.severity).compareTo(weights.weightFor(a.severity));
+        final weightCompare = weights
+            .weightFor(b.severity)
+            .compareTo(weights.weightFor(a.severity));
         if (weightCompare != 0) return weightCompare;
         return a.code.compareTo(b.code);
       });

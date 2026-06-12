@@ -82,10 +82,14 @@ void main() {
       final captureStdout = _CaptureStdout()..setAnsiSupported(true);
       final captureStderr = _CaptureStdout()..setAnsiSupported(true);
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeSuccess('done');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeSuccess('done');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('\x1B[32mdone\x1B[0m\n'));
     });
@@ -94,22 +98,33 @@ void main() {
       final captureStdout = _CaptureStdout()..setAnsiSupported(true);
       final captureStderr = _CaptureStdout()..setAnsiSupported(true);
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeWarning('caution');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeWarning('caution');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
-      expect(captureStdout.buffer.toString(), equals('\x1B[33mcaution\x1B[0m\n'));
+      expect(
+        captureStdout.buffer.toString(),
+        equals('\x1B[33mcaution\x1B[0m\n'),
+      );
     });
 
     test('writeError uses red ANSI codes to stderr', () async {
       final captureStdout = _CaptureStdout()..setAnsiSupported(true);
       final captureStderr = _CaptureStdout()..setAnsiSupported(true);
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeError('fail');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeError('fail');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStderr.buffer.toString(), equals('\x1B[31mfail\x1B[0m\n'));
     });
@@ -118,10 +133,14 @@ void main() {
       final captureStdout = _CaptureStdout()..setAnsiSupported(true);
       final captureStderr = _CaptureStdout()..setAnsiSupported(true);
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeInfo('note');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeInfo('note');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('\x1B[34mnote\x1B[0m\n'));
     });
@@ -130,13 +149,16 @@ void main() {
       final captureStdout = _CaptureStdout()..setAnsiSupported(true);
       final captureStderr = _CaptureStdout()..setAnsiSupported(true);
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.clear();
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.clear();
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
-      expect(captureStdout.buffer.toString(),
-          equals('\x1B[2J\x1B[0;0H'));
+      expect(captureStdout.buffer.toString(), equals('\x1B[2J\x1B[0;0H'));
     });
   });
 
@@ -145,10 +167,14 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.write('hello');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.write('hello');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('hello'));
     });
@@ -157,10 +183,14 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeLine('hello');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeLine('hello');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('hello\n'));
     });
@@ -169,10 +199,14 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeSuccess('done');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeSuccess('done');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('[SUCCESS] done\n'));
     });
@@ -181,10 +215,14 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeWarning('caution');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeWarning('caution');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('[WARN] caution\n'));
     });
@@ -193,10 +231,14 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeError('fail');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeError('fail');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStderr.buffer.toString(), equals('ERROR: fail\n'));
     });
@@ -205,10 +247,14 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeInfo('note');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeInfo('note');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('[INFO] note\n'));
     });
@@ -217,12 +263,16 @@ void main() {
       final captureStdout = _CaptureStdout();
       final captureStderr = _CaptureStdout();
 
-      await IOOverrides.runZoned(() {
-        final terminal = AnsiTerminal();
-        terminal.writeLine('before');
-        terminal.clear();
-        terminal.writeLine('after');
-      }, stdout: () => captureStdout, stderr: () => captureStderr);
+      await IOOverrides.runZoned(
+        () {
+          final terminal = AnsiTerminal();
+          terminal.writeLine('before');
+          terminal.clear();
+          terminal.writeLine('after');
+        },
+        stdout: () => captureStdout,
+        stderr: () => captureStderr,
+      );
 
       expect(captureStdout.buffer.toString(), equals('before\nafter\n'));
     });
