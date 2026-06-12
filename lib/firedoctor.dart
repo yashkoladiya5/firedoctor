@@ -57,6 +57,12 @@ Future<void> runFireDoctor(List<String> args) async {
       fileSystem: fileSystem,
       analyzerService: analyzerService,
     ),
+    ValidateCommand(
+      logger: logger,
+      terminal: terminal,
+      fileSystem: fileSystem,
+      analyzerService: analyzerService,
+    ),
     ReportCommand(
       logger: logger,
       terminal: terminal,

@@ -1,0 +1,11 @@
+platform :ios, '12.0'
+
+use_frameworks!
+
+target 'Runner' do
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Messaging'
+  pod 'Firebase/Crashlytics'
+end

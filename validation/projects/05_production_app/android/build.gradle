@@ -1,0 +1,23 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "com.google.gms.google-services" version "4.4.0"
+    id "com.google.firebase.crashlytics" version "3.0.0"
+}
+
+android {
+    namespace "com.example.app"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.app"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+firebaseCrashlytics {
+    nativeSymbolUploadEnabled = true
+}

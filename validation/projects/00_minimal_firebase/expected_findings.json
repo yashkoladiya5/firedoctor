@@ -1,0 +1,32 @@
+{
+  "projectName": "00_minimal_firebase",
+  "description": "Minimal Firebase project with only firebase_core. No issues except recommended dependencies not present.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "project", "code": "FD102", "shouldBeFound": false},
+    {"analyzerName": "project", "code": "FD103", "shouldBeFound": false},
+    {"analyzerName": "project", "code": "FD104", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD201", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD202", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD203", "shouldBeFound": true},
+    {"analyzerName": "dependency", "code": "FD204", "shouldBeFound": true},
+    {"analyzerName": "dependency", "code": "FD205", "shouldBeFound": true},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD301", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD302", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD401", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD402", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD403", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD404", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD405", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD501", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD502", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD504", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD509", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}

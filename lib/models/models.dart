@@ -6,3 +6,5 @@ export 'diagnostic_report.dart';
 export 'pubspec.dart';
 export 'score_weights.dart';
 export 'health_score.dart';
+export 'validation_result.dart';
+export 'analyzer_confidence.dart';

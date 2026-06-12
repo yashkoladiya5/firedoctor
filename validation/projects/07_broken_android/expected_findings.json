@@ -1,0 +1,16 @@
+{
+  "projectName": "07_broken_android",
+  "description": "Intentionally broken Android config — no Google Services plugin, no google-services.json, compileSdk 30, minSdk 19.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": true},
+    {"analyzerName": "android", "code": "FD403", "shouldBeFound": true},
+    {"analyzerName": "android", "code": "FD407", "shouldBeFound": true},
+    {"analyzerName": "android", "code": "FD408", "shouldBeFound": true},
+    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}

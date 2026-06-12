@@ -1,0 +1,11 @@
+{
+  "projectName": "06_broken_minimal",
+  "description": "Intentionally broken project — missing Flutter SDK in pubspec.yaml and no Firebase.initializeApp() in code.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": true},
+    {"analyzerName": "project", "code": "FD104", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD301", "shouldBeFound": true},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}

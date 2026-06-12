@@ -1,0 +1,14 @@
+name: production_app
+version: 1.0.0
+description: Full production app with all Firebase services for validation.
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.20.0
+  firebase_auth: ^5.0.0
+  cloud_firestore: ^5.0.0
+  firebase_messaging: ^15.0.0
+  firebase_crashlytics: ^4.0.0

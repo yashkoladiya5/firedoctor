@@ -1,0 +1,18 @@
+{
+  "projectName": "03_messaging_app",
+  "description": "FCM messaging app with firebase_messaging. Podfile has Firebase/Core but no Firebase/Messaging pod.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD502", "shouldBeFound": true},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD601", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD602", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD603", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD605", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}

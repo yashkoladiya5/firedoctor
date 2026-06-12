@@ -1,0 +1,16 @@
+{
+  "projectName": "01_auth_app",
+  "description": "Firebase Auth app with firebase_auth dependency and code usage.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD203", "shouldBeFound": true},
+    {"analyzerName": "dependency", "code": "FD204", "shouldBeFound": true},
+    {"analyzerName": "dependency", "code": "FD205", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}

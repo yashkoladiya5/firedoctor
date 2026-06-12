@@ -1,0 +1,16 @@
+{
+  "projectName": "02_firestore_app",
+  "description": "Firestore app with cloud_firestore dependency and code usage.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD203", "shouldBeFound": true},
+    {"analyzerName": "dependency", "code": "FD204", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD205", "shouldBeFound": true},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "projectName": "04_crashlytics_app",
+  "description": "Crashlytics app with firebase_crashlytics. Has FlutterError.onError and recordError configured. Missing Gradle plugin, CocoaPods pod, and some recommended patterns.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD701", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD702", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD703", "shouldBeFound": true},
+    {"analyzerName": "crashlytics", "code": "FD704", "shouldBeFound": true},
+    {"analyzerName": "crashlytics", "code": "FD706", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD708", "shouldBeFound": true},
+    {"analyzerName": "crashlytics", "code": "FD710", "shouldBeFound": true}
+  ]
+}

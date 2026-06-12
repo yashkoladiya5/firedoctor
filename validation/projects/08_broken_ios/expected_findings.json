@@ -1,0 +1,15 @@
+{
+  "projectName": "08_broken_ios",
+  "description": "Intentionally broken iOS config — no GoogleService-Info.plist, platform :ios, '10.0', no Runner target in Podfile.",
+  "expectedFindings": [
+    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
+    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
+    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
+    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
+    {"analyzerName": "ios", "code": "FD501", "shouldBeFound": true},
+    {"analyzerName": "ios", "code": "FD509", "shouldBeFound": true},
+    {"analyzerName": "ios", "code": "FD504", "shouldBeFound": true},
+    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
+    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+  ]
+}
