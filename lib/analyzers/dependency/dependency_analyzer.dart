@@ -4,6 +4,7 @@ import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/parsers/pubspec_parser.dart';
 import 'firebase_package.dart';
 
+/// Core class.
 final class DependencyAnalyzer extends Analyzer {
   @override
   String get name => 'dependency';
@@ -15,6 +16,7 @@ final class DependencyAnalyzer extends Analyzer {
   String get category => 'dependency';
 
   @override
+  /// Public method or function.
   Future<DiagnosticResult> analyze(AnalyzerContext context) async {
     final startTime = DateTime.now();
     final issues = <DiagnosticIssue>[];

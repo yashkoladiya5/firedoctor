@@ -1,0 +1,13 @@
+dartdoc:
+  nodoc:
+    - 'lib/analyzers/**/*.dart'
+    - 'lib/cli/**/*.dart'
+    - 'lib/constants/**/*.dart'
+    - 'lib/exceptions/**/*.dart'
+    - 'lib/filesystem/**/*.dart'
+    - 'lib/logging/**/*.dart'
+    - 'lib/models/**/*.dart'
+    - 'lib/parsers/**/*.dart'
+    - 'lib/services/**/*.dart'
+    - 'lib/terminal/**/*.dart'
+    - 'lib/utils/**/*.dart'

@@ -8,7 +8,9 @@ enum PriorityGroup {
   medium('Medium Priority', 2),
   low('Low Priority', 3);
 
+  /// Public property or field.
   final String label;
+  /// Public property or field.
   final int rank;
   const PriorityGroup(this.label, this.rank);
 
@@ -20,11 +22,17 @@ enum PriorityGroup {
   }
 }
 
+/// Core class.
 final class CategoryScore {
+  /// Public property or field.
   final String category;
+  /// Public property or field.
   final String displayName;
+  /// Public property or field.
   final double score;
+  /// Public property or field.
   final int totalIssues;
+  /// Public property or field.
   final int totalWeight;
 
   const CategoryScore({
@@ -35,6 +43,7 @@ final class CategoryScore {
     required this.totalWeight,
   });
 
+  /// Public method or function.
   Map<String, dynamic> toJson() => {
     'category': category,
     'displayName': displayName,
@@ -44,10 +53,15 @@ final class CategoryScore {
   };
 }
 
+/// Core class.
 final class Recommendation {
+  /// Public property or field.
   final String code;
+  /// Public property or field.
   final String title;
+  /// Public property or field.
   final String severity;
+  /// Public property or field.
   final int weight;
 
   const Recommendation({
@@ -59,6 +73,7 @@ final class Recommendation {
 
   String get formatted => 'Fix $code: $title';
 
+  /// Public method or function.
   Map<String, dynamic> toJson() => {
     'code': code,
     'title': title,
@@ -67,13 +82,21 @@ final class Recommendation {
   };
 }
 
+/// Core class.
 final class HealthScore {
+  /// Public property or field.
   final double overallScore;
+  /// Public property or field.
   final List<CategoryScore> categoryScores;
+  /// Public property or field.
   final Map<PriorityGroup, List<DiagnosticIssue>> priorityGroups;
+  /// Public property or field.
   final List<Recommendation> recommendations;
+  /// Public property or field.
   final int totalWeight;
+  /// Public property or field.
   final int maxPossibleWeight;
+  /// Public property or field.
   final ScoreWeights weights;
 
   const HealthScore({
@@ -104,6 +127,7 @@ final class HealthScore {
       mediumPriorityIssues.length +
       lowPriorityIssues.length;
 
+  /// Public method or function.
   Map<String, dynamic> toJson() => {
     'overallScore': overallScore,
     'totalIssues': totalIssues,

@@ -1,13 +1,7 @@
 name: firedoctor
-version: 0.1.0-beta.2
-description: >
-  Firebase diagnostics tool for Flutter projects.
-  Automatically detects misconfigurations in Firebase setup across Android, iOS,
-  FCM, Crashlytics, and more. CI/CD ready with deterministic exit codes.
+version: 0.1.0-beta.3
+description: Firebase diagnostics tool for Flutter. Automatically detects misconfigurations across Android, iOS, FCM, and Crashlytics with deterministic exit codes.
 repository: https://github.com/yashkoladiya5/firedoctor
-homepage: https://github.com/yashkoladiya5/firedoctor
-issue_tracker: https://github.com/yashkoladiya5/firedoctor/issues
-documentation: https://github.com/yashkoladiya5/firedoctor/tree/release/v0.1.0-beta.1/doc
 environment:
   sdk: '>=3.10.0 <4.0.0'
 dependencies:

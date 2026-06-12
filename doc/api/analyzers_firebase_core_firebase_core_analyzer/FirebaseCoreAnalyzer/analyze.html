@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the analyze method from the FirebaseCoreAnalyzer class, for the Dart programming language.">
+  <title>analyze method - FirebaseCoreAnalyzer class - firebase_core_analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_firebase_core_firebase_core_analyzer/">analyzers&#47;firebase_core&#47;firebase_core_analyzer.dart</a></li>
+    <li><a href="../../analyzers_firebase_core_firebase_core_analyzer/FirebaseCoreAnalyzer-class.html">FirebaseCoreAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+  </ol>
+  <div class="self-name">analyze</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzers_firebase_core_firebase_core_analyzer&#47;FirebaseCoreAnalyzer-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">analyze</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_diagnostic_result/DiagnosticResult-class.html">DiagnosticResult</a></span>&gt;</span></span>
+<span class="name ">analyze</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="analyze-param-context"><span class="type-annotation"><a href="../../analyzers_analyzer_context/AnalyzerContext-class.html">AnalyzerContext</a></span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Public method or function.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+&#47;&#47;&#47; Public method or function.
+Future&lt;DiagnosticResult&gt; analyze(AnalyzerContext context) async {
+  final startTime = DateTime.now();
+  final issues = &lt;DiagnosticIssue&gt;[];
+  final fs = context.fileSystem;
+  final projectPath = context.projectPath;
+  final pubspecPath = fs.join(projectPath, &#39;pubspec.yaml&#39;);
+
+  if (!fs.exists(pubspecPath)) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final pubspec = await PubspecParser.parseFromFile(pubspecPath, fs);
+  if (pubspec == null) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final libPath = fs.join(projectPath, &#39;lib&#39;);
+  if (!fs.exists(libPath) || !fs.isDirectory(libPath)) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final dartFiles = context.sourceFileCache?.getDartFiles(projectPath) ?? [];
+  final initCalls = &lt;_InitCall&gt;[];
+  final ensureInitializedByFile = &lt;String, int&gt;{};
+  final runAppByFile = &lt;String, int&gt;{};
+  bool foundDefaultOptions = false;
+
+  for (final filePath in dartFiles) {
+    final cleaned = context.sourceFileCache?.getCleaned(filePath);
+    if (cleaned == null) continue;
+    final cleanedLines = context.sourceFileCache?.getLines(filePath);
+    if (cleanedLines == null) continue;
+
+    initCalls.addAll(_findInitCalls(cleaned, filePath));
+
+    for (int i = 0; i &lt; cleanedLines.length; i++) {
+      final line = cleanedLines[i];
+      final lineNumber = i + 1;
+
+      if (line.contains(&#39;WidgetsFlutterBinding.ensureInitialized(&#39;)) {
+        final idx = line.indexOf(&#39;WidgetsFlutterBinding.ensureInitialized(&#39;);
+        if (!(idx &gt; 0 &amp;&amp; RegExp(r&#39;[a-zA-Z0-9_]&#39;).hasMatch(line[idx - 1]))) {
+          ensureInitializedByFile.putIfAbsent(filePath, () =&gt; lineNumber);
+        }
+      }
+
+      if (line.contains(&#39;runApp(&#39;)) {
+        final idx = line.indexOf(&#39;runApp(&#39;);
+        if (!(idx &gt; 0 &amp;&amp; RegExp(r&#39;[a-zA-Z0-9_]&#39;).hasMatch(line[idx - 1]))) {
+          runAppByFile.putIfAbsent(filePath, () =&gt; lineNumber);
+        }
+      }
+
+      if (line.contains(&#39;DefaultFirebaseOptions.currentPlatform&#39;)) {
+        final idx = line.indexOf(&#39;DefaultFirebaseOptions.currentPlatform&#39;);
+        if (!(idx &gt; 0 &amp;&amp; RegExp(r&#39;[a-zA-Z0-9_]&#39;).hasMatch(line[idx - 1]))) {
+          foundDefaultOptions = true;
+        }
+      }
+    }
+  }
+
+  final hasFirebaseCore =
+      pubspec.hasDependency(&#39;firebase_core&#39;) ||
+      pubspec.hasDevDependency(&#39;firebase_core&#39;);
+
+  final firebaseOptionsPath = fs.join(
+    projectPath,
+    &#39;lib&#39;,
+    &#39;firebase_options.dart&#39;,
+  );
+  final hasFirebaseOptionsFile = fs.exists(firebaseOptionsPath);
+
+  if (initCalls.isEmpty &amp;&amp; hasFirebaseCore) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.critical,
+        code: &#39;FD300&#39;,
+        title: &#39;Firebase not initialized&#39;,
+        description:
+            &#39;No Firebase.initializeApp() call found in any Dart file under lib&#47;.&#39;,
+        recommendation:
+            &#39;Add Firebase.initializeApp() to your main.dart:\n&#39;
+            &#39;  await Firebase.initializeApp(\n&#39;
+            &#39;    options: DefaultFirebaseOptions.currentPlatform,\n&#39;
+            &#39;  );&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  if (!hasFirebaseOptionsFile &amp;&amp; hasFirebaseCore) {
+    issues.add(
+      const DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD301&#39;,
+        title: &#39;Missing firebase_options.dart&#39;,
+        description:
+            &#39;The lib&#47;firebase_options.dart file does not exist. &#39;
+            &#39;This file is generated by the Firebase CLI.&#39;,
+        recommendation:
+            &#39;Run &quot;flutterfire configure&quot; to generate firebase_options.dart.&#39;,
+      ),
+    );
+  }
+
+  if (initCalls.isNotEmpty) {
+    bool shouldEmit = false;
+    if (ensureInitializedByFile.isEmpty) {
+      shouldEmit = true;
+    } else {
+      for (final call in initCalls) {
+        final eiLine = ensureInitializedByFile[call.filePath];
+        if (eiLine != null &amp;&amp; call.lineNumber &lt;= eiLine) {
+          shouldEmit = true;
+          break;
+        }
+      }
+    }
+    if (shouldEmit) {
+      issues.add(
+        const DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD302&#39;,
+          title: &#39;Missing WidgetsFlutterBinding.ensureInitialized()&#39;,
+          description:
+              &#39;WidgetsFlutterBinding.ensureInitialized() should be called &#39;
+              &#39;before Firebase.initializeApp() to ensure plugin initialization.&#39;,
+          recommendation:
+              &#39;Add WidgetsFlutterBinding.ensureInitialized() before &#39;
+              &#39;Firebase.initializeApp():\n&#39;
+              &#39;  WidgetsFlutterBinding.ensureInitialized();\n&#39;
+              &#39;  await Firebase.initializeApp();&#39;,
+        ),
+      );
+    }
+  }
+
+  if (!foundDefaultOptions &amp;&amp; hasFirebaseCore) {
+    issues.add(
+      const DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD303&#39;,
+        title: &#39;DefaultFirebaseOptions not used&#39;,
+        description:
+            &#39;DefaultFirebaseOptions.currentPlatform is not referenced &#39;
+            &#39;in any Dart file. Firebase initialization should use &#39;
+            &#39;platform-specific options.&#39;,
+        recommendation:
+            &#39;Pass DefaultFirebaseOptions.currentPlatform to &#39;
+            &#39;Firebase.initializeApp():\n&#39;
+            &#39;  await Firebase.initializeApp(\n&#39;
+            &#39;    options: DefaultFirebaseOptions.currentPlatform,\n&#39;
+            &#39;  );&#39;,
+      ),
+    );
+  }
+
+  if (initCalls.length &gt; 1) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD304&#39;,
+        title: &#39;Multiple Firebase.initializeApp() calls&#39;,
+        description:
+            &#39;Found ${initCalls.length} calls to Firebase.initializeApp(). &#39;
+            &#39;Firebase should only be initialized once.&#39;,
+        recommendation:
+            &#39;Ensure Firebase.initializeApp() is called only once &#39;
+            &#39;in your application.&#39;,
+      ),
+    );
+  }
+
+  for (final call in initCalls) {
+    if (!call.isAwaited) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: &#39;FD305&#39;,
+          title: &#39;Firebase.initializeApp() should be awaited&#39;,
+          description:
+              &#39;Firebase.initializeApp() is called without await on &#39;
+              &#39;line ${call.lineNumber}.&#39;,
+          recommendation:
+              &#39;Add await before Firebase.initializeApp():\n&#39;
+              &#39;  await Firebase.initializeApp();&#39;,
+          filePath: call.filePath,
+          lineNumber: call.lineNumber,
+        ),
+      );
+    }
+  }
+
+  for (final call in initCalls) {
+    final rAppLine = runAppByFile[call.filePath];
+    if (rAppLine != null &amp;&amp; call.lineNumber &gt; rAppLine) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD306&#39;,
+          title: &#39;Firebase.initializeApp() after runApp()&#39;,
+          description:
+              &#39;Firebase.initializeApp() is called after runApp() in &#39;
+              &#39;${call.filePath}. Firebase should be initialized before runApp().&#39;,
+          recommendation:
+              &#39;Move Firebase.initializeApp() before runApp() &#39;
+              &#39;in the main function.&#39;,
+          filePath: call.filePath,
+          lineNumber: call.lineNumber,
+        ),
+      );
+    }
+  }
+
+  if (!hasFirebaseCore &amp;&amp; initCalls.isNotEmpty) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.error,
+        code: &#39;FD307&#39;,
+        title: &#39;Missing firebase_core dependency&#39;,
+        description:
+            &#39;firebase_core is not listed in pubspec.yaml dependencies. &#39;
+            &#39;It is required for all Firebase services.&#39;,
+        recommendation:
+            &#39;Add firebase_core to your dependencies:\n&#39;
+            &#39;  firebase_core: ^3.0.0&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  final hasCriticalOrError = issues.any(
+    (i) =&gt; i.severity == Severity.critical || i.severity == Severity.error,
+  );
+  final hasWarning = issues.any((i) =&gt; i.severity == Severity.warning);
+
+  CheckStatus status;
+  if (hasCriticalOrError) {
+    status = CheckStatus.failed;
+  } else if (hasWarning) {
+    status = CheckStatus.warning;
+  } else {
+    status = CheckStatus.passed;
+  }
+
+  return DiagnosticResult(
+    analyzerName: name,
+    status: status,
+    issues: issues,
+    duration: DateTime.now().difference(startTime),
+    timestamp: DateTime.now(),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_firebase_core_firebase_core_analyzer/">firebase_core_analyzer</a></li>
+    <li><a href="../../analyzers_firebase_core_firebase_core_analyzer/FirebaseCoreAnalyzer-class.html">FirebaseCoreAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+</ol>
+
+    <h5>FirebaseCoreAnalyzer class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

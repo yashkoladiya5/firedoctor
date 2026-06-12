@@ -8,15 +8,20 @@ import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/services/report_service.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
+/// Core class.
 final class DoctorCommand extends Command {
   @override
   String get name => 'doctor';
   @override
   String get description => 'Run all FireDoctor checks and generate analysis';
 
+  /// Public property or field.
   final Logger logger;
+  /// Public property or field.
   final Terminal terminal;
+  /// Public property or field.
   final FileSystem fileSystem;
+  /// Public property or field.
   final AnalyzerService analyzerService;
 
   DoctorCommand({
@@ -27,6 +32,7 @@ final class DoctorCommand extends Command {
   });
 
   @override
+  /// Public method or function.
   Future<int> execute(List<String> args) async {
     Severity failOn = Severity.error;
     double? minScore;

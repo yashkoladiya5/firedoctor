@@ -4,8 +4,11 @@ import 'package:firedoctor/models/diagnostic_report.dart';
 import 'package:firedoctor/models/health_score.dart';
 import 'package:firedoctor/models/score_weights.dart';
 
+/// Core class.
 final class HealthScoreEngine {
+  /// Public property or field.
   final ScoreWeights weights;
+  /// Public property or field.
   final int maxRecommendations;
 
   const HealthScoreEngine({
@@ -23,10 +26,12 @@ final class HealthScoreEngine {
     'crashlytics': 'Crashlytics Health',
   };
 
+  /// Public method or function.
   HealthScore compute(DiagnosticReport report) {
     return computeFromResults(report.results);
   }
 
+  /// Public method or function.
   HealthScore computeFromResults(List<DiagnosticResult> results) {
     final allIssues = <DiagnosticIssue>[];
     final analyzerIssues = <String, List<DiagnosticIssue>>{};

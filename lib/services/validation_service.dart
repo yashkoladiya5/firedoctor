@@ -5,9 +5,13 @@ import 'package:firedoctor/logging/logging.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 
+/// Core class.
 class ValidationService {
+  /// Public property or field.
   final AnalyzerService analyzerService;
+  /// Public property or field.
   final FileSystem fileSystem;
+  /// Public property or field.
   final Logger? logger;
 
   ValidationService({

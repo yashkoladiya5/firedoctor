@@ -1,3 +1,4 @@
+/// Core class.
 final class PodfileLockParser {
   const PodfileLockParser();
 

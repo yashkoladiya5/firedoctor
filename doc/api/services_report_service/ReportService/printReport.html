@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the printReport method from the ReportService class, for the Dart programming language.">
+  <title>printReport method - ReportService class - report_service library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../services_report_service/">services&#47;report_service.dart</a></li>
+    <li><a href="../../services_report_service/ReportService-class.html">ReportService</a></li>
+    <li class="self-crumb">printReport method</li>
+  </ol>
+  <div class="self-name">printReport</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="services_report_service&#47;ReportService-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">printReport</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">void</span>
+<span class="name ">printReport</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="printReport-param-report"><span class="type-annotation"><a href="../../models_diagnostic_report/DiagnosticReport-class.html">DiagnosticReport</a></span> <span class="parameter-name">report</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Public method or function.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void printReport(DiagnosticReport report) {
+  terminal.writeLine(&#39;&#39;);
+  terminal.writeLine(&#39;═══════════════════════════════════════════&#39;);
+  terminal.writeLine(&#39;  FireDoctor Diagnostic Report&#39;);
+  terminal.writeLine(&#39;═══════════════════════════════════════════&#39;);
+  terminal.writeLine(&#39;&#39;);
+
+  terminal.writeLine(&#39;  ┌─ Project&#39;);
+  terminal.writeLine(&#39;  │ Project: ${report.projectName}&#39;);
+  terminal.writeLine(&#39;  │ Path: ${report.projectPath}&#39;);
+  terminal.writeLine(&#39;  └─&#39;);
+
+  if (report.healthScore != null) {
+    final hs = report.healthScore!;
+    terminal.writeLine(&#39;&#39;);
+    terminal.writeLine(&#39;  ┌─ Health Score&#39;);
+    terminal.writeLine(&#39;  │ Overall: ${_formatScore(hs.overallScore)}&#47;100&#39;);
+    terminal.writeLine(&#39;  │ Issues: ${hs.totalIssues}&#39;);
+    terminal.writeLine(
+      &#39;  │ Weight: ${hs.totalWeight}&#47;${hs.maxPossibleWeight}&#39;,
+    );
+    terminal.writeLine(&#39;  └─&#39;);
+
+    terminal.writeLine(&#39;&#39;);
+    terminal.writeLine(&#39;  ┌─ Category Scores&#39;);
+    for (final cat in hs.categoryScores) {
+      final bar = _scoreBar(cat.score);
+      terminal.writeLine(
+        &#39;  │ ${cat.displayName}: ${_formatScore(cat.score)}&#47;100 $bar&#39;,
+      );
+    }
+    terminal.writeLine(&#39;  └─&#39;);
+
+    terminal.writeLine(&#39;&#39;);
+    terminal.writeLine(&#39;  ┌─ Priority Breakdown&#39;);
+    for (final group in PriorityGroup.values) {
+      final count = hs.priorityGroups[group]?.length ?? 0;
+      if (count &gt; 0) {
+        terminal.writeLine(&#39;  │ ${group.label}: $count&#39;);
+      }
+    }
+    terminal.writeLine(&#39;  └─&#39;);
+
+    if (hs.recommendations.isNotEmpty) {
+      terminal.writeLine(&#39;&#39;);
+      terminal.writeLine(&#39;  ┌─ Recommended Next Actions&#39;);
+      for (var i = 0; i &lt; hs.recommendations.length; i++) {
+        final rec = hs.recommendations[i];
+        terminal.writeLine(&#39;  │ ${i + 1}. ${rec.formatted}&#39;);
+      }
+      terminal.writeLine(&#39;  └─&#39;);
+    }
+  }
+
+  terminal.writeLine(&#39;&#39;);
+  terminal.writeLine(&#39;  ┌─ Analyzer Results&#39;);
+  for (final result in report.results) {
+    terminal.writeLine(&#39;  │ ${result.analyzerName}: ${result.status.label}&#39;);
+    for (final issue in result.issues) {
+      terminal.writeLine(
+        &#39;  │   ${issue.severity.emoji} [${issue.code}] ${issue.title}&#39;,
+      );
+    }
+  }
+  terminal.writeLine(&#39;  └─&#39;);
+
+  terminal.writeLine(&#39;&#39;);
+  terminal.writeLine(&#39;  Score: ${report.score.toStringAsFixed(1)}&#47;100&#39;);
+  terminal.writeLine(&#39;  Status: ${report.passed ? &quot;PASSED&quot; : &quot;FAILED&quot;}&#39;);
+  terminal.writeLine(&#39;&#39;);
+  terminal.writeLine(&#39;  Issues: ${report.totalIssues}&#39;);
+  terminal.writeLine(&#39;  Errors: ${report.totalErrors}&#39;);
+  terminal.writeLine(&#39;  Warnings: ${report.totalWarnings}&#39;);
+  terminal.writeLine(&#39;&#39;);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../services_report_service/">report_service</a></li>
+    <li><a href="../../services_report_service/ReportService-class.html">ReportService</a></li>
+    <li class="self-crumb">printReport method</li>
+</ol>
+
+    <h5>ReportService class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

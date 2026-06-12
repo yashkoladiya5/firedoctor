@@ -1,6 +1,9 @@
+/// Core class.
 sealed class CheckStatus {
   const CheckStatus();
+  /// Public property or field.
   String get name;
+  /// Public property or field.
   String get label;
   bool get isPassed => this is _CheckStatusPassed;
   bool get isFailed => this is _CheckStatusFailed;

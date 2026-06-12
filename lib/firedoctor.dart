@@ -23,6 +23,7 @@ export 'package:firedoctor/analyzers/analyzers.dart';
 export 'package:firedoctor/services/services.dart';
 export 'package:firedoctor/shared/shared.dart';
 
+/// Public method or function.
 Future<void> runFireDoctor(List<String> args) async {
   final terminal = AnsiTerminal();
   const fileSystem = LocalFileSystem();

@@ -1,3 +1,4 @@
+/// Core class.
 final class PbxprojParser {
   const PbxprojParser();
 

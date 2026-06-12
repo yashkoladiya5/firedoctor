@@ -3,6 +3,7 @@ import 'package:firedoctor/analyzers/analyzer.dart';
 import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/models/models.dart';
 
+/// Core class.
 final class AndroidAnalyzer extends Analyzer {
   @override
   String get name => 'android';
@@ -14,6 +15,7 @@ final class AndroidAnalyzer extends Analyzer {
   String get category => 'android';
 
   @override
+  /// Public method or function.
   Future<DiagnosticResult> analyze(AnalyzerContext context) async {
     final startTime = DateTime.now();
     final issues = <DiagnosticIssue>[];

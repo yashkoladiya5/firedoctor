@@ -4,9 +4,13 @@ import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/logging/logger.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
+/// Core class.
 final class CommandRunner {
+  /// Public property or field.
   final Logger logger;
+  /// Public property or field.
   final Terminal terminal;
+  /// Public property or field.
   final FileSystem fileSystem;
   final List<Command> _commands = [];
 
@@ -16,10 +20,12 @@ final class CommandRunner {
     required this.fileSystem,
   });
 
+  /// Public method or function.
   void register(Command command) {
     _commands.add(command);
   }
 
+  /// Public method or function.
   void registerAll(List<Command> commands) {
     _commands.addAll(commands);
   }
@@ -30,6 +36,7 @@ final class CommandRunner {
         .firstOrNull;
   }
 
+  /// Public method or function.
   Future<int> run(List<String> args) async {
     if (args.isEmpty) {
       printUsage();
@@ -56,6 +63,7 @@ final class CommandRunner {
     return command.execute(commandArgs);
   }
 
+  /// Public method or function.
   void printUsage() {
     terminal.writeLine('FireDoctor v${AppConstants.version}');
     terminal.writeLine(AppConstants.description);

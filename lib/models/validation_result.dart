@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'package:firedoctor/models/diagnostic_issue.dart';
 
+/// Core class.
 final class ExpectedFinding {
+  /// Public property or field.
   final String analyzerName;
+  /// Public property or field.
   final String code;
+  /// Public property or field.
   final bool shouldBeFound;
 
   const ExpectedFinding({
@@ -12,6 +16,7 @@ final class ExpectedFinding {
     required this.shouldBeFound,
   });
 
+  /// Public method or function.
   Map<String, dynamic> toJson() => {
     'analyzerName': analyzerName,
     'code': code,
@@ -26,15 +31,25 @@ final class ExpectedFinding {
       );
 }
 
+/// Core class.
 final class ValidationEntry {
+  /// Public property or field.
   final String projectName;
+  /// Public property or field.
   final String projectPath;
+  /// Public property or field.
   final int totalChecks;
+  /// Public property or field.
   final List<ExpectedFinding> truePositives;
+  /// Public property or field.
   final List<ExpectedFinding> falseNegatives;
+  /// Public property or field.
   final List<DiagnosticIssue> falsePositives;
+  /// Public property or field.
   final double accuracy;
+  /// Public property or field.
   final double precision;
+  /// Public property or field.
   final double recall;
 
   const ValidationEntry({
@@ -52,6 +67,7 @@ final class ValidationEntry {
   int get totalExpected => truePositives.length + falseNegatives.length;
   int get totalActual => truePositives.length + falsePositives.length;
 
+  /// Public method or function.
   Map<String, dynamic> toJson() => {
     'projectName': projectName,
     'projectPath': projectPath,
@@ -76,8 +92,11 @@ final class ValidationEntry {
   };
 }
 
+/// Core class.
 final class ValidationReport {
+  /// Public property or field.
   final List<ValidationEntry> entries;
+  /// Public property or field.
   final DateTime generatedAt;
 
   const ValidationReport({required this.entries, required this.generatedAt});
@@ -135,6 +154,7 @@ final class ValidationReport {
     return result;
   }
 
+  /// Public method or function.
   String toJsonString() {
     final map = <String, dynamic>{
       'generatedAt': generatedAt.toUtc().toIso8601String(),

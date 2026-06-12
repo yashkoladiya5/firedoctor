@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the analyze method from the IOSAnalyzer class, for the Dart programming language.">
+  <title>analyze method - IOSAnalyzer class - ios_analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_ios_ios_analyzer/">analyzers&#47;ios&#47;ios_analyzer.dart</a></li>
+    <li><a href="../../analyzers_ios_ios_analyzer/IOSAnalyzer-class.html">IOSAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+  </ol>
+  <div class="self-name">analyze</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzers_ios_ios_analyzer&#47;IOSAnalyzer-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">analyze</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_diagnostic_result/DiagnosticResult-class.html">DiagnosticResult</a></span>&gt;</span></span>
+<span class="name ">analyze</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="analyze-param-context"><span class="type-annotation"><a href="../../analyzers_analyzer_context/AnalyzerContext-class.html">AnalyzerContext</a></span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Public method or function.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+&#47;&#47;&#47; Public method or function.
+Future&lt;DiagnosticResult&gt; analyze(AnalyzerContext context) async {
+  final startTime = DateTime.now();
+  final issues = &lt;DiagnosticIssue&gt;[];
+  final fs = context.fileSystem;
+  final projectPath = context.projectPath;
+
+  final iosPath = fs.join(projectPath, &#39;ios&#39;);
+  if (!fs.exists(iosPath) || !fs.isDirectory(iosPath)) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final googleServicePath = fs.join(
+    fs.join(iosPath, &#39;Runner&#39;),
+    &#39;GoogleService-Info.plist&#39;,
+  );
+  final podfilePath = fs.join(iosPath, &#39;Podfile&#39;);
+  final podfileLockPath = fs.join(iosPath, &#39;Podfile.lock&#39;);
+  final pbxprojPath = fs.join(
+    fs.join(iosPath, &#39;Runner.xcodeproj&#39;),
+    &#39;project.pbxproj&#39;,
+  );
+  final infoPlistPath = fs.join(fs.join(iosPath, &#39;Runner&#39;), &#39;Info.plist&#39;);
+
+  Map&lt;String, String&gt;? googleServiceInfo;
+  if (!fs.exists(googleServicePath)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.critical,
+        code: &#39;FD500&#39;,
+        title: &#39;Missing GoogleService-Info.plist&#39;,
+        description:
+            &#39;The ios&#47;Runner&#47;GoogleService-Info.plist file is missing. &#39;
+            &#39;This file is required for Firebase services on iOS.&#39;,
+        recommendation:
+            &#39;Run &quot;flutterfire configure&quot; to generate the &#39;
+            &#39;GoogleService-Info.plist file or download it from Firebase Console.&#39;,
+        filePath: googleServicePath,
+      ),
+    );
+  } else {
+    final content = fs.readAsString(googleServicePath);
+    googleServiceInfo = _plistParser.parseGoogleServiceInfoPlist(content);
+
+    if (googleServiceInfo == null) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD501&#39;,
+          title: &#39;Invalid GoogleService-Info.plist&#39;,
+          description:
+              &#39;The GoogleService-Info.plist file contains invalid or malformed content.&#39;,
+          recommendation:
+              &#39;Regenerate the file using &quot;flutterfire configure&quot; &#39;
+              &#39;or download a fresh copy from Firebase Console.&#39;,
+          filePath: googleServicePath,
+        ),
+      );
+    }
+  }
+
+  String? podfileContent;
+  if (!fs.exists(podfilePath)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.error,
+        code: &#39;FD508&#39;,
+        title: &#39;Missing Podfile&#39;,
+        description:
+            &#39;The ios&#47;Podfile file is missing. This file is required for &#39;
+            &#39;managing iOS dependencies.&#39;,
+        recommendation:
+            &#39;Run &quot;flutter create .&quot; in the ios directory or &#39;
+            &#39;create a Podfile manually.&#39;,
+        filePath: podfilePath,
+      ),
+    );
+  } else {
+    podfileContent = fs.readAsString(podfilePath);
+  }
+
+  ({
+    String? bundleIdentifier,
+    String? runnerTargetName,
+    bool hasPushCapability,
+    bool hasBackgroundModes,
+  })?
+  pbxprojInfo;
+  if (fs.exists(pbxprojPath)) {
+    final pbxprojContent = fs.readAsString(pbxprojPath);
+    pbxprojInfo = _pbxprojParser.parse(pbxprojContent);
+  }
+
+  ({List&lt;String&gt; backgroundModes, bool hasFirebaseAppDelegateProxy})?
+  infoPlistInfo;
+  if (fs.exists(infoPlistPath)) {
+    final infoPlistContent = fs.readAsString(infoPlistPath);
+    infoPlistInfo = _plistParser.parseInfoPlist(infoPlistContent);
+  }
+
+  if (googleServiceInfo != null &amp;&amp;
+      googleServiceInfo[&#39;BUNDLE_ID&#39;] != null &amp;&amp;
+      pbxprojInfo != null &amp;&amp;
+      pbxprojInfo.bundleIdentifier != null) {
+    final plistBundleId = googleServiceInfo[&#39;BUNDLE_ID&#39;]!;
+    if (plistBundleId != pbxprojInfo.bundleIdentifier) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD502&#39;,
+          title: &#39;Bundle ID mismatch in GoogleService-Info.plist&#39;,
+          description:
+              &#39;The bundle ID &quot;$plistBundleId&quot; in GoogleService-Info.plist &#39;
+              &#39;does not match the PRODUCT_BUNDLE_IDENTIFIER &#39;
+              &#39;&quot;${pbxprojInfo.bundleIdentifier}&quot; in the Xcode project.&#39;,
+          recommendation:
+              &#39;Update the PRODUCT_BUNDLE_IDENTIFIER in your Xcode project or &#39;
+              &#39;regenerate GoogleService-Info.plist with &#39;
+              &#39;&quot;flutterfire configure&quot;.&#39;,
+          filePath: googleServicePath,
+        ),
+      );
+    }
+  }
+
+  if (pbxprojInfo != null &amp;&amp; pbxprojInfo.bundleIdentifier == null) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD503&#39;,
+        title: &#39;Bundle identifier not detected&#39;,
+        description:
+            &#39;Could not detect the bundle identifier from the Xcode project.&#39;,
+        recommendation:
+            &#39;Ensure PRODUCT_BUNDLE_IDENTIFIER is set in your Xcode project settings.&#39;,
+        filePath: pbxprojPath,
+      ),
+    );
+  }
+
+  if (pbxprojInfo != null &amp;&amp; pbxprojInfo.runnerTargetName == null) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.error,
+        code: &#39;FD504&#39;,
+        title: &#39;Runner target not found in Xcode project&#39;,
+        description:
+            &#39;The &quot;Runner&quot; target was not found in the Xcode project file.&#39;,
+        recommendation:
+            &#39;Ensure the Xcode project contains a target named &quot;Runner&quot;.&#39;,
+        filePath: pbxprojPath,
+      ),
+    );
+  }
+
+  if (pbxprojInfo != null &amp;&amp; !pbxprojInfo.hasPushCapability) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD505&#39;,
+        title: &#39;Push Notifications capability missing&#39;,
+        description:
+            &#39;The Push Notifications capability is not enabled in the Xcode project.&#39;,
+        recommendation:
+            &#39;Enable Push Notifications in Xcode: &#39;
+            &#39;Signing &amp; Capabilities &gt; + Capability &gt; Push Notifications.&#39;,
+        filePath: pbxprojPath,
+      ),
+    );
+  }
+
+  if (pbxprojInfo != null &amp;&amp; !pbxprojInfo.hasBackgroundModes) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD506&#39;,
+        title: &#39;Background Modes capability missing&#39;,
+        description:
+            &#39;The Background Modes capability is not enabled in the Xcode project.&#39;,
+        recommendation:
+            &#39;Enable Background Modes in Xcode: &#39;
+            &#39;Signing &amp; Capabilities &gt; + Capability &gt; Background Modes.&#39;,
+        filePath: pbxprojPath,
+      ),
+    );
+  }
+
+  &#47;&#47; Only flag missing remote-notification background mode if the project
+  &#47;&#47; actually uses Firebase Cloud Messaging
+  bool needsRemoteNotifications = false;
+  if (!needsRemoteNotifications) {
+    final pubspecPath = fs.join(projectPath, &#39;pubspec.yaml&#39;);
+    if (fs.exists(pubspecPath)) {
+      final pubspec = await PubspecParser.parseFromFile(pubspecPath, fs);
+      needsRemoteNotifications =
+          pubspec != null &amp;&amp;
+          (pubspec.hasDependency(&#39;firebase_messaging&#39;) ||
+              pubspec.hasDevDependency(&#39;firebase_messaging&#39;));
+    }
+  }
+
+  if (infoPlistInfo != null &amp;&amp;
+      needsRemoteNotifications &amp;&amp;
+      !infoPlistInfo.backgroundModes.contains(&#39;remote-notification&#39;)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD507&#39;,
+        title: &#39;Remote Notifications background mode missing&#39;,
+        description:
+            &#39;The &quot;remote-notification&quot; background mode is not configured in Info.plist.&#39;,
+        recommendation:
+            &#39;Add &quot;remote-notification&quot; to UIBackgroundModes in Info.plist:\n&#39;
+            &#39;  &lt;key&gt;UIBackgroundModes&lt;&#47;key&gt;\n&#39;
+            &#39;  &lt;array&gt;\n&#39;
+            &#39;    &lt;string&gt;remote-notification&lt;&#47;string&gt;\n&#39;
+            &#39;  &lt;&#47;array&gt;&#39;,
+        filePath: infoPlistPath,
+      ),
+    );
+  }
+
+  ({
+    double? iosVersion,
+    bool hasFirebasePods,
+    List&lt;String&gt; pods,
+    bool hasRunnerTarget,
+  })?
+  podfileInfo;
+  if (podfileContent != null) {
+    podfileInfo = _podfileParser.parse(podfileContent);
+    if (podfileInfo != null &amp;&amp;
+        podfileInfo.iosVersion != null &amp;&amp;
+        podfileInfo.iosVersion! &lt; 12.0) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: &#39;FD509&#39;,
+          title: &#39;iOS platform version below 12.0 in Podfile&#39;,
+          description:
+              &#39;The Podfile platform version is set to ${podfileInfo.iosVersion}. &#39;
+              &#39;Firebase SDKs require iOS 12.0 or higher.&#39;,
+          recommendation:
+              &#39;Update the platform version in your Podfile:\n&#39;
+              &#39;  platform :ios, \&#39;12.0\&#39;&#39;,
+          filePath: podfilePath,
+        ),
+      );
+    }
+  }
+
+  bool hasFirebasePods = false;
+  if (podfileInfo != null &amp;&amp; podfileInfo.hasFirebasePods) {
+    hasFirebasePods = true;
+  } else if (fs.exists(podfileLockPath)) {
+    final lockContent = fs.readAsString(podfileLockPath);
+    final lockInfo = _podfileLockParser.parse(lockContent);
+    if (lockInfo.hasFirebasePods) {
+      hasFirebasePods = true;
+    }
+  }
+
+  if (!hasFirebasePods &amp;&amp;
+      (googleServiceInfo != null || fs.exists(podfilePath))) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD510&#39;,
+        title: &#39;No Firebase pods found&#39;,
+        description:
+            &#39;No Firebase pods were found in the Podfile or Podfile.lock.&#39;,
+        recommendation:
+            &#39;Add Firebase pods to your Podfile:\n&#39;
+            &#39;  pod \&#39;Firebase&#47;Core\&#39;&#39;,
+        filePath: podfilePath,
+      ),
+    );
+  }
+
+  if (googleServiceInfo != null) {
+    final libPath = fs.join(projectPath, &#39;lib&#39;);
+    bool hasFirebaseImport = false;
+    if (fs.exists(libPath) &amp;&amp; fs.isDirectory(libPath)) {
+      hasFirebaseImport = _scanForFirebaseImports(fs, libPath);
+    }
+    if (!hasFirebaseImport) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.info,
+          code: &#39;FD511&#39;,
+          title: &#39;GoogleService-Info.plist not referenced&#39;,
+          description:
+              &#39;GoogleService-Info.plist exists but no Firebase imports &#39;
+              &#39;were found in Dart files.&#39;,
+          recommendation:
+              &#39;Add Firebase to your Dart code:\n&#39;
+              &#39;  import \&#39;package:firebase_core&#47;firebase_core.dart\&#39;;&#39;,
+          filePath: googleServicePath,
+        ),
+      );
+    }
+  }
+
+  if (googleServiceInfo != null &amp;&amp;
+      infoPlistInfo != null &amp;&amp;
+      !infoPlistInfo.hasFirebaseAppDelegateProxy) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD512&#39;,
+        title: &#39;APNs configuration warning&#39;,
+        description:
+            &#39;FirebaseAppDelegateProxyEnabled is not configured in Info.plist. &#39;
+            &#39;Without this setting, Firebase may not properly handle APNs &#39;
+            &#39;token registration.&#39;,
+        recommendation:
+            &#39;Consider adding to your Info.plist:\n&#39;
+            &#39;  &lt;key&gt;FirebaseAppDelegateProxyEnabled&lt;&#47;key&gt;\n&#39;
+            &#39;  &lt;false&#47;&gt;&#39;,
+        filePath: infoPlistPath,
+      ),
+    );
+  }
+
+  final hasCriticalOrError = issues.any(
+    (i) =&gt; i.severity == Severity.critical || i.severity == Severity.error,
+  );
+  final hasWarning = issues.any((i) =&gt; i.severity == Severity.warning);
+
+  final status = hasCriticalOrError
+      ? CheckStatus.failed
+      : hasWarning
+      ? CheckStatus.warning
+      : CheckStatus.passed;
+
+  return DiagnosticResult(
+    analyzerName: name,
+    status: status,
+    issues: issues,
+    duration: DateTime.now().difference(startTime),
+    timestamp: DateTime.now(),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_ios_ios_analyzer/">ios_analyzer</a></li>
+    <li><a href="../../analyzers_ios_ios_analyzer/IOSAnalyzer-class.html">IOSAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+</ol>
+
+    <h5>IOSAnalyzer class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

@@ -3,22 +3,27 @@ import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/logging/logging.dart';
 import 'package:firedoctor/shared/source_file_cache.dart';
 
+/// Core class.
 class AnalyzerService {
   final List<Analyzer> _analyzers = [];
+  /// Public property or field.
   final Logger logger;
 
   AnalyzerService({required this.logger});
 
+  /// Public method or function.
   void register(Analyzer analyzer) {
     _analyzers.add(analyzer);
   }
 
+  /// Public method or function.
   void registerAll(List<Analyzer> analyzers) {
     _analyzers.addAll(analyzers);
   }
 
   List<Analyzer> get registeredAnalyzers => List.unmodifiable(_analyzers);
 
+  /// Public method or function.
   Future<List<DiagnosticResult>> runAll(
     AnalyzerContext context, {
     Logger? progressLogger,
@@ -44,6 +49,7 @@ class AnalyzerService {
     return results;
   }
 
+  /// Public method or function.
   Future<DiagnosticResult> runAnalyzer(
     Analyzer analyzer,
     AnalyzerContext context, {

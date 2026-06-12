@@ -3,13 +3,21 @@ import 'package:firedoctor/models/diagnostic_result.dart';
 import 'package:firedoctor/models/health_score.dart';
 import 'package:firedoctor/services/health_score_engine.dart';
 
+/// Core class.
 final class DiagnosticReport {
+  /// Public property or field.
   final String projectName;
+  /// Public property or field.
   final String projectPath;
+  /// Public property or field.
   final DateTime createdAt;
+  /// Public property or field.
   final List<DiagnosticResult> results;
+  /// Public property or field.
   final String? firebaseVersion;
+  /// Public property or field.
   final Map<String, String> environment;
+  /// Public property or field.
   final HealthScore? healthScore;
 
   const DiagnosticReport({
@@ -22,8 +30,11 @@ final class DiagnosticReport {
     this.healthScore,
   });
 
+  /// Public method or function.
   int get totalIssues => results.fold(0, (sum, r) => sum + r.issueCount);
+  /// Public method or function.
   int get totalErrors => results.fold(0, (sum, r) => sum + r.errorCount);
+  /// Public method or function.
   int get totalWarnings => results.fold(0, (sum, r) => sum + r.warningCount);
 
   double get score {
@@ -35,6 +46,7 @@ final class DiagnosticReport {
     return ((maxWeighted - weighted) / maxWeighted * 100).clamp(0.0, 100.0);
   }
 
+  /// Public method or function.
   bool get passed => results.every((r) => r.passed);
 
   /// The highest severity rank across all results.

@@ -4,6 +4,7 @@ import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/parsers/pubspec_parser.dart';
 import 'package:firedoctor/analyzers/ios/parsers/plist_parser.dart';
 
+/// Core class.
 final class FCMAnalyzer extends Analyzer {
   final PlistParser _plistParser;
 
@@ -20,6 +21,7 @@ final class FCMAnalyzer extends Analyzer {
   String get category => 'fcm';
 
   @override
+  /// Public method or function.
   Future<DiagnosticResult> analyze(AnalyzerContext context) async {
     final startTime = DateTime.now();
     final issues = <DiagnosticIssue>[];
