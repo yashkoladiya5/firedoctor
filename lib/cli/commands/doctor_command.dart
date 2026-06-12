@@ -36,7 +36,13 @@ final class DoctorCommand extends Command {
       final arg = args[i];
       if (arg == '--fail-on') {
         if (i + 1 < args.length) {
-          failOn = _parseSeverity(args[++i]);
+          final parsed = _tryParseSeverity(args[++i]);
+          if (parsed == null) {
+            terminal.writeError(
+                'Invalid --fail-on value. Must be one of: warning, error, critical.');
+            return AppConstants.exitInternalFailure;
+          }
+          failOn = parsed;
         } else {
           terminal.writeError('Missing value for --fail-on flag');
           return AppConstants.exitInternalFailure;
@@ -118,7 +124,7 @@ final class DoctorCommand extends Command {
     return AppConstants.exitNoIssues;
   }
 
-  Severity _parseSeverity(String value) {
+  Severity? _tryParseSeverity(String value) {
     switch (value.toLowerCase()) {
       case 'warning':
       case 'warn':
@@ -128,7 +134,7 @@ final class DoctorCommand extends Command {
       case 'critical':
         return Severity.critical;
       default:
-        return Severity.error;
+        return null;
     }
   }
 

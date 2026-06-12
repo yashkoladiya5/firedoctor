@@ -24,7 +24,7 @@ final class PodfileLockParser {
   List<String> _findPodsSection(String content) {
     final lines = content.split('\n');
     var inPods = false;
-    var podDepth = 0;
+    const podDepth = 0;
     final result = <String>[];
 
     for (final line in lines) {

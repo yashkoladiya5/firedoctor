@@ -118,7 +118,7 @@ void main() {
   });
 
   group('HealthScore', () {
-    final criticalIssue = DiagnosticIssue(
+    const criticalIssue = DiagnosticIssue(
       severity: Severity.critical,
       code: 'CRIT001',
       title: 'Critical bug',
@@ -126,34 +126,34 @@ void main() {
       filePath: 'lib/main.dart',
       lineNumber: 10,
     );
-    final errorIssue = DiagnosticIssue(
+    const errorIssue = DiagnosticIssue(
       severity: Severity.error,
       code: 'ERR001',
       title: 'Error bug',
       description: 'An error issue',
     );
-    final warningIssue = DiagnosticIssue(
+    const warningIssue = DiagnosticIssue(
       severity: Severity.warning,
       code: 'WARN001',
       title: 'Warning bug',
       description: 'A warning issue',
       filePath: 'lib/utils.dart',
     );
-    final infoIssue = DiagnosticIssue(
+    const infoIssue = DiagnosticIssue(
       severity: Severity.info,
       code: 'INFO001',
       title: 'Info suggestion',
       description: 'An info issue',
       lineNumber: 42,
     );
-    final infoIssue2 = DiagnosticIssue(
+    const infoIssue2 = DiagnosticIssue(
       severity: Severity.info,
       code: 'INFO002',
       title: 'Another suggestion',
       description: 'Another info issue',
     );
 
-    final categoryScore = CategoryScore(
+    const categoryScore = CategoryScore(
       category: 'performance',
       displayName: 'Performance',
       score: 92.0,
@@ -161,14 +161,14 @@ void main() {
       totalWeight: 46,
     );
 
-    final recommendation = Recommendation(
+    const recommendation = Recommendation(
       code: 'CRIT001',
       title: 'Critical bug',
       severity: 'critical',
       weight: 25,
     );
 
-    final weights = ScoreWeights(
+    const weights = ScoreWeights(
       critical: 25,
       error: 15,
       warning: 5,

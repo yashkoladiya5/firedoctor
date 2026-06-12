@@ -58,7 +58,7 @@ end
 """);
         expect(result, isNotNull);
         expect(result!.hasFirebasePods, isTrue);
-        expect(result!.pods, contains('Firebase/Core'));
+        expect(result.pods, contains('Firebase/Core'));
       });
 
       test('returns isFirebasePods false when no Firebase pods', () {
@@ -70,7 +70,7 @@ end
 """);
         expect(result, isNotNull);
         expect(result!.hasFirebasePods, isFalse);
-        expect(result!.pods, contains('Alamofire'));
+        expect(result.pods, contains('Alamofire'));
       });
 
       test('strips comments', () {
@@ -84,8 +84,8 @@ end
 """);
         expect(result, isNotNull);
         expect(result!.iosVersion, equals(12.0));
-        expect(result!.hasFirebasePods, isTrue);
-        expect(result!.hasRunnerTarget, isTrue);
+        expect(result.hasFirebasePods, isTrue);
+        expect(result.hasRunnerTarget, isTrue);
       });
 
       test('detects multiple pods', () {
@@ -100,7 +100,7 @@ end
 """);
         expect(result, isNotNull);
         expect(result!.hasFirebasePods, isTrue);
-        expect(result!.pods.length, equals(4));
+        expect(result.pods.length, equals(4));
       });
     });
   });

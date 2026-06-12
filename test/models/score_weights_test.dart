@@ -5,7 +5,7 @@ import 'package:firedoctor/models/severity.dart';
 void main() {
   group('ScoreWeights', () {
     group('default weights', () {
-      final weights = const ScoreWeights();
+      const weights = ScoreWeights();
 
       test('critical defaults to 25', () {
         expect(weights.critical, equals(25));
@@ -25,7 +25,7 @@ void main() {
     });
 
     group('weightFor', () {
-      final weights = const ScoreWeights();
+      const weights = ScoreWeights();
 
       test('returns critical weight for Severity.critical', () {
         expect(weights.weightFor(Severity.critical), equals(25));

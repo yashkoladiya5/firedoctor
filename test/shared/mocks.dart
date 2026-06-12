@@ -89,7 +89,7 @@ class FakeFileSystem implements FileSystem {
         if (slashIndex == -1) {
           entries.add(f);
         } else {
-          entries.add('${path}/${relative.substring(0, slashIndex)}');
+          entries.add('$path/${relative.substring(0, slashIndex)}');
         }
       }
     }

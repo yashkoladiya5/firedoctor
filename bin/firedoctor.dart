@@ -1,3 +1,4 @@
+#!/usr/bin/env dart
 import 'dart:io';
 import 'package:firedoctor/firedoctor.dart';
 

@@ -5,6 +5,7 @@ import 'package:firedoctor/terminal/terminal_interface.dart';
 final class AnsiTerminal implements Terminal {
   bool get _supportsAnsi {
     if (Platform.environment.containsKey('NO_COLOR')) return false;
+    if (Platform.environment['TERM'] == 'dumb') return false;
     if (!stdout.hasTerminal) return false;
     return stdout.supportsAnsiEscapes;
   }
@@ -60,7 +61,7 @@ final class AnsiTerminal implements Terminal {
 
   @override
   void clear() {
-    if (stdout.hasTerminal) {
+    if (_supportsAnsi) {
       stdout.write('\x1B[2J\x1B[0;0H');
     }
   }

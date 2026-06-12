@@ -18,18 +18,26 @@ class AnalyzerService {
 
   List<Analyzer> get registeredAnalyzers => List.unmodifiable(_analyzers);
 
-  Future<List<DiagnosticResult>> runAll(AnalyzerContext context) async {
+  Future<List<DiagnosticResult>> runAll(
+    AnalyzerContext context, {
+    Logger? progressLogger,
+  }) async {
     final results = <DiagnosticResult>[];
     for (final analyzer in _analyzers) {
-      final result = await runAnalyzer(analyzer, context);
+      final result =
+          await runAnalyzer(analyzer, context, progressLogger: progressLogger);
       results.add(result);
     }
     return results;
   }
 
   Future<DiagnosticResult> runAnalyzer(
-      Analyzer analyzer, AnalyzerContext context) async {
-    logger.info('Running analyzer: ${analyzer.name}');
+    Analyzer analyzer,
+    AnalyzerContext context, {
+    Logger? progressLogger,
+  }) async {
+    final log = progressLogger ?? logger;
+    log.info('Running analyzer: ${analyzer.name}');
     final stopwatch = Stopwatch()..start();
     try {
       final result = await analyzer.analyze(context);
@@ -42,12 +50,12 @@ class AnalyzerService {
         timestamp: result.timestamp,
         projectName: result.projectName,
       );
-      logger.success(
+      log.success(
           '${analyzer.name}: ${timedResult.status.label} (${timedResult.issueCount} issues)');
       return timedResult;
     } catch (e) {
       stopwatch.stop();
-      logger.error('${analyzer.name} failed: $e');
+      log.error('${analyzer.name} failed: $e');
       return DiagnosticResult(
         analyzerName: analyzer.name,
         status: CheckStatus.failed,

@@ -10,7 +10,7 @@ void main() {
   group('PubspecParser', () {
     group('parse', () {
       test('parses a valid Flutter pubspec.yaml with all fields', () {
-        final yaml = '''
+        const yaml = '''
 name: my_app
 version: 1.0.0
 description: A Flutter project
@@ -39,7 +39,7 @@ dev_dependencies:
       });
 
       test('parses a non-Flutter Dart project', () {
-        final yaml = '''
+        const yaml = '''
 name: dart_app
 dependencies:
   http: ^1.0.0
@@ -54,7 +54,7 @@ dev_dependencies: {}
       });
 
       test('parses project with no dependencies', () {
-        final yaml =
+        const yaml =
             'name: empty_project\ndependencies: {}\ndev_dependencies: {}';
         final pubspec = PubspecParser.parse(yaml);
 
@@ -67,7 +67,7 @@ dev_dependencies: {}
       });
 
       test('parses project with git dependency', () {
-        final yaml = '''
+        const yaml = '''
 name: git_dep_app
 dependencies:
   my_package:
@@ -82,7 +82,7 @@ dev_dependencies: {}
       });
 
       test('parses project with path dependency', () {
-        final yaml = '''
+        const yaml = '''
 name: path_dep_app
 dependencies:
   local_pkg:
@@ -96,7 +96,7 @@ dev_dependencies: {}
       });
 
       test('parses project with flutter dev dependency only', () {
-        final yaml = '''
+        const yaml = '''
 name: dev_only
 dependencies:
   http: ^1.0.0
@@ -136,7 +136,7 @@ dev_dependencies:
       });
 
       test('returns Pubspec for valid Flutter YAML', () {
-        final yaml = '''
+        const yaml = '''
 name: flutter_app
 dependencies:
   flutter:
@@ -216,7 +216,7 @@ dev_dependencies: {}
       });
 
       test('returns Pubspec for Flutter project from file', () async {
-        final yaml = '''
+        const yaml = '''
 name: flutter_app
 dependencies:
   flutter:
