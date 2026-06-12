@@ -20,10 +20,7 @@ void main() {
 
     test('uses empty configuration by default', () {
       final fs = MockFileSystem();
-      final context = AnalyzerContext(
-        projectPath: '/test',
-        fileSystem: fs,
-      );
+      final context = AnalyzerContext(projectPath: '/test', fileSystem: fs);
 
       expect(context.configuration, isEmpty);
     });
@@ -37,7 +34,9 @@ void main() {
       );
 
       expect(
-          context.configuration, equals({'key': 'value', 'verbose': 'true'}));
+        context.configuration,
+        equals({'key': 'value', 'verbose': 'true'}),
+      );
     });
   });
 }

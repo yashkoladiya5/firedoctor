@@ -5,7 +5,9 @@ import 'package:firedoctor/firedoctor.dart';
 
 Future<void> main(List<String> args) async {
   if (args.isEmpty) {
-    stderr.writeln('Usage: dart run validation/analyze_project.dart <project-path>');
+    stderr.writeln(
+      'Usage: dart run validation/analyze_project.dart <project-path>',
+    );
     exit(1);
   }
 
@@ -18,7 +20,9 @@ Future<void> main(List<String> args) async {
   }
 
   // Create analyzer service with all 7 analyzers
-  final analyzerService = AnalyzerService(logger: Logger(terminal: AnsiTerminal()));
+  final analyzerService = AnalyzerService(
+    logger: Logger(terminal: AnsiTerminal()),
+  );
   analyzerService.register(ProjectAnalyzer());
   analyzerService.register(DependencyAnalyzer());
   analyzerService.register(FirebaseCoreAnalyzer());
@@ -44,9 +48,13 @@ Future<void> main(List<String> args) async {
   for (final result in results) {
     final issues = result.issues;
     totalIssues += issues.length;
-    print('${result.analyzerName} (${result.status.label}): ${issues.length} issues in ${result.duration.inMilliseconds}ms');
+    print(
+      '${result.analyzerName} (${result.status.label}): ${issues.length} issues in ${result.duration.inMilliseconds}ms',
+    );
     for (final issue in issues) {
-      print('  [${issue.severity.name.toUpperCase().padRight(8)}] ${issue.code}: ${issue.title}');
+      print(
+        '  [${issue.severity.name.toUpperCase().padRight(8)}] ${issue.code}: ${issue.title}',
+      );
     }
   }
 

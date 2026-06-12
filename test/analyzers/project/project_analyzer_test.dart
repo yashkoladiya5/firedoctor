@@ -36,16 +36,20 @@ void main() {
 
     test('has correct metadata', () {
       expect(analyzer.name, equals('project'));
-      expect(analyzer.description,
-          equals('Analyzes Flutter project structure and metadata'));
+      expect(
+        analyzer.description,
+        equals('Analyzes Flutter project structure and metadata'),
+      );
       expect(analyzer.category, equals('project'));
     });
 
     group('missing pubspec.yaml', () {
       test('returns FAILED with MISSING_PUBSPEC critical issue', () async {
         final fs = FakeFileSystem();
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -55,25 +59,31 @@ void main() {
         expect(result.issues.first.title, equals('pubspec.yaml not found'));
       });
 
-      test('does not check other directories when pubspec is missing',
-          () async {
-        final fs = FakeFileSystem();
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
-        final result = await analyzer.analyze(context);
+      test(
+        'does not check other directories when pubspec is missing',
+        () async {
+          final fs = FakeFileSystem();
+          final context = AnalyzerContext(
+            projectPath: '/project',
+            fileSystem: fs,
+          );
+          final result = await analyzer.analyze(context);
 
-        // Only MISSING_PUBSPEC issue — no directory checks
-        expect(result.issues, hasLength(1));
-        expect(result.issues.single.code, equals('MISSING_PUBSPEC'));
-      });
+          // Only MISSING_PUBSPEC issue — no directory checks
+          expect(result.issues, hasLength(1));
+          expect(result.issues.single.code, equals('MISSING_PUBSPEC'));
+        },
+      );
     });
 
     group('invalid pubspec.yaml', () {
       test('returns FAILED with INVALID_PUBSPEC critical issue', () async {
         final fs = FakeFileSystem();
         fs.addFile('/project/pubspec.yaml', '{{{');
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -88,8 +98,10 @@ void main() {
         final fs = FakeFileSystem();
         setUpFlutterProject(fs);
         addAllDirectories(fs);
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -106,13 +118,16 @@ void main() {
         addAllDirectories(fs);
         await fs.delete('/project/android');
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
-        final androidIssue =
-            result.issues.firstWhere((i) => i.code == 'MISSING_ANDROID');
+        final androidIssue = result.issues.firstWhere(
+          (i) => i.code == 'MISSING_ANDROID',
+        );
         expect(androidIssue.severity, equals(Severity.warning));
       });
     });
@@ -124,13 +139,16 @@ void main() {
         addAllDirectories(fs);
         await fs.delete('/project/ios');
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
-        final iosIssue =
-            result.issues.firstWhere((i) => i.code == 'MISSING_IOS');
+        final iosIssue = result.issues.firstWhere(
+          (i) => i.code == 'MISSING_IOS',
+        );
         expect(iosIssue.severity, equals(Severity.warning));
       });
     });
@@ -142,13 +160,16 @@ void main() {
         addAllDirectories(fs);
         await fs.delete('/project/lib');
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
-        final libIssue =
-            result.issues.firstWhere((i) => i.code == 'MISSING_LIB');
+        final libIssue = result.issues.firstWhere(
+          (i) => i.code == 'MISSING_LIB',
+        );
         expect(libIssue.severity, equals(Severity.error));
       });
     });
@@ -160,13 +181,16 @@ void main() {
         addAllDirectories(fs);
         await fs.delete('/project/test');
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
-        final testIssue =
-            result.issues.firstWhere((i) => i.code == 'MISSING_TEST');
+        final testIssue = result.issues.firstWhere(
+          (i) => i.code == 'MISSING_TEST',
+        );
         expect(testIssue.severity, equals(Severity.info));
       });
     });
@@ -182,13 +206,16 @@ dev_dependencies: {}
 ''');
         fs.addDirectory('/project/lib');
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
-        final notFlutter =
-            result.issues.firstWhere((i) => i.code == 'NOT_FLUTTER_PROJECT');
+        final notFlutter = result.issues.firstWhere(
+          (i) => i.code == 'NOT_FLUTTER_PROJECT',
+        );
         expect(notFlutter.severity, equals(Severity.warning));
         expect(notFlutter.filePath, endsWith('pubspec.yaml'));
       });
@@ -200,8 +227,10 @@ dev_dependencies: {}
         setUpFlutterProject(fs);
         // fs only has pubspec.yaml - no directories added
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         final codes = result.issues.map((i) => i.code).toSet();
@@ -222,12 +251,15 @@ dev_dependencies: {}
         await fs.delete('/project/android');
         fs.addFile('/project/android', 'not a directory');
 
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
-        final androidIssue =
-            result.issues.firstWhere((i) => i.code == 'MISSING_ANDROID');
+        final androidIssue = result.issues.firstWhere(
+          (i) => i.code == 'MISSING_ANDROID',
+        );
         expect(androidIssue, isNotNull);
         expect(result.status, equals(CheckStatus.warning));
       });
@@ -268,8 +300,10 @@ dev_dependencies: {}
         final fs = FakeFileSystem();
         setUpFlutterProject(fs);
         addAllDirectories(fs);
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.projectName, equals('test_app'));
@@ -277,8 +311,10 @@ dev_dependencies: {}
 
       test('is null when pubspec is missing', () async {
         final fs = FakeFileSystem();
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.projectName, isNull);
@@ -287,8 +323,10 @@ dev_dependencies: {}
       test('is null when pubspec is invalid', () async {
         final fs = FakeFileSystem();
         fs.addFile('/project/pubspec.yaml', '{{{');
-        final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+        final context = AnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
         final result = await analyzer.analyze(context);
 
         expect(result.projectName, isNull);

@@ -31,8 +31,9 @@ final class DiagnoseCommand extends Command {
 
   @override
   Future<int> execute(List<String> args) async {
-    final projectPath =
-        args.isNotEmpty ? args.first : fileSystem.currentDirectory;
+    final projectPath = args.isNotEmpty
+        ? args.first
+        : fileSystem.currentDirectory;
 
     if (!fileSystem.exists(projectPath) ||
         !fileSystem.isDirectory(projectPath)) {
@@ -84,8 +85,9 @@ final class DiagnoseCommand extends Command {
   }
 
   void _printAnalyzerHeader(DiagnosticResult result) {
-    terminal
-        .writeLine('── ${result.analyzerName} ── ${result.status.label} ──');
+    terminal.writeLine(
+      '── ${result.analyzerName} ── ${result.status.label} ──',
+    );
   }
 
   void _printIssue(DiagnosticIssue issue) {
@@ -101,7 +103,8 @@ final class DiagnoseCommand extends Command {
 
     if (issue.recommendation != null) {
       terminal.writeLine(
-          '  Recommendation: ${issue.recommendation!.replaceAll('\n', '\n    ')}');
+        '  Recommendation: ${issue.recommendation!.replaceAll('\n', '\n    ')}',
+      );
     }
     terminal.writeLine('');
   }
@@ -134,7 +137,8 @@ final class DiagnoseCommand extends Command {
     terminal.writeLine('  Analyzers run: ${results.length}');
     terminal.writeLine('  Passed: $totalPassed | Skipped: $totalSkipped');
     terminal.writeLine(
-        '  Errors: $totalErrors | Warnings: $totalWarnings | Info: $totalInfos');
+      '  Errors: $totalErrors | Warnings: $totalWarnings | Info: $totalInfos',
+    );
     terminal.writeLine('');
   }
 }

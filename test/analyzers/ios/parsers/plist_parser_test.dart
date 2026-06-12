@@ -26,75 +26,90 @@ void main() {
       });
 
       test('returns null for content without dict', () {
-        final result = parser.parseGoogleServiceInfoPlist('<plist version="1.0"></plist>');
+        final result = parser.parseGoogleServiceInfoPlist(
+          '<plist version="1.0"></plist>',
+        );
         expect(result, isNull);
       });
 
       test('returns null for empty dict', () {
-        final result = parser.parseGoogleServiceInfoPlist('<plist><dict></dict></plist>');
+        final result = parser.parseGoogleServiceInfoPlist(
+          '<plist><dict></dict></plist>',
+        );
         expect(result, isNull);
       });
 
       test('parses string values from plist', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>BUNDLE_ID</key>
     <string>com.example.test</string>
     <key>PROJECT_ID</key>
     <string>my-project</string>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['BUNDLE_ID'], equals('com.example.test'));
         expect(result['PROJECT_ID'], equals('my-project'));
       });
 
       test('parses true boolean values', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>IS_ADS_ENABLED</key>
     <true/>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['IS_ADS_ENABLED'], equals('true'));
       });
 
       test('parses false boolean values', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>IS_ANALYTICS_ENABLED</key>
     <false/>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['IS_ANALYTICS_ENABLED'], equals('false'));
       });
 
       test('parses integer values', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>SOME_INT</key>
     <integer>42</integer>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['SOME_INT'], equals('42'));
       });
 
       test('parses real (float) values', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>SOME_REAL</key>
     <real>3.14</real>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['SOME_REAL'], equals('3.14'));
       });
 
       test('parses nested dicts', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>OUTER</key>
     <dict>
@@ -104,13 +119,15 @@ void main() {
     <key>AFTER</key>
     <string>after</string>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['AFTER'], equals('after'));
       });
 
       test('handles array values by converting to string', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>ITEMS</key>
     <array>
@@ -120,13 +137,15 @@ void main() {
     <key>NAME</key>
     <string>test</string>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['NAME'], equals('test'));
       });
 
       test('handles complex plist with all types', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>STRING_KEY</key>
     <string>hello</string>
@@ -149,7 +168,8 @@ void main() {
         <string>b</string>
     </array>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['STRING_KEY'], equals('hello'));
         expect(result['BOOL_TRUE'], equals('true'));
@@ -216,7 +236,9 @@ void main() {
       });
 
       test('handles malformed plist gracefully', () {
-        final result = parser.parseInfoPlist('<plist><dict><key>UIBackgroundModes</key></dict></plist>');
+        final result = parser.parseInfoPlist(
+          '<plist><dict><key>UIBackgroundModes</key></dict></plist>',
+        );
         expect(result.backgroundModes, isEmpty);
         expect(result.hasFirebaseAppDelegateProxy, isFalse);
       });
@@ -257,19 +279,22 @@ void main() {
 
     group('edge cases in _parseDict and _parseArray', () {
       test('handles plist with content after closing dict', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>KEY</key>
     <string>value</string>
 </dict>
 trailing content after closing
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['KEY'], equals('value'));
       });
 
       test('handles unexpected text between key-value pairs', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>FIRST</key>
     <string>first</string>
@@ -277,14 +302,16 @@ trailing content after closing
     <key>SECOND</key>
     <string>second</string>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['FIRST'], equals('first'));
         expect(result['SECOND'], equals('second'));
       });
 
       test('handles array with text content between items', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>ITEMS</key>
     <array>
@@ -293,12 +320,14 @@ trailing content after closing
         <string>item2</string>
     </array>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
       });
 
       test('handles deeply nested dicts', () {
-        final result = parser.parseGoogleServiceInfoPlist('''<plist version="1.0">
+        final result = parser.parseGoogleServiceInfoPlist(
+          '''<plist version="1.0">
 <dict>
     <key>LEVEL1</key>
     <dict>
@@ -309,7 +338,8 @@ trailing content after closing
         </dict>
     </dict>
 </dict>
-</plist>''');
+</plist>''',
+        );
         expect(result, isNotNull);
         expect(result!['LEVEL1'], isNotNull);
       });

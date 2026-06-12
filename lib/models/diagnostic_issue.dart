@@ -36,8 +36,9 @@ final class DiagnosticIssue {
       code: code ?? this.code,
       title: title ?? this.title,
       description: description ?? this.description,
-      recommendation:
-          recommendation != null ? recommendation() : this.recommendation,
+      recommendation: recommendation != null
+          ? recommendation()
+          : this.recommendation,
       filePath: filePath != null ? filePath() : this.filePath,
       lineNumber: lineNumber != null ? lineNumber() : this.lineNumber,
       metadata: metadata != null ? metadata() : this.metadata,

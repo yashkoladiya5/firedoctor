@@ -25,7 +25,10 @@ void main() {
     fileSystem = MockFileSystem();
     logger = Logger(terminal: terminal);
     runner = CommandRunner(
-        logger: logger, terminal: terminal, fileSystem: fileSystem);
+      logger: logger,
+      terminal: terminal,
+      fileSystem: fileSystem,
+    );
   });
 
   group('HelpCommand', () {
@@ -33,12 +36,16 @@ void main() {
       test('with no args calls printUsage and returns exitNoIssues', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
 
-        final cmd =
-            HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd = HelpCommand(
+          logger: logger,
+          terminal: terminal,
+          runner: runner,
+        );
         final exitCode = await cmd.execute([]);
 
-        verify(() => terminal.writeLine(any(that: contains('Usage'))))
-            .called(1);
+        verify(
+          () => terminal.writeLine(any(that: contains('Usage'))),
+        ).called(1);
         expect(exitCode, equals(AppConstants.exitNoIssues));
       });
 
@@ -51,13 +58,17 @@ void main() {
 
         runner.register(mockCommand);
 
-        final cmd =
-            HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd = HelpCommand(
+          logger: logger,
+          terminal: terminal,
+          runner: runner,
+        );
         final exitCode = await cmd.execute(['version']);
 
         verify(() => terminal.writeLine('Command: version')).called(1);
-        verify(() => terminal.writeLine('Description: Shows the version'))
-            .called(1);
+        verify(
+          () => terminal.writeLine('Description: Shows the version'),
+        ).called(1);
         verify(() => terminal.writeLine('Aliases: v, -v')).called(1);
         expect(exitCode, equals(AppConstants.exitNoIssues));
       });
@@ -71,8 +82,11 @@ void main() {
 
         runner.register(mockCommand);
 
-        final cmd =
-            HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd = HelpCommand(
+          logger: logger,
+          terminal: terminal,
+          runner: runner,
+        );
         final exitCode = await cmd.execute(['simple']);
 
         verify(() => terminal.writeLine('Command: simple')).called(1);
@@ -83,8 +97,11 @@ void main() {
       test('with unknown command name returns exitInternalFailure', () async {
         when(() => terminal.writeError(any())).thenReturn(null);
 
-        final cmd =
-            HelpCommand(logger: logger, terminal: terminal, runner: runner);
+        final cmd = HelpCommand(
+          logger: logger,
+          terminal: terminal,
+          runner: runner,
+        );
         final exitCode = await cmd.execute(['unknown']);
 
         verify(() => terminal.writeError('Unknown command: unknown')).called(1);

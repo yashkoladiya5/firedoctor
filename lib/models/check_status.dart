@@ -13,13 +13,13 @@ sealed class CheckStatus {
   static const notApplicable = _CheckStatusNotApplicable();
 
   static CheckStatus fromName(String name) => switch (name) {
-        'passed' => passed,
-        'failed' => failed,
-        'warning' => warning,
-        'skipped' => skipped,
-        'not_applicable' => notApplicable,
-        _ => throw ArgumentError('Invalid check status name: $name'),
-      };
+    'passed' => passed,
+    'failed' => failed,
+    'warning' => warning,
+    'skipped' => skipped,
+    'not_applicable' => notApplicable,
+    _ => throw ArgumentError('Invalid check status name: $name'),
+  };
 }
 
 final class _CheckStatusPassed extends CheckStatus {

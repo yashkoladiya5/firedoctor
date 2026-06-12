@@ -33,9 +33,11 @@ class ValidationService {
 
     // Extract project name from expected_findings.json
     final content = await fileSystem.readAsStringAsync(
-        fileSystem.join(projectPath, 'expected_findings.json'));
+      fileSystem.join(projectPath, 'expected_findings.json'),
+    );
     final json = jsonDecode(content) as Map<String, dynamic>;
-    final projectName = json['projectName'] as String? ?? projectPath.split('/').last;
+    final projectName =
+        json['projectName'] as String? ?? projectPath.split('/').last;
 
     // Run all analyzers
     final context = AnalyzerContext(
@@ -89,8 +91,13 @@ class ValidationService {
     final totalChecks = expectedFindings.length;
     // correct = truePositives + trueNegatives
     // trueNegatives = expected where shouldBeFound:false AND not in falsePositives
-    final shouldBeFalseCount = expectedFindings.where((e) => !e.shouldBeFound).length;
-    final trueNegatives = (shouldBeFalseCount - falsePositives.length).clamp(0, shouldBeFalseCount);
+    final shouldBeFalseCount = expectedFindings
+        .where((e) => !e.shouldBeFound)
+        .length;
+    final trueNegatives = (shouldBeFalseCount - falsePositives.length).clamp(
+      0,
+      shouldBeFalseCount,
+    );
     final totalCorrect = truePositives.length + trueNegatives;
     final accuracy = totalChecks > 0 ? totalCorrect / totalChecks : 1.0;
     final precision = (truePositives.length + falsePositives.length) > 0
@@ -114,7 +121,10 @@ class ValidationService {
   }
 
   /// Validate all projects in a directory
-  Future<ValidationReport> validateAll(String projectsDir, {Logger? progressLogger}) async {
+  Future<ValidationReport> validateAll(
+    String projectsDir, {
+    Logger? progressLogger,
+  }) async {
     final log = progressLogger ?? logger;
     log?.info('Validating projects in: $projectsDir');
 
@@ -127,7 +137,8 @@ class ValidationService {
     for (final dir in dirs) {
       if (fileSystem.isDirectory(dir)) {
         final hasExpected = fileSystem.exists(
-            fileSystem.join(dir, 'expected_findings.json'));
+          fileSystem.join(dir, 'expected_findings.json'),
+        );
         if (!hasExpected) continue;
 
         final name = dir.split('/').last;
@@ -135,19 +146,18 @@ class ValidationService {
         try {
           final entry = await validateProject(dir);
           entries.add(entry);
-          log?.success('$name: accuracy=${(entry.accuracy * 100).toStringAsFixed(1)}% '
-              'TP=${entry.truePositives.length} FP=${entry.falsePositives.length} '
-              'FN=${entry.falseNegatives.length}');
+          log?.success(
+            '$name: accuracy=${(entry.accuracy * 100).toStringAsFixed(1)}% '
+            'TP=${entry.truePositives.length} FP=${entry.falsePositives.length} '
+            'FN=${entry.falseNegatives.length}',
+          );
         } catch (e) {
           log?.error('$name failed: $e');
         }
       }
     }
 
-    return ValidationReport(
-      entries: entries,
-      generatedAt: DateTime.now(),
-    );
+    return ValidationReport(entries: entries, generatedAt: DateTime.now());
   }
 
   String _analyzerNameForCode(String code) {

@@ -22,12 +22,7 @@ final class ScoreWeights {
 
   int get maxScorePerIssue => critical;
 
-  ScoreWeights copyWith({
-    int? critical,
-    int? error,
-    int? warning,
-    int? info,
-  }) {
+  ScoreWeights copyWith({int? critical, int? error, int? warning, int? info}) {
     return ScoreWeights(
       critical: critical ?? this.critical,
       error: error ?? this.error,

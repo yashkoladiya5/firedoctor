@@ -13,8 +13,10 @@ void main() {
       });
 
       test('cloudFirestore has correct packageName', () {
-        expect(FirebasePackage.cloudFirestore.packageName,
-            equals('cloud_firestore'));
+        expect(
+          FirebasePackage.cloudFirestore.packageName,
+          equals('cloud_firestore'),
+        );
       });
 
       test('storage has correct packageName', () {
@@ -22,33 +24,45 @@ void main() {
       });
 
       test('messaging has correct packageName', () {
-        expect(FirebasePackage.messaging.packageName,
-            equals('firebase_messaging'));
+        expect(
+          FirebasePackage.messaging.packageName,
+          equals('firebase_messaging'),
+        );
       });
 
       test('crashlytics has correct packageName', () {
-        expect(FirebasePackage.crashlytics.packageName,
-            equals('firebase_crashlytics'));
+        expect(
+          FirebasePackage.crashlytics.packageName,
+          equals('firebase_crashlytics'),
+        );
       });
 
       test('analytics has correct packageName', () {
-        expect(FirebasePackage.analytics.packageName,
-            equals('firebase_analytics'));
+        expect(
+          FirebasePackage.analytics.packageName,
+          equals('firebase_analytics'),
+        );
       });
 
       test('remoteConfig has correct packageName', () {
-        expect(FirebasePackage.remoteConfig.packageName,
-            equals('firebase_remote_config'));
+        expect(
+          FirebasePackage.remoteConfig.packageName,
+          equals('firebase_remote_config'),
+        );
       });
 
       test('database has correct packageName', () {
         expect(
-            FirebasePackage.database.packageName, equals('firebase_database'));
+          FirebasePackage.database.packageName,
+          equals('firebase_database'),
+        );
       });
 
       test('appCheck has correct packageName', () {
         expect(
-            FirebasePackage.appCheck.packageName, equals('firebase_app_check'));
+          FirebasePackage.appCheck.packageName,
+          equals('firebase_app_check'),
+        );
       });
     });
 
@@ -79,71 +93,92 @@ void main() {
 
       test('contains all static instances', () {
         expect(
-            FirebasePackage.all,
-            containsAll([
-              FirebasePackage.core,
-              FirebasePackage.auth,
-              FirebasePackage.cloudFirestore,
-              FirebasePackage.storage,
-              FirebasePackage.messaging,
-              FirebasePackage.crashlytics,
-              FirebasePackage.analytics,
-              FirebasePackage.remoteConfig,
-              FirebasePackage.database,
-              FirebasePackage.appCheck,
-            ]));
+          FirebasePackage.all,
+          containsAll([
+            FirebasePackage.core,
+            FirebasePackage.auth,
+            FirebasePackage.cloudFirestore,
+            FirebasePackage.storage,
+            FirebasePackage.messaging,
+            FirebasePackage.crashlytics,
+            FirebasePackage.analytics,
+            FirebasePackage.remoteConfig,
+            FirebasePackage.database,
+            FirebasePackage.appCheck,
+          ]),
+        );
       });
     });
 
     group('fromPackageName', () {
       test('returns core for firebase_core', () {
-        expect(FirebasePackage.fromPackageName('firebase_core'),
-            equals(FirebasePackage.core));
+        expect(
+          FirebasePackage.fromPackageName('firebase_core'),
+          equals(FirebasePackage.core),
+        );
       });
 
       test('returns auth for firebase_auth', () {
-        expect(FirebasePackage.fromPackageName('firebase_auth'),
-            equals(FirebasePackage.auth));
+        expect(
+          FirebasePackage.fromPackageName('firebase_auth'),
+          equals(FirebasePackage.auth),
+        );
       });
 
       test('returns cloudFirestore for cloud_firestore', () {
-        expect(FirebasePackage.fromPackageName('cloud_firestore'),
-            equals(FirebasePackage.cloudFirestore));
+        expect(
+          FirebasePackage.fromPackageName('cloud_firestore'),
+          equals(FirebasePackage.cloudFirestore),
+        );
       });
 
       test('returns storage for firebase_storage', () {
-        expect(FirebasePackage.fromPackageName('firebase_storage'),
-            equals(FirebasePackage.storage));
+        expect(
+          FirebasePackage.fromPackageName('firebase_storage'),
+          equals(FirebasePackage.storage),
+        );
       });
 
       test('returns messaging for firebase_messaging', () {
-        expect(FirebasePackage.fromPackageName('firebase_messaging'),
-            equals(FirebasePackage.messaging));
+        expect(
+          FirebasePackage.fromPackageName('firebase_messaging'),
+          equals(FirebasePackage.messaging),
+        );
       });
 
       test('returns crashlytics for firebase_crashlytics', () {
-        expect(FirebasePackage.fromPackageName('firebase_crashlytics'),
-            equals(FirebasePackage.crashlytics));
+        expect(
+          FirebasePackage.fromPackageName('firebase_crashlytics'),
+          equals(FirebasePackage.crashlytics),
+        );
       });
 
       test('returns analytics for firebase_analytics', () {
-        expect(FirebasePackage.fromPackageName('firebase_analytics'),
-            equals(FirebasePackage.analytics));
+        expect(
+          FirebasePackage.fromPackageName('firebase_analytics'),
+          equals(FirebasePackage.analytics),
+        );
       });
 
       test('returns remoteConfig for firebase_remote_config', () {
-        expect(FirebasePackage.fromPackageName('firebase_remote_config'),
-            equals(FirebasePackage.remoteConfig));
+        expect(
+          FirebasePackage.fromPackageName('firebase_remote_config'),
+          equals(FirebasePackage.remoteConfig),
+        );
       });
 
       test('returns database for firebase_database', () {
-        expect(FirebasePackage.fromPackageName('firebase_database'),
-            equals(FirebasePackage.database));
+        expect(
+          FirebasePackage.fromPackageName('firebase_database'),
+          equals(FirebasePackage.database),
+        );
       });
 
       test('returns appCheck for firebase_app_check', () {
-        expect(FirebasePackage.fromPackageName('firebase_app_check'),
-            equals(FirebasePackage.appCheck));
+        expect(
+          FirebasePackage.fromPackageName('firebase_app_check'),
+          equals(FirebasePackage.appCheck),
+        );
       });
 
       test('returns null for unknown package', () {

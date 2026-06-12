@@ -9,10 +9,9 @@ import '../../shared/mocks.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: FakeFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: FakeFileSystem()),
+    );
   });
 
   late MockTerminal terminal;
@@ -41,15 +40,19 @@ void main() {
   });
 
   group('ReportCommand', () {
-    test('returns exitInternalFailure when project path does not exist', () async {
-      when(() => fileSystem.exists('/invalid')).thenReturn(false);
+    test(
+      'returns exitInternalFailure when project path does not exist',
+      () async {
+        when(() => fileSystem.exists('/invalid')).thenReturn(false);
 
-      final exitCode = await command.execute(['/invalid']);
+        final exitCode = await command.execute(['/invalid']);
 
-      expect(exitCode, equals(AppConstants.exitInternalFailure));
-      verify(() => terminal.writeError('Project path does not exist: /invalid'))
-          .called(1);
-    });
+        expect(exitCode, equals(AppConstants.exitInternalFailure));
+        verify(
+          () => terminal.writeError('Project path does not exist: /invalid'),
+        ).called(1);
+      },
+    );
 
     test('returns exitInternalFailure when path is not a directory', () async {
       when(() => fileSystem.exists('/file')).thenReturn(true);
@@ -71,21 +74,30 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await cmd.execute(['/project']);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
-      expect(fakeTerminal.buffer.toString(),
-          contains('FireDoctor Diagnostic Report'));
+      expect(
+        fakeTerminal.buffer.toString(),
+        contains('FireDoctor Diagnostic Report'),
+      );
     });
 
     test('prints JSON when --json flag provided', () async {
@@ -99,15 +111,22 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await cmd.execute(['--json', '/project']);
 
@@ -118,42 +137,63 @@ void main() {
     test('saves report to file with --output flag', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
-      when(() => fileSystem.writeAsStringAsync(any(), any()))
-          .thenAnswer((_) async {});
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
+      when(
+        () => fileSystem.writeAsStringAsync(any(), any()),
+      ).thenAnswer((_) async {});
 
-      final exitCode =
-          await command.execute(['--output', '/tmp/report.json', '/project']);
+      final exitCode = await command.execute([
+        '--output',
+        '/tmp/report.json',
+        '/project',
+      ]);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
-      verify(() => terminal.writeSuccess('Report saved to /tmp/report.json'))
-          .called(1);
-      verify(() => fileSystem.writeAsStringAsync('/tmp/report.json', any()))
-          .called(1);
+      verify(
+        () => terminal.writeSuccess('Report saved to /tmp/report.json'),
+      ).called(1);
+      verify(
+        () => fileSystem.writeAsStringAsync('/tmp/report.json', any()),
+      ).called(1);
     });
 
     test('saves JSON report with --json --output flags combined', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
-      when(() => fileSystem.writeAsStringAsync(any(), any()))
-          .thenAnswer((_) async {});
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
+      when(
+        () => fileSystem.writeAsStringAsync(any(), any()),
+      ).thenAnswer((_) async {});
 
       final exitCode = await command.execute([
         '--json',
@@ -163,10 +203,12 @@ void main() {
       ]);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
-      verify(() => terminal.writeSuccess('Report saved to /tmp/report.json'))
-          .called(1);
-      verify(() => fileSystem.writeAsStringAsync('/tmp/report.json', any()))
-          .called(1);
+      verify(
+        () => terminal.writeSuccess('Report saved to /tmp/report.json'),
+      ).called(1);
+      verify(
+        () => fileSystem.writeAsStringAsync('/tmp/report.json', any()),
+      ).called(1);
     });
 
     test('uses projectName from results in report', () async {
@@ -180,16 +222,23 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-              projectName: 'my_app',
-            ),
-          ]);
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+            projectName: 'my_app',
+          ),
+        ],
+      );
 
       final exitCode = await cmd.execute(['/project']);
 
@@ -208,15 +257,22 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await cmd.execute(['/project']);
 
@@ -228,61 +284,86 @@ void main() {
       when(() => fileSystem.currentDirectory).thenReturn('/cwd');
       when(() => fileSystem.exists('/cwd')).thenReturn(true);
       when(() => fileSystem.isDirectory('/cwd')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute([]);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
     });
 
-    test('returns exitInternalFailure when --output is missing value', () async {
-      final exitCode = await command.execute(['--output']);
+    test(
+      'returns exitInternalFailure when --output is missing value',
+      () async {
+        final exitCode = await command.execute(['--output']);
 
-      expect(exitCode, equals(AppConstants.exitInternalFailure));
-      verify(() => terminal.writeError('Missing value for --output flag'))
-          .called(1);
-    });
+        expect(exitCode, equals(AppConstants.exitInternalFailure));
+        verify(
+          () => terminal.writeError('Missing value for --output flag'),
+        ).called(1);
+      },
+    );
 
     test('returns exitInternalFailure when analyzer service throws', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger')))
-          .thenThrow(Exception('Report failed'));
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenThrow(Exception('Report failed'));
 
       final exitCode = await command.execute(['/project']);
 
       expect(exitCode, equals(AppConstants.exitInternalFailure));
-      verify(() => terminal.writeError(
-          'Report generation failed: Exception: Report failed')).called(1);
+      verify(
+        () => terminal.writeError(
+          'Report generation failed: Exception: Report failed',
+        ),
+      ).called(1);
     });
 
     test('returns exitCriticalIssues when critical issues found', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.failed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.critical,
-                  code: 'MISSING_PUBSPEC',
-                  title: 'pubspec.yaml not found',
-                  description: 'No pubspec.yaml found.',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.failed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.critical,
+                code: 'MISSING_PUBSPEC',
+                title: 'pubspec.yaml not found',
+                description: 'No pubspec.yaml found.',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       final exitCode = await command.execute(['/project']);
 
@@ -292,20 +373,32 @@ void main() {
     test('handles path after flags correctly', () async {
       when(() => fileSystem.exists('/my_project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/my_project')).thenReturn(true);
-      when(() => fileSystem.writeAsStringAsync(any(), any()))
-          .thenAnswer((_) async {});
-      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(
+        () => fileSystem.writeAsStringAsync(any(), any()),
+      ).thenAnswer((_) async {});
+      when(
+        () => analyzerService.runAll(
+          any(),
+          progressLogger: any(named: 'progressLogger'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
-      final exitCode = await command
-          .execute(['--json', '--output', '/tmp/r.json', '/my_project']);
+      final exitCode = await command.execute([
+        '--json',
+        '--output',
+        '/tmp/r.json',
+        '/my_project',
+      ]);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
     });

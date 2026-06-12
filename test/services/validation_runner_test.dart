@@ -9,10 +9,9 @@ import '../shared/mocks.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: FakeFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: FakeFileSystem()),
+    );
   });
 
   late MockAnalyzerService analyzerService;
@@ -46,22 +45,24 @@ void main() {
           }),
         );
 
-        when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-              DiagnosticResult(
-                analyzerName: 'project',
-                status: CheckStatus.passed,
-                issues: [
-                  const DiagnosticIssue(
-                    severity: Severity.warning,
-                    code: 'FD101',
-                    title: 'Missing pubspec',
-                    description: 'pubspec.yaml not found',
-                  ),
-                ],
-                duration: Duration.zero,
-                timestamp: DateTime.now(),
-              ),
-            ]);
+        when(() => analyzerService.runAll(any())).thenAnswer(
+          (_) async => [
+            DiagnosticResult(
+              analyzerName: 'project',
+              status: CheckStatus.passed,
+              issues: [
+                const DiagnosticIssue(
+                  severity: Severity.warning,
+                  code: 'FD101',
+                  title: 'Missing pubspec',
+                  description: 'pubspec.yaml not found',
+                ),
+              ],
+              duration: Duration.zero,
+              timestamp: DateTime.now(),
+            ),
+          ],
+        );
 
         runner = ValidationRunner(
           analyzerService: analyzerService,

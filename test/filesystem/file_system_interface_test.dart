@@ -44,8 +44,10 @@ class FakeFileSystem implements FileSystem {
   List<String> listDirectory(String path) {
     if (!_directories.contains(path)) return [];
     return _files.keys
-        .where((f) =>
-            f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1)
+        .where(
+          (f) =>
+              f.startsWith('$path/') && f.indexOf('/', path.length + 1) == -1,
+        )
         .toList()
       ..sort();
   }

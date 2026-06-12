@@ -116,20 +116,25 @@ dev_dependencies:
       });
 
       test('throws FormatException for non-map content', () {
-        expect(() => PubspecParser.parse('just a string'),
-            throwsA(isA<FormatException>()));
+        expect(
+          () => PubspecParser.parse('just a string'),
+          throwsA(isA<FormatException>()),
+        );
       });
 
       test('throws TypeError for null content', () {
         expect(
-            () => PubspecParser.parse('null'), throwsA(isA<FormatException>()));
+          () => PubspecParser.parse('null'),
+          throwsA(isA<FormatException>()),
+        );
       });
     });
 
     group('tryParse', () {
       test('returns Pubspec for valid YAML', () {
         final result = PubspecParser.tryParse(
-            'name: test\ndependencies: {}\ndev_dependencies: {}');
+          'name: test\ndependencies: {}\ndev_dependencies: {}',
+        );
 
         expect(result, isA<Pubspec>());
         expect(result!.name, equals('test'));
@@ -167,8 +172,10 @@ dev_dependencies: {}
         final fs = _MockFileSystem();
         when(() => fs.exists('/path/pubspec.yaml')).thenReturn(false);
 
-        final result =
-            await PubspecParser.parseFromFile('/path/pubspec.yaml', fs);
+        final result = await PubspecParser.parseFromFile(
+          '/path/pubspec.yaml',
+          fs,
+        );
 
         expect(result, isNull);
         verify(() => fs.exists('/path/pubspec.yaml')).called(1);
@@ -179,11 +186,13 @@ dev_dependencies: {}
         final fs = _MockFileSystem();
         when(() => fs.exists('/project/pubspec.yaml')).thenReturn(true);
         when(() => fs.readAsStringAsync('/project/pubspec.yaml')).thenAnswer(
-            (_) async =>
-                'name: test_app\ndependencies: {}\ndev_dependencies: {}');
+          (_) async => 'name: test_app\ndependencies: {}\ndev_dependencies: {}',
+        );
 
-        final result =
-            await PubspecParser.parseFromFile('/project/pubspec.yaml', fs);
+        final result = await PubspecParser.parseFromFile(
+          '/project/pubspec.yaml',
+          fs,
+        );
 
         expect(result, isA<Pubspec>());
         expect(result!.name, equals('test_app'));
@@ -194,11 +203,14 @@ dev_dependencies: {}
       test('returns null when file read throws', () async {
         final fs = _MockFileSystem();
         when(() => fs.exists('/project/pubspec.yaml')).thenReturn(true);
-        when(() => fs.readAsStringAsync('/project/pubspec.yaml'))
-            .thenThrow(Exception('Read error'));
+        when(
+          () => fs.readAsStringAsync('/project/pubspec.yaml'),
+        ).thenThrow(Exception('Read error'));
 
-        final result =
-            await PubspecParser.parseFromFile('/project/pubspec.yaml', fs);
+        final result = await PubspecParser.parseFromFile(
+          '/project/pubspec.yaml',
+          fs,
+        );
 
         expect(result, isNull);
       });
@@ -206,11 +218,14 @@ dev_dependencies: {}
       test('returns null when file content is invalid YAML', () async {
         final fs = _MockFileSystem();
         when(() => fs.exists('/project/pubspec.yaml')).thenReturn(true);
-        when(() => fs.readAsStringAsync('/project/pubspec.yaml'))
-            .thenAnswer((_) async => '{{{');
+        when(
+          () => fs.readAsStringAsync('/project/pubspec.yaml'),
+        ).thenAnswer((_) async => '{{{');
 
-        final result =
-            await PubspecParser.parseFromFile('/project/pubspec.yaml', fs);
+        final result = await PubspecParser.parseFromFile(
+          '/project/pubspec.yaml',
+          fs,
+        );
 
         expect(result, isNull);
       });
@@ -225,11 +240,14 @@ dev_dependencies: {}
 ''';
         final fs = _MockFileSystem();
         when(() => fs.exists('/project/pubspec.yaml')).thenReturn(true);
-        when(() => fs.readAsStringAsync('/project/pubspec.yaml'))
-            .thenAnswer((_) async => yaml);
+        when(
+          () => fs.readAsStringAsync('/project/pubspec.yaml'),
+        ).thenAnswer((_) async => yaml);
 
-        final result =
-            await PubspecParser.parseFromFile('/project/pubspec.yaml', fs);
+        final result = await PubspecParser.parseFromFile(
+          '/project/pubspec.yaml',
+          fs,
+        );
 
         expect(result, isA<Pubspec>());
         expect(result!.isFlutterProject, isTrue);

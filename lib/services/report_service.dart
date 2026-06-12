@@ -54,11 +54,11 @@ final class ReportService {
       final hs = report.healthScore!;
       terminal.writeLine('');
       terminal.writeLine('  ┌─ Health Score');
-      terminal.writeLine(
-          '  │ Overall: ${_formatScore(hs.overallScore)}/100');
+      terminal.writeLine('  │ Overall: ${_formatScore(hs.overallScore)}/100');
       terminal.writeLine('  │ Issues: ${hs.totalIssues}');
       terminal.writeLine(
-          '  │ Weight: ${hs.totalWeight}/${hs.maxPossibleWeight}');
+        '  │ Weight: ${hs.totalWeight}/${hs.maxPossibleWeight}',
+      );
       terminal.writeLine('  └─');
 
       terminal.writeLine('');
@@ -86,9 +86,7 @@ final class ReportService {
         terminal.writeLine('  ┌─ Recommended Next Actions');
         for (var i = 0; i < hs.recommendations.length; i++) {
           final rec = hs.recommendations[i];
-          terminal.writeLine(
-            '  │ ${i + 1}. ${rec.formatted}',
-          );
+          terminal.writeLine('  │ ${i + 1}. ${rec.formatted}');
         }
         terminal.writeLine('  └─');
       }
@@ -100,15 +98,15 @@ final class ReportService {
       terminal.writeLine('  │ ${result.analyzerName}: ${result.status.label}');
       for (final issue in result.issues) {
         terminal.writeLine(
-            '  │   ${issue.severity.emoji} [${issue.code}] ${issue.title}');
+          '  │   ${issue.severity.emoji} [${issue.code}] ${issue.title}',
+        );
       }
     }
     terminal.writeLine('  └─');
 
     terminal.writeLine('');
     terminal.writeLine('  Score: ${report.score.toStringAsFixed(1)}/100');
-    terminal.writeLine(
-        '  Status: ${report.passed ? "PASSED" : "FAILED"}');
+    terminal.writeLine('  Status: ${report.passed ? "PASSED" : "FAILED"}');
     terminal.writeLine('');
     terminal.writeLine('  Issues: ${report.totalIssues}');
     terminal.writeLine('  Errors: ${report.totalErrors}');
@@ -135,29 +133,32 @@ final class ReportService {
       if (report.firebaseVersion != null)
         'firebaseVersion': report.firebaseVersion,
       'analyzerResults': report.results
-          .map((r) => {
-                'analyzerName': r.analyzerName,
-                'status': r.status.name,
-                'duration': r.duration.inMilliseconds,
-                'timestamp': r.timestamp.toIso8601String(),
-                'issueCount': r.issueCount,
-                'errorCount': r.errorCount,
-                'warningCount': r.warningCount,
-                'mostSevereRank': r.mostSevereRank,
-                'issues': r.issues
-                    .map((i) => {
-                          'severity': i.severity.name,
-                          'code': i.code,
-                          'title': i.title,
-                          'description': i.description,
-                          if (i.recommendation != null)
-                            'recommendation': i.recommendation,
-                          if (i.filePath != null) 'filePath': i.filePath,
-                          if (i.lineNumber != null)
-                            'lineNumber': i.lineNumber,
-                        })
-                    .toList(),
-              })
+          .map(
+            (r) => {
+              'analyzerName': r.analyzerName,
+              'status': r.status.name,
+              'duration': r.duration.inMilliseconds,
+              'timestamp': r.timestamp.toIso8601String(),
+              'issueCount': r.issueCount,
+              'errorCount': r.errorCount,
+              'warningCount': r.warningCount,
+              'mostSevereRank': r.mostSevereRank,
+              'issues': r.issues
+                  .map(
+                    (i) => {
+                      'severity': i.severity.name,
+                      'code': i.code,
+                      'title': i.title,
+                      'description': i.description,
+                      if (i.recommendation != null)
+                        'recommendation': i.recommendation,
+                      if (i.filePath != null) 'filePath': i.filePath,
+                      if (i.lineNumber != null) 'lineNumber': i.lineNumber,
+                    },
+                  )
+                  .toList(),
+            },
+          )
           .toList(),
     };
 
@@ -179,7 +180,10 @@ final class ReportService {
   }
 
   Future<void> saveReport(
-      DiagnosticReport report, FileSystem fs, String outputPath) async {
+    DiagnosticReport report,
+    FileSystem fs,
+    String outputPath,
+  ) async {
     final json = toJson(report);
     await fs.writeAsStringAsync(outputPath, json);
   }

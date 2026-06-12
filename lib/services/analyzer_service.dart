@@ -34,8 +34,11 @@ class AnalyzerService {
 
     final results = <DiagnosticResult>[];
     for (final analyzer in _analyzers) {
-      final result = await runAnalyzer(analyzer, contextWithCache,
-          progressLogger: progressLogger);
+      final result = await runAnalyzer(
+        analyzer,
+        contextWithCache,
+        progressLogger: progressLogger,
+      );
       results.add(result);
     }
     return results;
@@ -61,7 +64,8 @@ class AnalyzerService {
         projectName: result.projectName,
       );
       log.success(
-          '${analyzer.name}: ${timedResult.status.label} (${timedResult.issueCount} issues)');
+        '${analyzer.name}: ${timedResult.status.label} (${timedResult.issueCount} issues)',
+      );
       return timedResult;
     } catch (e) {
       stopwatch.stop();

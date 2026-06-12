@@ -20,7 +20,10 @@ Future<void> main(List<String> args) async {
   analyzerService.register(CrashlyticsAnalyzer());
 
   final projectsDir = fileSystem.join(
-    fileSystem.currentDirectory, 'validation', 'projects');
+    fileSystem.currentDirectory,
+    'validation',
+    'projects',
+  );
 
   if (!fileSystem.exists(projectsDir)) {
     stderr.writeln('Validation projects directory not found: $projectsDir');
@@ -39,14 +42,25 @@ Future<void> main(List<String> args) async {
     terminal.writeLine('');
     terminal.writeLine('Overall Results');
     terminal.writeLine('───────────────');
-    terminal.writeLine('  Accuracy:  ${(report.overallAccuracy * 100).toStringAsFixed(1)}%');
-    terminal.writeLine('  Precision: ${(report.overallPrecision * 100).toStringAsFixed(1)}%');
-    terminal.writeLine('  Recall:    ${(report.overallRecall * 100).toStringAsFixed(1)}%');
-    terminal.writeLine('  TP: ${report.totalTruePositives}  FP: ${report.totalFalsePositives}  FN: ${report.totalFalseNegatives}');
+    terminal.writeLine(
+      '  Accuracy:  ${(report.overallAccuracy * 100).toStringAsFixed(1)}%',
+    );
+    terminal.writeLine(
+      '  Precision: ${(report.overallPrecision * 100).toStringAsFixed(1)}%',
+    );
+    terminal.writeLine(
+      '  Recall:    ${(report.overallRecall * 100).toStringAsFixed(1)}%',
+    );
+    terminal.writeLine(
+      '  TP: ${report.totalTruePositives}  FP: ${report.totalFalsePositives}  FN: ${report.totalFalseNegatives}',
+    );
 
     // Save report
     final outputPath = fileSystem.join(
-      fileSystem.currentDirectory, 'validation', 'validation_report.json');
+      fileSystem.currentDirectory,
+      'validation',
+      'validation_report.json',
+    );
     await runner.saveReport(report, outputPath);
     terminal.writeLine('');
     terminal.writeLine('Report saved to: validation/validation_report.json');

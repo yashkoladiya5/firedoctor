@@ -7,7 +7,10 @@ import 'package:firedoctor/models/severity.dart';
 void main() {
   group('PriorityGroup', () {
     test('fromSeverity maps critical severity', () {
-      expect(PriorityGroup.fromSeverity(Severity.critical), PriorityGroup.critical);
+      expect(
+        PriorityGroup.fromSeverity(Severity.critical),
+        PriorityGroup.critical,
+      );
     });
 
     test('fromSeverity maps error severity', () {
@@ -15,7 +18,10 @@ void main() {
     });
 
     test('fromSeverity maps warning severity', () {
-      expect(PriorityGroup.fromSeverity(Severity.warning), PriorityGroup.medium);
+      expect(
+        PriorityGroup.fromSeverity(Severity.warning),
+        PriorityGroup.medium,
+      );
     });
 
     test('fromSeverity maps info severity', () {
@@ -168,12 +174,7 @@ void main() {
       weight: 25,
     );
 
-    const weights = ScoreWeights(
-      critical: 25,
-      error: 15,
-      warning: 5,
-      info: 1,
-    );
+    const weights = ScoreWeights(critical: 25, error: 15, warning: 5, info: 1);
 
     HealthScore createScore({
       List<DiagnosticIssue> critical = const [],
@@ -198,10 +199,7 @@ void main() {
     }
 
     test('constructor assigns all fields', () {
-      final score = createScore(
-        critical: [criticalIssue],
-        low: [infoIssue],
-      );
+      final score = createScore(critical: [criticalIssue], low: [infoIssue]);
       expect(score.overallScore, 92.0);
       expect(score.categoryScores, [categoryScore]);
       expect(score.recommendations, [recommendation]);
@@ -279,20 +277,20 @@ void main() {
     });
 
     test('toJson includes all expected keys', () {
-      final score = createScore(
-        critical: [criticalIssue],
-        low: [infoIssue],
-      );
+      final score = createScore(critical: [criticalIssue], low: [infoIssue]);
       final json = score.toJson();
-      expect(json.keys, containsAll([
-        'overallScore',
-        'totalIssues',
-        'totalWeight',
-        'maxPossibleWeight',
-        'categoryScores',
-        'priorityGroups',
-        'recommendations',
-      ]));
+      expect(
+        json.keys,
+        containsAll([
+          'overallScore',
+          'totalIssues',
+          'totalWeight',
+          'maxPossibleWeight',
+          'categoryScores',
+          'priorityGroups',
+          'recommendations',
+        ]),
+      );
     });
 
     test('toJson produces correct nested structure for categoryScores', () {
@@ -330,11 +328,7 @@ void main() {
       ]);
 
       expect(groups['high'], [
-        {
-          'code': 'ERR001',
-          'severity': 'error',
-          'title': 'Error bug',
-        },
+        {'code': 'ERR001', 'severity': 'error', 'title': 'Error bug'},
       ]);
 
       expect(groups['medium'], [
@@ -353,11 +347,7 @@ void main() {
           'title': 'Info suggestion',
           'lineNumber': 42,
         },
-        {
-          'code': 'INFO002',
-          'severity': 'info',
-          'title': 'Another suggestion',
-        },
+        {'code': 'INFO002', 'severity': 'info', 'title': 'Another suggestion'},
       ]);
     });
 

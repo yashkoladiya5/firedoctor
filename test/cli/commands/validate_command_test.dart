@@ -10,10 +10,9 @@ import '../../shared/mocks.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: FakeFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: FakeFileSystem()),
+    );
   });
 
   late MockAnalyzerService analyzerService;
@@ -38,31 +37,29 @@ void main() {
         jsonEncode({
           'projectName': 'app1',
           'expectedFindings': [
-            {
-              'analyzerName': 'project',
-              'code': 'FD101',
-              'shouldBeFound': true,
-            },
+            {'analyzerName': 'project', 'code': 'FD101', 'shouldBeFound': true},
           ],
         }),
       );
 
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.warning,
-                  code: 'FD101',
-                  title: 'Missing pubspec',
-                  description: 'pubspec.yaml not found',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.warning,
+                code: 'FD101',
+                title: 'Missing pubspec',
+                description: 'pubspec.yaml not found',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       command = ValidateCommand(
         logger: logger,
@@ -77,32 +74,35 @@ void main() {
       expect(terminal.buffer.toString(), contains('Validation complete'));
     });
 
-    test('returns exitInternalFailure when projects dir does not exist',
-        () async {
-      final terminal = MockTerminal();
-      final fileSystem = MockFileSystem();
-      logger = Logger(terminal: terminal);
+    test(
+      'returns exitInternalFailure when projects dir does not exist',
+      () async {
+        final terminal = MockTerminal();
+        final fileSystem = MockFileSystem();
+        logger = Logger(terminal: terminal);
 
-      when(() => terminal.writeError(any())).thenReturn(null);
-      when(() => terminal.writeLine(any())).thenReturn(null);
-      when(() => fileSystem.exists(any())).thenReturn(false);
-      when(() => fileSystem.isDirectory(any())).thenReturn(false);
-      when(() => fileSystem.currentDirectory).thenReturn('/cwd');
-      when(() => fileSystem.join(any(), any(), any()))
-          .thenReturn('/cwd/validation/projects');
+        when(() => terminal.writeError(any())).thenReturn(null);
+        when(() => terminal.writeLine(any())).thenReturn(null);
+        when(() => fileSystem.exists(any())).thenReturn(false);
+        when(() => fileSystem.isDirectory(any())).thenReturn(false);
+        when(() => fileSystem.currentDirectory).thenReturn('/cwd');
+        when(
+          () => fileSystem.join(any(), any(), any()),
+        ).thenReturn('/cwd/validation/projects');
 
-      command = ValidateCommand(
-        logger: logger,
-        terminal: terminal,
-        fileSystem: fileSystem,
-        analyzerService: analyzerService,
-      );
+        command = ValidateCommand(
+          logger: logger,
+          terminal: terminal,
+          fileSystem: fileSystem,
+          analyzerService: analyzerService,
+        );
 
-      final exitCode = await command.execute(['/nonexistent']);
+        final exitCode = await command.execute(['/nonexistent']);
 
-      expect(exitCode, equals(AppConstants.exitInternalFailure));
-      verify(() => terminal.writeError(any())).called(1);
-    });
+        expect(exitCode, equals(AppConstants.exitInternalFailure));
+        verify(() => terminal.writeError(any())).called(1);
+      },
+    );
 
     test('handles --output flag for saving report', () async {
       final terminal = FakeTerminal();
@@ -117,31 +117,29 @@ void main() {
         jsonEncode({
           'projectName': 'app1',
           'expectedFindings': [
-            {
-              'analyzerName': 'project',
-              'code': 'FD101',
-              'shouldBeFound': true,
-            },
+            {'analyzerName': 'project', 'code': 'FD101', 'shouldBeFound': true},
           ],
         }),
       );
 
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.warning,
-                  code: 'FD101',
-                  title: 'Missing pubspec',
-                  description: 'pubspec.yaml not found',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.warning,
+                code: 'FD101',
+                title: 'Missing pubspec',
+                description: 'pubspec.yaml not found',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       command = ValidateCommand(
         logger: logger,
@@ -151,12 +149,17 @@ void main() {
       );
 
       const outputPath = '/tmp/report.json';
-      final exitCode =
-          await command.execute(['--output', outputPath, projectsDir]);
+      final exitCode = await command.execute([
+        '--output',
+        outputPath,
+        projectsDir,
+      ]);
 
       expect(exitCode, equals(AppConstants.exitNoIssues));
-      expect(terminal.buffer.toString(),
-          contains('Report saved to: $outputPath'));
+      expect(
+        terminal.buffer.toString(),
+        contains('Report saved to: $outputPath'),
+      );
       expect(fileSystem.exists(outputPath), isTrue);
       final savedJson = jsonDecode(fileSystem.readAsString(outputPath));
       expect(savedJson, isA<Map<String, dynamic>>());
@@ -175,31 +178,29 @@ void main() {
         jsonEncode({
           'projectName': 'app1',
           'expectedFindings': [
-            {
-              'analyzerName': 'project',
-              'code': 'FD101',
-              'shouldBeFound': true,
-            },
+            {'analyzerName': 'project', 'code': 'FD101', 'shouldBeFound': true},
           ],
         }),
       );
 
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
-            DiagnosticResult(
-              analyzerName: 'project',
-              status: CheckStatus.passed,
-              issues: [
-                const DiagnosticIssue(
-                  severity: Severity.warning,
-                  code: 'FD101',
-                  title: 'Missing pubspec',
-                  description: 'pubspec.yaml not found',
-                ),
-              ],
-              duration: Duration.zero,
-              timestamp: DateTime.now(),
-            ),
-          ]);
+      when(() => analyzerService.runAll(any())).thenAnswer(
+        (_) async => [
+          DiagnosticResult(
+            analyzerName: 'project',
+            status: CheckStatus.passed,
+            issues: [
+              const DiagnosticIssue(
+                severity: Severity.warning,
+                code: 'FD101',
+                title: 'Missing pubspec',
+                description: 'pubspec.yaml not found',
+              ),
+            ],
+            duration: Duration.zero,
+            timestamp: DateTime.now(),
+          ),
+        ],
+      );
 
       command = ValidateCommand(
         logger: logger,

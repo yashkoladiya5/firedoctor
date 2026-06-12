@@ -19,8 +19,11 @@ DiagnosticIssue _issue(Severity severity, {String code = 'TEST'}) {
   );
 }
 
-DiagnosticResult _result(CheckStatus status, List<DiagnosticIssue> issues,
-    {String analyzerName = 'TestAnalyzer'}) {
+DiagnosticResult _result(
+  CheckStatus status,
+  List<DiagnosticIssue> issues, {
+  String analyzerName = 'TestAnalyzer',
+}) {
   return DiagnosticResult(
     analyzerName: analyzerName,
     status: status,
@@ -94,8 +97,10 @@ void main() {
         );
         expect(report.healthScore, isNotNull);
         expect(report.healthScore!.overallScore, lessThan(100.0));
-        expect(report.healthScore!.priorityGroups[PriorityGroup.high]!.length,
-            equals(1));
+        expect(
+          report.healthScore!.priorityGroups[PriorityGroup.high]!.length,
+          equals(1),
+        );
       });
     });
 
@@ -250,8 +255,9 @@ void main() {
     group('saveReport', () {
       test('writes JSON to filesystem', () async {
         final fs = MockFileSystem();
-        when(() => fs.writeAsStringAsync(any(), any()))
-            .thenAnswer((_) async {});
+        when(
+          () => fs.writeAsStringAsync(any(), any()),
+        ).thenAnswer((_) async {});
 
         final report = service.generateReport(results: []);
 

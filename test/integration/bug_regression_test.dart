@@ -57,10 +57,7 @@ FakeFileSystem _createFlutterProject({
 
   return _createProject(
     pubspecContent: buffer.toString(),
-    dartFiles: {
-      '/project/lib/main.dart': mainContent,
-      ...additionalFiles,
-    },
+    dartFiles: {'/project/lib/main.dart': mainContent, ...additionalFiles},
     addFirebaseOptions: addFirebaseOptions,
   );
 }
@@ -80,7 +77,10 @@ dev_dependencies: {}
       fs.addFile('/project/lib/main.dart', 'void main() {}');
 
       final analyzer = ProjectAnalyzer();
-      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(
+        projectPath: '/project',
+        fileSystem: fs,
+      );
       final result = await analyzer.analyze(context);
 
       expect(result.projectName, equals('my_test_project'));
@@ -178,25 +178,41 @@ class MyApp extends StatelessWidget {
         mainContent: mainContent,
         addFirebaseOptions: true,
       );
-      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(
+        projectPath: '/project',
+        fileSystem: fs,
+      );
       final analyzer = FirebaseCoreAnalyzer();
       final result = await analyzer.analyze(context);
 
-      expect(result.issues.where((i) => i.code == 'FD300'), isEmpty,
-          reason: 'FD300 should not fire — init IS found');
-      expect(result.issues.where((i) => i.code == 'FD302'), isEmpty,
-          reason: 'FD302 should not fire — ensureInitialized IS before init');
-      expect(result.issues.where((i) => i.code == 'FD306'), isEmpty,
-          reason: 'FD306 should not fire — init IS before runApp');
-      expect(result.issues.where((i) => i.code == 'FD305'), isEmpty,
-          reason: 'FD305 should not fire — init IS awaited');
+      expect(
+        result.issues.where((i) => i.code == 'FD300'),
+        isEmpty,
+        reason: 'FD300 should not fire — init IS found',
+      );
+      expect(
+        result.issues.where((i) => i.code == 'FD302'),
+        isEmpty,
+        reason: 'FD302 should not fire — ensureInitialized IS before init',
+      );
+      expect(
+        result.issues.where((i) => i.code == 'FD306'),
+        isEmpty,
+        reason: 'FD306 should not fire — init IS before runApp',
+      );
+      expect(
+        result.issues.where((i) => i.code == 'FD305'),
+        isEmpty,
+        reason: 'FD305 should not fire — init IS awaited',
+      );
     });
   });
 
-  group('Bug 3: Comments and string literals do not produce false positives',
-      () {
-    test('commented-out init calls do not count toward FD304', () async {
-      const mainContent = '''
+  group(
+    'Bug 3: Comments and string literals do not produce false positives',
+    () {
+      test('commented-out init calls do not count toward FD304', () async {
+        const mainContent = '''
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -214,19 +230,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => const MaterialApp(home: Scaffold());
 }
 ''';
-      final fs = _createFlutterProject(mainContent: mainContent);
-      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-      final analyzer = FirebaseCoreAnalyzer();
-      final result = await analyzer.analyze(context);
+        final fs = _createFlutterProject(mainContent: mainContent);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
+        final analyzer = FirebaseCoreAnalyzer();
+        final result = await analyzer.analyze(context);
 
-      expect(result.issues.where((i) => i.code == 'FD304'), isEmpty,
-          reason: 'FD304 should not fire — only one real init call');
-      expect(result.issues.where((i) => i.code == 'FD300'), isEmpty,
-          reason: 'FD300 should not fire — init IS found');
-    });
+        expect(
+          result.issues.where((i) => i.code == 'FD304'),
+          isEmpty,
+          reason: 'FD304 should not fire — only one real init call',
+        );
+        expect(
+          result.issues.where((i) => i.code == 'FD300'),
+          isEmpty,
+          reason: 'FD300 should not fire — init IS found',
+        );
+      });
 
-    test('string literal init calls do not count toward FD304', () async {
-      const mainContent = '''
+      test('string literal init calls do not count toward FD304', () async {
+        const mainContent = '''
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -243,24 +268,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => const MaterialApp(home: Scaffold());
 }
 ''';
-      final fs = _createFlutterProject(mainContent: mainContent);
-      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-      final analyzer = FirebaseCoreAnalyzer();
-      final result = await analyzer.analyze(context);
+        final fs = _createFlutterProject(mainContent: mainContent);
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
+        final analyzer = FirebaseCoreAnalyzer();
+        final result = await analyzer.analyze(context);
 
-      expect(result.issues.where((i) => i.code == 'FD304'), isEmpty,
-          reason: 'FD304 should not fire — only one real init call');
-      expect(result.issues.where((i) => i.code == 'FD300'), isEmpty,
-          reason: 'FD300 should not fire — init IS found');
-    });
-  });
+        expect(
+          result.issues.where((i) => i.code == 'FD304'),
+          isEmpty,
+          reason: 'FD304 should not fire — only one real init call',
+        );
+        expect(
+          result.issues.where((i) => i.code == 'FD300'),
+          isEmpty,
+          reason: 'FD300 should not fire — init IS found',
+        );
+      });
+    },
+  );
 
   group('Bug 4: Cross-file ensureInitialized detection', () {
     test(
-        'FD302 not emitted when ensureInitialized is in a different file from init',
-        () async {
-      final fs = _createFlutterProject(
-        mainContent: '''
+      'FD302 not emitted when ensureInitialized is in a different file from init',
+      () async {
+        final fs = _createFlutterProject(
+          mainContent: '''
 import 'package:flutter/material.dart';
 import 'firebase.dart';
 
@@ -276,28 +311,41 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => const MaterialApp(home: Scaffold());
 }
 ''',
-        additionalFiles: {
-          '/project/lib/firebase.dart': '''
+          additionalFiles: {
+            '/project/lib/firebase.dart': '''
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> initializeFirebase() async {
   await Firebase.initializeApp();
 }
 ''',
-        },
-      );
-      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
-      final analyzer = FirebaseCoreAnalyzer();
-      final result = await analyzer.analyze(context);
+          },
+        );
+        final context = createAnalyzerContext(
+          projectPath: '/project',
+          fileSystem: fs,
+        );
+        final analyzer = FirebaseCoreAnalyzer();
+        final result = await analyzer.analyze(context);
 
-      expect(result.issues.where((i) => i.code == 'FD302'), isEmpty,
+        expect(
+          result.issues.where((i) => i.code == 'FD302'),
+          isEmpty,
           reason:
-              'FD302 should not fire — ensureInitialized is in main.dart, init is in firebase.dart');
-      expect(result.issues.where((i) => i.code == 'FD306'), isEmpty,
+              'FD302 should not fire — ensureInitialized is in main.dart, init is in firebase.dart',
+        );
+        expect(
+          result.issues.where((i) => i.code == 'FD306'),
+          isEmpty,
           reason:
-              'FD306 should not fire — runApp is in main.dart, init is in firebase.dart');
-      expect(result.issues.where((i) => i.code == 'FD300'), isEmpty,
-          reason: 'FD300 should not fire — init IS found');
-    });
+              'FD306 should not fire — runApp is in main.dart, init is in firebase.dart',
+        );
+        expect(
+          result.issues.where((i) => i.code == 'FD300'),
+          isEmpty,
+          reason: 'FD300 should not fire — init IS found',
+        );
+      },
+    );
   });
 }

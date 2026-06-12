@@ -20,10 +20,9 @@ void main() {
   late AnalyzerService service;
 
   setUpAll(() {
-    registerFallbackValue(AnalyzerContext(
-      projectPath: '',
-      fileSystem: MockFileSystem(),
-    ));
+    registerFallbackValue(
+      AnalyzerContext(projectPath: '', fileSystem: MockFileSystem()),
+    );
   });
 
   setUp(() {
@@ -59,8 +58,10 @@ void main() {
         final analyzer = MockAnalyzer();
         when(() => analyzer.name).thenReturn('test');
         service.register(analyzer);
-        expect(() => service.registeredAnalyzers.add(analyzer),
-            throwsA(isA<Error>()));
+        expect(
+          () => service.registeredAnalyzers.add(analyzer),
+          throwsA(isA<Error>()),
+        );
       });
     });
 
@@ -104,8 +105,9 @@ void main() {
           fileSystem: MockFileSystem(),
         );
 
-        when(() => analyzer.analyze(any()))
-            .thenThrow(Exception('Something broke'));
+        when(
+          () => analyzer.analyze(any()),
+        ).thenThrow(Exception('Something broke'));
         when(() => terminal.writeInfo(any())).thenReturn(null);
         when(() => terminal.writeError(any())).thenReturn(null);
 
@@ -135,10 +137,7 @@ void main() {
         when(() => fs.exists(any())).thenReturn(false);
         when(() => fs.isDirectory(any())).thenReturn(false);
 
-        final context = AnalyzerContext(
-          projectPath: '/test',
-          fileSystem: fs,
-        );
+        final context = AnalyzerContext(projectPath: '/test', fileSystem: fs);
 
         final result1 = DiagnosticResult(
           analyzerName: 'Analyzer1',

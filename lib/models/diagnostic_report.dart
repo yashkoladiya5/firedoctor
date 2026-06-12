@@ -53,12 +53,9 @@ final class DiagnosticReport {
   ///   1 = warnings only
   ///   2 = errors (but no critical)
   ///   3 = critical issues
-  int get exitCode =>
-      AppConstants.exitCodeForSeverityRank(mostSevereRank);
+  int get exitCode => AppConstants.exitCodeForSeverityRank(mostSevereRank);
 
-  DiagnosticReport computeHealthScore({
-    HealthScoreEngine? engine,
-  }) {
+  DiagnosticReport computeHealthScore({HealthScoreEngine? engine}) {
     final hse = engine ?? const HealthScoreEngine();
     return DiagnosticReport(
       projectName: projectName,

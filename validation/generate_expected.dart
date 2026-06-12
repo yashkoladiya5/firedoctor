@@ -5,7 +5,8 @@ import 'dart:io';
 
 void main() {
   final projectsDir = Directory('validation/projects');
-  final entries = projectsDir.listSync()..sort((a, b) => a.path.compareTo(b.path));
+  final entries = projectsDir.listSync()
+    ..sort((a, b) => a.path.compareTo(b.path));
 
   for (final entry in entries) {
     if (entry is! Directory) continue;
@@ -14,10 +15,7 @@ void main() {
 
     print('Generating expected findings for $projectName...');
     final findings = generateForProject(projectPath, projectName);
-    final output = {
-      'projectName': projectName,
-      'expectedFindings': findings,
-    };
+    final output = {'projectName': projectName, 'expectedFindings': findings};
     final json = const JsonEncoder.withIndent('  ').convert(output);
 
     final outputPath = '$projectPath/expected_findings.json';
@@ -35,7 +33,8 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
 
   final hasFlutterSdk = pubspec.contains('flutter:');
   final isFlutterProject = hasPubspec && hasFlutterSdk;
-  final pubspecIsMalformed = name.contains('broken') && hasPubspec && !pubspec.contains('name:');
+  final pubspecIsMalformed =
+      name.contains('broken') && hasPubspec && !pubspec.contains('name:');
 
   final deps = _parseDependencies(pubspec);
   final hasFirebaseCore = deps.contains('firebase_core');
@@ -44,29 +43,40 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   final hasFirebaseAnalytics = deps.contains('firebase_analytics');
   final hasFirebaseAuth = deps.contains('firebase_auth');
   final hasCloudFirestore = deps.contains('cloud_firestore');
-  final hasFirebaseDependency = deps.any((d) => d.startsWith('firebase') || d.startsWith('cloud_'));
+  final hasFirebaseDependency = deps.any(
+    (d) => d.startsWith('firebase') || d.startsWith('cloud_'),
+  );
 
   final libDir = Directory('$projectPath/lib');
   final allDartCode = libDir.existsSync()
-      ? libDir.listSync(recursive: true)
-          .where((f) => f is File && f.path.endsWith('.dart'))
-          .cast<File>()
-          .map((f) => f.readAsStringSync())
-          .join('\n')
+      ? libDir
+            .listSync(recursive: true)
+            .where((f) => f is File && f.path.endsWith('.dart'))
+            .cast<File>()
+            .map((f) => f.readAsStringSync())
+            .join('\n')
       : '';
-  final hasCrashlyticsImport = allDartCode.contains('package:firebase_crashlytics');
+  final hasCrashlyticsImport = allDartCode.contains(
+    'package:firebase_crashlytics',
+  );
   final hasMessagingImport = allDartCode.contains('package:firebase_messaging');
 
   final hasAndroidDir = Directory('$projectPath/android').existsSync();
   final hasIOSDir = Directory('$projectPath/ios').existsSync();
   final hasLibDir = libDir.existsSync();
   final hasTestDir = Directory('$projectPath/test').existsSync();
-  final hasFirebaseOptions = File('$projectPath/lib/firebase_options.dart').existsSync();
+  final hasFirebaseOptions = File(
+    '$projectPath/lib/firebase_options.dart',
+  ).existsSync();
 
   final hasInitializeApp = allDartCode.contains('Firebase.initializeApp');
-  final hasEnsureInitialized = allDartCode.contains('WidgetsFlutterBinding.ensureInitialized');
+  final hasEnsureInitialized = allDartCode.contains(
+    'WidgetsFlutterBinding.ensureInitialized',
+  );
   final hasRunZonedGuarded = allDartCode.contains('runZonedGuarded');
-  final hasErrorOnPlatformDispatcher = allDartCode.contains('PlatformDispatcher');
+  final hasErrorOnPlatformDispatcher = allDartCode.contains(
+    'PlatformDispatcher',
+  );
   final initCount = 'Firebase.initializeApp'.allMatches(allDartCode).length;
 
   final infoPlistPath = '$projectPath/ios/Runner/Info.plist';
@@ -77,24 +87,35 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   final podfilePath = '$projectPath/ios/Podfile';
   final hasPodfile = File(podfilePath).existsSync();
   final podfile = hasPodfile ? File(podfilePath).readAsStringSync() : '';
-  final iosVersionMatch = RegExp("platform\\s*:ios,\\s*['\"](\\d+\\.\\d+)['\"]").firstMatch(podfile);
-  final iosVersion = iosVersionMatch != null ? double.parse(iosVersionMatch.group(1)!) : null;
+  final iosVersionMatch = RegExp(
+    "platform\\s*:ios,\\s*['\"](\\d+\\.\\d+)['\"]",
+  ).firstMatch(podfile);
+  final iosVersion = iosVersionMatch != null
+      ? double.parse(iosVersionMatch.group(1)!)
+      : null;
 
   final buildGradlePath = '$projectPath/android/app/build.gradle';
   final hasBuildGradle = File(buildGradlePath).existsSync();
-  final buildGradle = hasBuildGradle ? File(buildGradlePath).readAsStringSync() : '';
+  final buildGradle = hasBuildGradle
+      ? File(buildGradlePath).readAsStringSync()
+      : '';
 
-  final hasNotificationPermission = allDartCode.contains('requestPermission') ||
+  final hasNotificationPermission =
+      allDartCode.contains('requestPermission') ||
       allDartCode.contains('NotificationSettings');
-  final hasTokenRefreshListener = allDartCode.contains('onTokenRefresh') ||
+  final hasTokenRefreshListener =
+      allDartCode.contains('onTokenRefresh') ||
       allDartCode.contains('getToken');
-  final hasBackgroundHandler = allDartCode.contains('firebaseMessagingBackgroundHandler') ||
+  final hasBackgroundHandler =
+      allDartCode.contains('firebaseMessagingBackgroundHandler') ||
       allDartCode.contains('FirebaseMessaging.onBackgroundMessage');
 
   final genuinelyUsesFirebase = hasInitializeApp;
   final genuinelyUsesCrashlytics = hasCrashlyticsImport || hasCrashlytics;
   final genuinelyUsesFCM = hasMessagingImport || hasFirebaseMessaging;
-  final hasFirebaseAppDelegateProxyEnabled = infoPlist.contains('FirebaseAppDelegateProxyEnabled');
+  final hasFirebaseAppDelegateProxyEnabled = infoPlist.contains(
+    'FirebaseAppDelegateProxyEnabled',
+  );
 
   final expected = <Map<String, dynamic>>[];
 
@@ -110,7 +131,11 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
       'FD7' => 'crashlytics',
       _ => 'project',
     };
-    expected.add({'code': code, 'shouldBeFound': shouldBeFound, 'analyzerName': analyzerName});
+    expected.add({
+      'code': code,
+      'shouldBeFound': shouldBeFound,
+      'analyzerName': analyzerName,
+    });
   }
 
   // Project analyzer
@@ -135,14 +160,21 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   add('FD300', hasFirebaseCore && !hasInitializeApp);
   add('FD301', hasFirebaseCore && !hasFirebaseOptions);
   add('FD302', genuinelyUsesFirebase && !hasEnsureInitialized);
-  add('FD303', genuinelyUsesFirebase && !allDartCode.contains('DefaultFirebaseOptions'));
+  add(
+    'FD303',
+    genuinelyUsesFirebase && !allDartCode.contains('DefaultFirebaseOptions'),
+  );
   add('FD304', genuinelyUsesFirebase && initCount >= 2);
   add('FD305', false);
   add('FD306', false);
   add('FD307', hasInitializeApp && !hasFirebaseCore);
 
   // Android
-  add('FD400', hasAndroidDir && !File('$projectPath/android/app/google-services.json').existsSync());
+  add(
+    'FD400',
+    hasAndroidDir &&
+        !File('$projectPath/android/app/google-services.json').existsSync(),
+  );
   add('FD401', false);
   add('FD402', false);
   // FD403 only fires if build.gradle exists but lacks google-services plugin
@@ -150,8 +182,12 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   // FD404 only fires if AndroidManifest.xml exists but lacks INTERNET permission
   final manifestPath = '$projectPath/android/app/src/main/AndroidManifest.xml';
   final hasAndroidManifest = File(manifestPath).existsSync();
-  final manifestContent = hasAndroidManifest ? File(manifestPath).readAsStringSync() : '';
-  final hasInternetPermission = manifestContent.contains('android.permission.INTERNET');
+  final manifestContent = hasAndroidManifest
+      ? File(manifestPath).readAsStringSync()
+      : '';
+  final hasInternetPermission = manifestContent.contains(
+    'android.permission.INTERNET',
+  );
   add('FD404', hasAndroidManifest && !hasInternetPermission);
   add('FD405', false);
   add('FD406', false);
@@ -160,7 +196,9 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   add('FD409', false);
 
   // iOS
-  final hasGoogleServicesPlist = File('$projectPath/ios/Runner/GoogleService-Info.plist').existsSync();
+  final hasGoogleServicesPlist = File(
+    '$projectPath/ios/Runner/GoogleService-Info.plist',
+  ).existsSync();
   add('FD500', hasIOSDir && !hasGoogleServicesPlist);
   add('FD501', false);
   add('FD502', false);
@@ -174,10 +212,22 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   add('FD507', genuinelyUsesFCM && hasInfoPlist && !hasRemoteNotificationMode);
   add('FD508', hasIOSDir && !File('$projectPath/ios/Podfile').existsSync());
   add('FD509', hasIOSDir && iosVersion != null && iosVersion < 12.0);
-  add('FD510', hasIOSDir && hasFirebaseCore && podfile.isNotEmpty && !podfile.contains(RegExp(r'firebase|Firebase')));
+  add(
+    'FD510',
+    hasIOSDir &&
+        hasFirebaseCore &&
+        podfile.isNotEmpty &&
+        !podfile.contains(RegExp(r'firebase|Firebase')),
+  );
   add('FD511', false);
   // FD512 requires both GoogleService-Info.plist AND Info.plist to exist
-  add('FD512', genuinelyUsesFCM && hasGoogleServicesPlist && hasInfoPlist && !hasFirebaseAppDelegateProxyEnabled);
+  add(
+    'FD512',
+    genuinelyUsesFCM &&
+        hasGoogleServicesPlist &&
+        hasInfoPlist &&
+        !hasFirebaseAppDelegateProxyEnabled,
+  );
 
   // FCM
   add('FD600', genuinelyUsesFCM && !hasFirebaseMessaging);
@@ -190,30 +240,65 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
   // Crashlytics
   add('FD700', genuinelyUsesCrashlytics && !hasCrashlytics);
   add('FD701', genuinelyUsesCrashlytics && !hasCrashlyticsImport);
-  add('FD702', genuinelyUsesCrashlytics && !allDartCode.contains('FlutterError.onError'));
+  add(
+    'FD702',
+    genuinelyUsesCrashlytics && !allDartCode.contains('FlutterError.onError'),
+  );
   add('FD703', genuinelyUsesCrashlytics && !hasErrorOnPlatformDispatcher);
   add('FD704', genuinelyUsesCrashlytics && !hasRunZonedGuarded);
-  add('FD705', genuinelyUsesCrashlytics && allDartCode.contains('crashlyticsCollectionEnabled'));
-  add('FD706', genuinelyUsesCrashlytics && !allDartCode.contains('recordError'));
+  add(
+    'FD705',
+    genuinelyUsesCrashlytics &&
+        allDartCode.contains('crashlyticsCollectionEnabled'),
+  );
+  add(
+    'FD706',
+    genuinelyUsesCrashlytics && !allDartCode.contains('recordError'),
+  );
   // FD707 only fires if crashlytics is used AND none of the error strategies are present
   // It requires no FlutterError.onError, no PlatformDispatcher.onError, AND no recordError
   final hasFlutterErrorOnError = allDartCode.contains('FlutterError.onError');
   final hasRecordError = allDartCode.contains('recordError');
-  add('FD707', genuinelyUsesCrashlytics && !hasFlutterErrorOnError && !hasErrorOnPlatformDispatcher && !hasRecordError);
+  add(
+    'FD707',
+    genuinelyUsesCrashlytics &&
+        !hasFlutterErrorOnError &&
+        !hasErrorOnPlatformDispatcher &&
+        !hasRecordError,
+  );
   // FD708/FD709 only fire if build.gradle exists (same as android analyzer)
-  add('FD708', genuinelyUsesCrashlytics && hasBuildGradle && !buildGradle.contains('crashlytics'));
+  add(
+    'FD708',
+    genuinelyUsesCrashlytics &&
+        hasBuildGradle &&
+        !buildGradle.contains('crashlytics'),
+  );
   add('FD709', genuinelyUsesCrashlytics && hasBuildGradle);
   // FD710/FD711: check Podfile + Podfile.lock for crashlytics
   // FD710: Crashlytics CocoaPod must be in Podfile OR Podfile.lock
   final hasCrashlyticsInPodfile =
-      podfile.contains('Firebase/Crashlytics') || podfile.contains('FirebaseCrashlytics');
+      podfile.contains('Firebase/Crashlytics') ||
+      podfile.contains('FirebaseCrashlytics');
   final podfileLockPath = '$projectPath/ios/Podfile.lock';
   final hasPodfileLock = File(podfileLockPath).existsSync();
-  final podfileLockContent = hasPodfileLock ? File(podfileLockPath).readAsStringSync() : '';
-  final hasCrashlyticsInPodfileLock = podfileLockContent.contains('FirebaseCrashlytics');
-  add('FD710', genuinelyUsesCrashlytics && hasIOSDir && !hasCrashlyticsInPodfile && !hasCrashlyticsInPodfileLock);
+  final podfileLockContent = hasPodfileLock
+      ? File(podfileLockPath).readAsStringSync()
+      : '';
+  final hasCrashlyticsInPodfileLock = podfileLockContent.contains(
+    'FirebaseCrashlytics',
+  );
+  add(
+    'FD710',
+    genuinelyUsesCrashlytics &&
+        hasIOSDir &&
+        !hasCrashlyticsInPodfile &&
+        !hasCrashlyticsInPodfileLock,
+  );
   // FD711: dSYM upload requires FirebaseCrashlytics in Podfile.lock
-  add('FD711', genuinelyUsesCrashlytics && hasIOSDir && !hasCrashlyticsInPodfileLock);
+  add(
+    'FD711',
+    genuinelyUsesCrashlytics && hasIOSDir && !hasCrashlyticsInPodfileLock,
+  );
   add('FD712', genuinelyUsesCrashlytics);
   add('FD713', genuinelyUsesCrashlytics);
 
@@ -222,11 +307,23 @@ List<Map<String, dynamic>> generateForProject(String projectPath, String name) {
 
 Set<String> _parseDependencies(String pubspec) {
   final knownFirebasePkgs = {
-    'firebase_core', 'firebase_analytics', 'firebase_auth', 'firebase_crashlytics',
-    'firebase_messaging', 'firebase_storage', 'firebase_database', 'firebase_remote_config',
-    'firebase_dynamic_links', 'firebase_app_check', 'firebase_app_installations',
-    'firebase_in_app_messaging', 'firebase_ml_model_downloader', 'firebase_performance',
-    'firebase_vertexai', 'cloud_firestore', 'cloud_functions',
+    'firebase_core',
+    'firebase_analytics',
+    'firebase_auth',
+    'firebase_crashlytics',
+    'firebase_messaging',
+    'firebase_storage',
+    'firebase_database',
+    'firebase_remote_config',
+    'firebase_dynamic_links',
+    'firebase_app_check',
+    'firebase_app_installations',
+    'firebase_in_app_messaging',
+    'firebase_ml_model_downloader',
+    'firebase_performance',
+    'firebase_vertexai',
+    'cloud_firestore',
+    'cloud_functions',
   };
   final deps = <String>{};
   for (final line in pubspec.split('\n')) {
