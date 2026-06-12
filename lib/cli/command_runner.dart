@@ -33,7 +33,7 @@ final class CommandRunner {
   Future<int> run(List<String> args) async {
     if (args.isEmpty) {
       printUsage();
-      return AppConstants.exitSuccess;
+      return AppConstants.exitNoIssues;
     }
 
     final commandName = args.first;
@@ -50,7 +50,7 @@ final class CommandRunner {
     if (command == null) {
       terminal.writeError('Unknown command: $commandName\n');
       printUsage();
-      return AppConstants.exitFailure;
+      return AppConstants.exitInternalFailure;
     }
 
     return command.execute(commandArgs);

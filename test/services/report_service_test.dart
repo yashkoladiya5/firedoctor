@@ -154,7 +154,12 @@ void main() {
         final decoded = json.decode(jsonStr);
         expect(decoded, isA<Map<String, dynamic>>());
         expect(decoded['projectName'], equals('Test'));
-        expect(decoded['results'], isA<List<dynamic>>());
+        expect(decoded['analyzerResults'], isA<List<dynamic>>());
+        expect(decoded['schemaVersion'], equals('1.0.0'));
+        expect(decoded['firedoctorVersion'], equals('0.1.0'));
+        expect(decoded['generatedAt'], isA<String>());
+        expect(decoded['exitCode'], equals(1)); // warning → exitWarningsOnly
+        expect(decoded['mostSevereRank'], equals(2));
       });
 
       test('includes all fields in JSON output', () {
@@ -175,7 +180,12 @@ void main() {
         expect(decoded['firebaseVersion'], equals('12.0.0'));
         expect(decoded['totalIssues'], equals(2));
         expect(decoded['passed'], isFalse);
-        expect((decoded['results'] as List).length, equals(1));
+        expect(decoded['schemaVersion'], equals('1.0.0'));
+        expect(decoded['firedoctorVersion'], equals('0.1.0'));
+        expect(decoded['generatedAt'], isA<String>());
+        expect(decoded['exitCode'], equals(2));
+        expect(decoded['mostSevereRank'], equals(3));
+        expect((decoded['analyzerResults'] as List).length, equals(1));
       });
 
       test('includes healthScore when present', () {

@@ -76,19 +76,19 @@ void main() {
     });
 
     group('run', () {
-      test('with no args calls printUsage and returns exitSuccess', () async {
+      test('with no args calls printUsage and returns exitNoIssues', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
         final exitCode = await runner.run([]);
         verify(() => terminal.writeLine(any(that: contains('Usage'))))
             .called(1);
-        expect(exitCode, equals(AppConstants.exitSuccess));
+        expect(exitCode, equals(AppConstants.exitNoIssues));
       });
 
-      test('with unknown command returns exitFailure', () async {
+      test('with unknown command returns exitInternalFailure', () async {
         when(() => terminal.writeError(any())).thenReturn(null);
         when(() => terminal.writeLine(any())).thenReturn(null);
         final exitCode = await runner.run(['unknown']);
-        expect(exitCode, equals(AppConstants.exitFailure));
+        expect(exitCode, equals(AppConstants.exitInternalFailure));
       });
 
       test('with known command executes it', () async {
@@ -96,12 +96,12 @@ void main() {
         when(() => command.name).thenReturn('testcmd');
         when(() => command.aliases).thenReturn([]);
         when(() => command.execute(any()))
-            .thenAnswer((_) async => AppConstants.exitSuccess);
+            .thenAnswer((_) async => AppConstants.exitNoIssues);
         when(() => terminal.writeLine(any())).thenReturn(null);
 
         runner.register(command);
         final exitCode = await runner.run(['testcmd']);
-        expect(exitCode, equals(AppConstants.exitSuccess));
+        expect(exitCode, equals(AppConstants.exitNoIssues));
         verify(() => command.execute([])).called(1);
       });
     });

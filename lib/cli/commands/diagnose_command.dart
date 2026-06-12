@@ -3,7 +3,11 @@ import 'package:firedoctor/cli/command.dart';
 import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/logging/logger.dart';
-import 'package:firedoctor/models/models.dart';
+import 'package:firedoctor/models/diagnostic_issue.dart';
+import 'package:firedoctor/models/diagnostic_report.dart';
+import 'package:firedoctor/models/diagnostic_result.dart';
+import 'package:firedoctor/models/check_status.dart';
+import 'package:firedoctor/models/severity.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
@@ -33,7 +37,7 @@ final class DiagnoseCommand extends Command {
     if (!fileSystem.exists(projectPath) ||
         !fileSystem.isDirectory(projectPath)) {
       terminal.writeError('Project path does not exist: $projectPath');
-      return AppConstants.exitFailure;
+      return AppConstants.exitInternalFailure;
     }
 
     terminal.writeLine('Diagnosing Firebase setup in $projectPath...');
@@ -49,10 +53,9 @@ final class DiagnoseCommand extends Command {
       results = await analyzerService.runAll(context);
     } catch (e) {
       terminal.writeError('Diagnosis failed: $e');
-      return AppConstants.exitFailure;
+      return AppConstants.exitInternalFailure;
     }
 
-    var hasCriticalOrError = false;
     for (final result in results) {
       _printAnalyzerHeader(result);
 
@@ -63,10 +66,6 @@ final class DiagnoseCommand extends Command {
       }
 
       for (final issue in result.issues) {
-        hasCriticalOrError = hasCriticalOrError ||
-            issue.severity == Severity.error ||
-            issue.severity == Severity.critical;
-
         _printIssue(issue);
       }
       terminal.writeLine('');
@@ -74,9 +73,14 @@ final class DiagnoseCommand extends Command {
 
     _printSummary(results);
 
-    return hasCriticalOrError
-        ? AppConstants.exitFailure
-        : AppConstants.exitSuccess;
+    // Deterministic exit codes
+    final report = DiagnosticReport(
+      projectName: '',
+      projectPath: '',
+      createdAt: DateTime.now(),
+      results: results,
+    );
+    return report.exitCode;
   }
 
   void _printAnalyzerHeader(DiagnosticResult result) {

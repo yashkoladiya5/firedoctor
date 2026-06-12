@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/services/health_score_engine.dart';
 import 'package:firedoctor/terminal/terminal.dart';
@@ -116,25 +117,33 @@ final class ReportService {
   }
 
   String toJson(DiagnosticReport report) {
-    final map = {
+    final map = <String, dynamic>{
+      'schemaVersion': AppConstants.jsonSchemaVersion,
+      'firedoctorVersion': AppConstants.version,
+      'generatedAt': DateTime.now().toUtc().toIso8601String(),
       'projectName': report.projectName,
       'projectPath': report.projectPath,
       'createdAt': report.createdAt.toIso8601String(),
       'score': report.score,
       'passed': report.passed,
+      'exitCode': report.exitCode,
+      'mostSevereRank': report.mostSevereRank,
       'totalIssues': report.totalIssues,
       'totalErrors': report.totalErrors,
       'totalWarnings': report.totalWarnings,
       'environment': report.environment,
       if (report.firebaseVersion != null)
         'firebaseVersion': report.firebaseVersion,
-      'results': report.results
+      'analyzerResults': report.results
           .map((r) => {
                 'analyzerName': r.analyzerName,
                 'status': r.status.name,
                 'duration': r.duration.inMilliseconds,
                 'timestamp': r.timestamp.toIso8601String(),
                 'issueCount': r.issueCount,
+                'errorCount': r.errorCount,
+                'warningCount': r.warningCount,
+                'mostSevereRank': r.mostSevereRank,
                 'issues': r.issues
                     .map((i) => {
                           'severity': i.severity.name,
@@ -154,6 +163,16 @@ final class ReportService {
 
     if (report.healthScore != null) {
       map['healthScore'] = report.healthScore!.toJson();
+    }
+
+    // Top-level category scores (shorthand)
+    if (report.healthScore != null) {
+      map['categoryScores'] = report.healthScore!.categoryScores
+          .map((c) => c.toJson())
+          .toList();
+      map['recommendations'] = report.healthScore!.recommendations
+          .map((r) => r.toJson())
+          .toList();
     }
 
     return const JsonEncoder.withIndent('  ').convert(map);

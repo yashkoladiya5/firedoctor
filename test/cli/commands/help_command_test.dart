@@ -30,7 +30,7 @@ void main() {
 
   group('HelpCommand', () {
     group('execute', () {
-      test('with no args calls printUsage and returns exitSuccess', () async {
+      test('with no args calls printUsage and returns exitNoIssues', () async {
         when(() => terminal.writeLine(any())).thenReturn(null);
 
         final cmd =
@@ -39,7 +39,7 @@ void main() {
 
         verify(() => terminal.writeLine(any(that: contains('Usage'))))
             .called(1);
-        expect(exitCode, equals(AppConstants.exitSuccess));
+        expect(exitCode, equals(AppConstants.exitNoIssues));
       });
 
       test('with valid command name shows command help', () async {
@@ -59,7 +59,7 @@ void main() {
         verify(() => terminal.writeLine('Description: Shows the version'))
             .called(1);
         verify(() => terminal.writeLine('Aliases: v, -v')).called(1);
-        expect(exitCode, equals(AppConstants.exitSuccess));
+        expect(exitCode, equals(AppConstants.exitNoIssues));
       });
 
       test('with command name without aliases omits aliases line', () async {
@@ -77,10 +77,10 @@ void main() {
 
         verify(() => terminal.writeLine('Command: simple')).called(1);
         verifyNever(() => terminal.writeLine(any(that: startsWith('Aliases'))));
-        expect(exitCode, equals(AppConstants.exitSuccess));
+        expect(exitCode, equals(AppConstants.exitNoIssues));
       });
 
-      test('with unknown command name returns exitFailure', () async {
+      test('with unknown command name returns exitInternalFailure', () async {
         when(() => terminal.writeError(any())).thenReturn(null);
 
         final cmd =
@@ -88,7 +88,7 @@ void main() {
         final exitCode = await cmd.execute(['unknown']);
 
         verify(() => terminal.writeError('Unknown command: unknown')).called(1);
-        expect(exitCode, equals(AppConstants.exitFailure));
+        expect(exitCode, equals(AppConstants.exitInternalFailure));
       });
     });
   });

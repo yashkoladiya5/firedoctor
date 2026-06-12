@@ -28,13 +28,43 @@ final class DoctorCommand extends Command {
 
   @override
   Future<int> execute(List<String> args) async {
-    final projectPath =
-        args.isNotEmpty ? args.first : fileSystem.currentDirectory;
+    Severity failOn = Severity.error;
+    double? minScore;
+    String? projectPath;
+
+    for (var i = 0; i < args.length; i++) {
+      final arg = args[i];
+      if (arg == '--fail-on') {
+        if (i + 1 < args.length) {
+          failOn = _parseSeverity(args[++i]);
+        } else {
+          terminal.writeError('Missing value for --fail-on flag');
+          return AppConstants.exitInternalFailure;
+        }
+      } else if (arg == '--min-score') {
+        if (i + 1 < args.length) {
+          final parsed = double.tryParse(args[++i]);
+          if (parsed == null || parsed < 0 || parsed > 100) {
+            terminal.writeError(
+                'Invalid --min-score value. Must be a number between 0 and 100.');
+            return AppConstants.exitInternalFailure;
+          }
+          minScore = parsed;
+        } else {
+          terminal.writeError('Missing value for --min-score flag');
+          return AppConstants.exitInternalFailure;
+        }
+      } else {
+        projectPath = arg;
+      }
+    }
+
+    projectPath ??= fileSystem.currentDirectory;
 
     if (!fileSystem.exists(projectPath) ||
         !fileSystem.isDirectory(projectPath)) {
       terminal.writeError('Project path does not exist: $projectPath');
-      return AppConstants.exitFailure;
+      return AppConstants.exitInternalFailure;
     }
 
     terminal.writeLine('Running FireDoctor analysis on $projectPath...');
@@ -50,28 +80,56 @@ final class DoctorCommand extends Command {
       results = await analyzerService.runAll(context);
     } catch (e) {
       terminal.writeError('Analysis failed: $e');
-      return AppConstants.exitFailure;
+      return AppConstants.exitInternalFailure;
     }
 
     final projectName = _extractProjectName(results);
 
-    final report = ReportService(terminal: terminal).generateReport(
+    var report = ReportService(terminal: terminal).generateReport(
       results: results,
       projectName: projectName,
       projectPath: projectPath,
     );
 
+    // Re-compute health score if minScore is set to ensure it's always present
+    if (minScore != null && report.healthScore == null) {
+      report = report.computeHealthScore();
+    }
+
     ReportService(terminal: terminal).printReport(report);
 
-    final hasCriticalOrError = results.any(
-      (r) => r.issues.any(
-        (i) => i.severity == Severity.error || i.severity == Severity.critical,
-      ),
-    );
+    // Check --min-score threshold
+    if (minScore != null) {
+      final score = report.healthScore?.overallScore ?? report.score;
+      if (score < minScore) {
+        terminal.writeWarning(
+            'Score ${score.toStringAsFixed(1)} is below threshold $minScore');
+        return AppConstants.exitInternalFailure;
+      }
+    }
 
-    return hasCriticalOrError
-        ? AppConstants.exitFailure
-        : AppConstants.exitSuccess;
+    // Check --fail-on threshold
+    final mostSevere = report.mostSevereRank;
+    final failOnRank = failOn.value + 1;
+    if (mostSevere >= failOnRank) {
+      return report.exitCode;
+    }
+
+    return AppConstants.exitNoIssues;
+  }
+
+  Severity _parseSeverity(String value) {
+    switch (value.toLowerCase()) {
+      case 'warning':
+      case 'warn':
+        return Severity.warning;
+      case 'error':
+        return Severity.error;
+      case 'critical':
+        return Severity.critical;
+      default:
+        return Severity.error;
+    }
   }
 
   String _extractProjectName(List<DiagnosticResult> results) {
