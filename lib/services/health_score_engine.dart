@@ -79,9 +79,13 @@ final class HealthScoreEngine {
         score = 100.0;
       } else {
         final categoryMaxWeight = issues.length * weights.maxScorePerIssue;
-        score =
-            ((categoryMaxWeight - totalWeight) / categoryMaxWeight * 100)
-                .clamp(0.0, 100.0);
+        if (categoryMaxWeight <= 0) {
+          score = 100.0;
+        } else {
+          score =
+              ((categoryMaxWeight - totalWeight) / categoryMaxWeight * 100)
+                  .clamp(0.0, 100.0);
+        }
       }
 
       scores.add(CategoryScore(
@@ -117,6 +121,7 @@ final class HealthScoreEngine {
   }
 
   int _computeMaxPossibleWeight(List<DiagnosticIssue> issues) {
+    if (issues.isEmpty) return 1;
     return issues.length * weights.maxScorePerIssue;
   }
 

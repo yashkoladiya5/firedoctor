@@ -1,6 +1,7 @@
 import 'package:firedoctor/analyzers/analyzers.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/logging/logging.dart';
+import 'package:firedoctor/shared/source_file_cache.dart';
 
 class AnalyzerService {
   final List<Analyzer> _analyzers = [];
@@ -22,10 +23,19 @@ class AnalyzerService {
     AnalyzerContext context, {
     Logger? progressLogger,
   }) async {
+    final cache = SourceFileCache(context.fileSystem);
+    cache.scanProject(context.projectPath);
+    final contextWithCache = AnalyzerContext(
+      projectPath: context.projectPath,
+      fileSystem: context.fileSystem,
+      configuration: context.configuration,
+      sourceFileCache: cache,
+    );
+
     final results = <DiagnosticResult>[];
     for (final analyzer in _analyzers) {
-      final result =
-          await runAnalyzer(analyzer, context, progressLogger: progressLogger);
+      final result = await runAnalyzer(analyzer, contextWithCache,
+          progressLogger: progressLogger);
       results.add(result);
     }
     return results;

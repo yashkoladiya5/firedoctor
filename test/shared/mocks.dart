@@ -2,7 +2,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 import 'package:firedoctor/analyzers/analyzer.dart';
+import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
+import 'package:firedoctor/shared/source_file_cache.dart';
 
 class MockTerminal extends Mock implements Terminal {}
 
@@ -136,4 +138,19 @@ class FakeFileSystem implements FileSystem {
       _files[destination] = _files[source]!;
     }
   }
+}
+
+AnalyzerContext createAnalyzerContext({
+  required String projectPath,
+  required FakeFileSystem fileSystem,
+  Map<String, String> configuration = const {},
+}) {
+  final cache = SourceFileCache(fileSystem);
+  cache.scanProject(projectPath);
+  return AnalyzerContext(
+    projectPath: projectPath,
+    fileSystem: fileSystem,
+    configuration: configuration,
+    sourceFileCache: cache,
+  );
 }

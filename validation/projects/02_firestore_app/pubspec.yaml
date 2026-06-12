@@ -1,0 +1,11 @@
+name: firestore_app
+version: 1.0.0
+description: Firestore app skeleton for validation.
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.20.0
+  cloud_firestore: ^5.0.0

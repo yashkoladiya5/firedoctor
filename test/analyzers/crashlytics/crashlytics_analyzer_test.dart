@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 import 'package:firedoctor/analyzers/crashlytics/crashlytics_analyzer.dart';
-import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/models/models.dart';
 import '../../shared/mocks.dart';
 
@@ -183,7 +182,7 @@ void main() {
       test('returns skipped when pubspec.yaml does not exist', () async {
         final fs = FakeFileSystem();
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -194,7 +193,7 @@ void main() {
         final fs = FakeFileSystem();
         fs.addFile('/project/pubspec.yaml', '{{{');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -209,7 +208,7 @@ void main() {
           withCrashlytics: false,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD700'), isTrue);
@@ -225,7 +224,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD700'), isEmpty);
@@ -246,7 +245,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
@@ -262,7 +261,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD701'), isEmpty);
@@ -278,7 +277,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD702'), isTrue);
@@ -294,7 +293,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
@@ -306,7 +305,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD702'), isEmpty);
@@ -322,7 +321,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD703'), isTrue);
@@ -338,7 +337,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD703'), isEmpty);
@@ -354,7 +353,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD704'), isTrue);
@@ -368,7 +367,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD704'), isEmpty);
@@ -384,7 +383,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD705'), isTrue);
@@ -400,7 +399,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD705'), isEmpty);
@@ -416,7 +415,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD706'), isTrue);
@@ -430,7 +429,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD706'), isEmpty);
@@ -444,7 +443,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // _fullErrorReportingMain includes recordError via
@@ -462,7 +461,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD707'), isTrue);
@@ -478,7 +477,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD707'), isEmpty);
@@ -490,7 +489,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD707'), isEmpty);
@@ -514,7 +513,7 @@ android {
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD708'), isTrue);
@@ -539,7 +538,7 @@ android {
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD708'), isEmpty);
@@ -560,7 +559,7 @@ android {
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD708'), isEmpty);
@@ -585,7 +584,7 @@ android {
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD709'), isTrue);
@@ -613,7 +612,7 @@ firebaseCrashlytics {
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD709'), isEmpty);
@@ -632,7 +631,7 @@ firebaseCrashlytics {
         // ios dir when iosPodfileContent is null
         fs.addDirectory('/project/ios');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD710'), isTrue);
@@ -655,7 +654,7 @@ end
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD710'), isTrue);
@@ -675,7 +674,7 @@ end
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD710'), isEmpty);
@@ -700,7 +699,7 @@ PODS:
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD710'), isEmpty);
@@ -724,7 +723,7 @@ PODS:
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD711'), isTrue);
@@ -750,7 +749,7 @@ PODS:
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD711'), isEmpty);
@@ -764,7 +763,7 @@ PODS:
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD712'), isTrue);
@@ -778,7 +777,7 @@ PODS:
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD712'), isEmpty);
@@ -794,7 +793,7 @@ PODS:
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD713'), isTrue);
@@ -808,7 +807,7 @@ PODS:
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD713'), isEmpty);
@@ -827,7 +826,7 @@ plugins {
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
@@ -839,7 +838,7 @@ plugins {
           withCrashlytics: false,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
@@ -855,7 +854,7 @@ plugins {
         );
         fs.addDirectory('/project/lib');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // FD700 fires (warning) since crashlytics is not in deps
@@ -874,7 +873,7 @@ plugins {
         fs.addDirectory('/project/lib');
 
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
@@ -903,7 +902,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
@@ -927,7 +926,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD701'), isTrue);
@@ -951,7 +950,7 @@ void main() {
           withCrashlytics: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Lowercase should NOT match, so FD701 fires
@@ -1016,7 +1015,7 @@ PODS:
 ''',
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD700'), isFalse);
@@ -1060,7 +1059,7 @@ firebaseCrashlytics {
         );
 
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Should find the plugin in Kotlin DSL format
@@ -1073,7 +1072,7 @@ firebaseCrashlytics {
       test('result has correct analyzerName', () async {
         final fs = _createProjectWithMain('void main() {}');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.analyzerName, equals('crashlytics'));
@@ -1082,7 +1081,7 @@ firebaseCrashlytics {
       test('result has non-zero duration', () async {
         final fs = _createProjectWithMain('void main() {}');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.duration.inMicroseconds, greaterThanOrEqualTo(0));
@@ -1091,7 +1090,7 @@ firebaseCrashlytics {
       test('result has a recent timestamp', () async {
         final fs = _createProjectWithMain('void main() {}');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);

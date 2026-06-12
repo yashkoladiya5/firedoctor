@@ -113,9 +113,9 @@ dev_dependencies: {}
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
-        expect(result.issues, hasLength(1));
-        expect(result.issues.first.code, equals('FD200'));
-        expect(result.issues.first.severity, equals(Severity.critical));
+        expect(result.issues.any((i) => i.code == 'FD200'), isTrue);
+        expect(result.issues.firstWhere((i) => i.code == 'FD200').severity,
+            equals(Severity.critical));
       });
 
       test(
@@ -132,9 +132,9 @@ dev_dependencies: {}
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.failed));
-        expect(result.issues, hasLength(1));
-        expect(result.issues.first.code, equals('FD200'));
-        expect(result.issues.first.severity, equals(Severity.critical));
+        expect(result.issues.any((i) => i.code == 'FD200'), isTrue);
+        expect(result.issues.firstWhere((i) => i.code == 'FD200').severity,
+            equals(Severity.critical));
       });
 
       test('FD200 has recommendation field set', () async {
@@ -148,8 +148,9 @@ dev_dependencies: {}
             AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
-        expect(result.issues.first.recommendation, isNotEmpty);
-        expect(result.issues.first.recommendation, contains('firebase_core'));
+        final fd200 = result.issues.firstWhere((i) => i.code == 'FD200');
+        expect(fd200.recommendation, isNotEmpty);
+        expect(fd200.recommendation, contains('firebase_core'));
       });
     });
 
@@ -172,7 +173,8 @@ dev_dependencies: {}
         expect(result.issues.where((i) => i.code == 'FD200'), isEmpty);
       });
 
-      test('returns passed when only firebase_core is present', () async {
+      test('returns passed with FD203/204/205 when only firebase_core is present',
+          () async {
         final fs = _createFs('''
 name: test_app
 dependencies:
@@ -184,7 +186,9 @@ dev_dependencies: {}
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
-        expect(result.issues, isEmpty);
+        expect(result.issues.where((i) => i.code == 'FD203'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD204'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD205'), hasLength(1));
       });
     });
 
@@ -256,9 +260,9 @@ dev_dependencies: {}
             AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
-        expect(result.issues, hasLength(1));
-        expect(result.issues.first.code, equals('FD202'));
-        expect(result.issues.first.severity, equals(Severity.warning));
+        expect(result.issues.where((i) => i.code == 'FD202'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD202').first.severity,
+            equals(Severity.warning));
       });
 
       test('returns warning FD202 for "*" version constraint', () async {
@@ -272,9 +276,9 @@ dev_dependencies: {}
             AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
-        expect(result.issues, hasLength(1));
-        expect(result.issues.first.code, equals('FD202'));
-        expect(result.issues.first.severity, equals(Severity.warning));
+        expect(result.issues.where((i) => i.code == 'FD202'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD202').first.severity,
+            equals(Severity.warning));
       });
 
       test('returns warning FD202 for empty version constraint', () async {
@@ -288,9 +292,9 @@ dev_dependencies: {}
             AnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
-        expect(result.issues, hasLength(1));
-        expect(result.issues.first.code, equals('FD202'));
-        expect(result.issues.first.severity, equals(Severity.warning));
+        expect(result.issues.where((i) => i.code == 'FD202'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD202').first.severity,
+            equals(Severity.warning));
       });
 
       test('does not produce FD202 for proper caret version constraint',
@@ -306,6 +310,9 @@ dev_dependencies: {}
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD202'), isEmpty);
+        expect(result.issues.where((i) => i.code == 'FD203'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD204'), hasLength(1));
+        expect(result.issues.where((i) => i.code == 'FD205'), hasLength(1));
       });
 
       test('does not produce FD202 for proper pinned version constraint',

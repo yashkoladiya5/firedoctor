@@ -9,7 +9,7 @@ homepage: https://github.com/firedoctor-cli/firedoctor
 issue_tracker: https://github.com/firedoctor-cli/firedoctor/issues
 documentation: https://github.com/firedoctor-cli/firedoctor/tree/main/docs
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 dependencies:
   args: ^2.4.0
   meta: ^1.11.0

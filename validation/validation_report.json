@@ -1,0 +1,864 @@
+{
+  "generatedAt": "2026-06-12T05:49:47.574120Z",
+  "overallAccuracy": -0.12867551392141555,
+  "overallPrecision": 0.04756539756539757,
+  "overallRecall": 0.28703703703703703,
+  "totalTruePositives": 5,
+  "totalFalsePositives": 98,
+  "totalFalseNegatives": 16,
+  "analyzerPrecision": {
+    "MIS": "0.0000",
+    "FLU": "0.0000",
+    "FD3": "0.0000",
+    "FD4": "0.0000",
+    "FD5": "0.0000",
+    "FD7": "0.0000",
+    "FD6": "0.0000",
+    "crashlytics": "1.0000",
+    "firebase_core": "1.0000",
+    "NOT": "0.0000",
+    "android": "1.0000",
+    "ios": "1.0000"
+  },
+  "analyzerRecall": {
+    "crashlytics": "0.5000",
+    "firebase_core": "1.0000",
+    "android": "0.2500",
+    "ios": "0.2500",
+    "dependency": "0.0000",
+    "project": "0.0000"
+  },
+  "entries": [
+    {
+      "projectName": "00_minimal_firebase",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/00_minimal_firebase",
+      "totalChecks": 26,
+      "totalExpected": 3,
+      "totalActual": 10,
+      "truePositives": [],
+      "falseNegatives": [
+        {
+          "analyzerName": "dependency",
+          "code": "FD203",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "dependency",
+          "code": "FD204",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "dependency",
+          "code": "FD205",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": 0.5,
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "projectName": "01_auth_app",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/01_auth_app",
+      "totalChecks": 10,
+      "totalExpected": 2,
+      "totalActual": 10,
+      "truePositives": [],
+      "falseNegatives": [
+        {
+          "analyzerName": "dependency",
+          "code": "FD203",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "dependency",
+          "code": "FD204",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": -0.2,
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "projectName": "02_firestore_app",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/02_firestore_app",
+      "totalChecks": 10,
+      "totalExpected": 2,
+      "totalActual": 10,
+      "truePositives": [],
+      "falseNegatives": [
+        {
+          "analyzerName": "dependency",
+          "code": "FD203",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "dependency",
+          "code": "FD205",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": -0.2,
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "projectName": "03_messaging_app",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/03_messaging_app",
+      "totalChecks": 12,
+      "totalExpected": 1,
+      "totalActual": 13,
+      "truePositives": [],
+      "falseNegatives": [
+        {
+          "analyzerName": "ios",
+          "code": "FD502",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD302",
+          "title": "Missing WidgetsFlutterBinding.ensureInitialized()",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD304",
+          "title": "Multiple Firebase.initializeApp() calls",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD602",
+          "title": "Notification permission not requested",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": -0.16666666666666666,
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "projectName": "04_crashlytics_app",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/04_crashlytics_app",
+      "totalChecks": 14,
+      "totalExpected": 4,
+      "totalActual": 13,
+      "truePositives": [
+        {
+          "analyzerName": "crashlytics",
+          "code": "FD703",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "crashlytics",
+          "code": "FD704",
+          "shouldBeFound": true
+        }
+      ],
+      "falseNegatives": [
+        {
+          "analyzerName": "crashlytics",
+          "code": "FD708",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "crashlytics",
+          "code": "FD710",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD712",
+          "title": "No custom keys usage detected",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD713",
+          "title": "No user identification strategy detected",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": 0.07142857142857142,
+      "precision": 0.15384615384615385,
+      "recall": 0.5
+    },
+    {
+      "projectName": "05_production_app",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/05_production_app",
+      "totalChecks": 61,
+      "totalExpected": 0,
+      "totalActual": 14,
+      "truePositives": [],
+      "falseNegatives": [],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD302",
+          "title": "Missing WidgetsFlutterBinding.ensureInitialized()",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD304",
+          "title": "Multiple Firebase.initializeApp() calls",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD602",
+          "title": "Notification permission not requested",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD704",
+          "title": "Missing runZonedGuarded for error zone",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD712",
+          "title": "No custom keys usage detected",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD713",
+          "title": "No user identification strategy detected",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": 0.7704918032786885,
+      "precision": 0.0,
+      "recall": 1.0
+    },
+    {
+      "projectName": "06_broken_minimal",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/06_broken_minimal",
+      "totalChecks": 5,
+      "totalExpected": 2,
+      "totalActual": 12,
+      "truePositives": [
+        {
+          "analyzerName": "firebase_core",
+          "code": "FD301",
+          "shouldBeFound": true
+        }
+      ],
+      "falseNegatives": [
+        {
+          "analyzerName": "project",
+          "code": "FD101",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "NOT_FLUTTER_PROJECT",
+          "title": "Not a Flutter project",
+          "severity": "warning",
+          "analyzerName": "NO"
+        },
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FD300",
+          "title": "Firebase not initialized",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD510",
+          "title": "No Firebase pods found",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": -1.4,
+      "precision": 0.08333333333333333,
+      "recall": 0.5
+    },
+    {
+      "projectName": "07_broken_android",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/07_broken_android",
+      "totalChecks": 10,
+      "totalExpected": 4,
+      "totalActual": 10,
+      "truePositives": [
+        {
+          "analyzerName": "android",
+          "code": "FD400",
+          "shouldBeFound": true
+        }
+      ],
+      "falseNegatives": [
+        {
+          "analyzerName": "android",
+          "code": "FD403",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "android",
+          "code": "FD407",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "android",
+          "code": "FD408",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": -0.2,
+      "precision": 0.1,
+      "recall": 0.25
+    },
+    {
+      "projectName": "08_broken_ios",
+      "projectPath": "/Users/yash/Desktop/Yash/firedoctor-flutter/validation/projects/08_broken_ios",
+      "totalChecks": 9,
+      "totalExpected": 3,
+      "totalActual": 11,
+      "truePositives": [
+        {
+          "analyzerName": "ios",
+          "code": "FD509",
+          "shouldBeFound": true
+        }
+      ],
+      "falseNegatives": [
+        {
+          "analyzerName": "ios",
+          "code": "FD501",
+          "shouldBeFound": true
+        },
+        {
+          "analyzerName": "ios",
+          "code": "FD504",
+          "shouldBeFound": true
+        }
+      ],
+      "falsePositives": [
+        {
+          "code": "MISSING_TEST",
+          "title": "Missing test/ directory",
+          "severity": "info",
+          "analyzerName": "MI"
+        },
+        {
+          "code": "FLUTTER_SDK_CONSTRAINT",
+          "title": "Flutter SDK constraint",
+          "severity": "info",
+          "analyzerName": "FL"
+        },
+        {
+          "code": "FD301",
+          "title": "Missing firebase_options.dart",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD303",
+          "title": "DefaultFirebaseOptions not used",
+          "severity": "info",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD400",
+          "title": "Missing google-services.json",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD500",
+          "title": "Missing GoogleService-Info.plist",
+          "severity": "critical",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD507",
+          "title": "Remote Notifications background mode missing",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD700",
+          "title": "Missing firebase_crashlytics dependency",
+          "severity": "warning",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD710",
+          "title": "Missing Crashlytics CocoaPods pod",
+          "severity": "error",
+          "analyzerName": "FD"
+        },
+        {
+          "code": "FD711",
+          "title": "Missing dSYM upload configuration",
+          "severity": "info",
+          "analyzerName": "FD"
+        }
+      ],
+      "accuracy": -0.3333333333333333,
+      "precision": 0.09090909090909091,
+      "recall": 0.3333333333333333
+    }
+  ]
+}

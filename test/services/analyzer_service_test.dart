@@ -130,9 +130,14 @@ void main() {
         when(() => a2.description).thenReturn('Second');
         when(() => a2.category).thenReturn('test');
 
+        final fs = MockFileSystem();
+        when(() => fs.join(any(), any())).thenReturn('/test/lib');
+        when(() => fs.exists(any())).thenReturn(false);
+        when(() => fs.isDirectory(any())).thenReturn(false);
+
         final context = AnalyzerContext(
           projectPath: '/test',
-          fileSystem: MockFileSystem(),
+          fileSystem: fs,
         );
 
         final result1 = DiagnosticResult(

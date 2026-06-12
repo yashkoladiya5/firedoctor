@@ -1,0 +1,7 @@
+name: broken_minimal
+version: 1.0.0
+description: Broken project with firebase_core but no Flutter SDK.
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dependencies:
+  firebase_core: ^2.20.0
