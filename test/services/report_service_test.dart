@@ -10,18 +10,19 @@ class MockTerminal extends Mock implements Terminal {}
 
 class MockFileSystem extends Mock implements FileSystem {}
 
-DiagnosticIssue _issue(Severity severity) {
+DiagnosticIssue _issue(Severity severity, {String code = 'TEST'}) {
   return DiagnosticIssue(
     severity: severity,
-    code: 'TEST',
+    code: code,
     title: 'Test issue',
     description: 'Test description',
   );
 }
 
-DiagnosticResult _result(CheckStatus status, List<DiagnosticIssue> issues) {
+DiagnosticResult _result(CheckStatus status, List<DiagnosticIssue> issues,
+    {String analyzerName = 'TestAnalyzer'}) {
   return DiagnosticResult(
-    analyzerName: 'TestAnalyzer',
+    analyzerName: analyzerName,
     status: status,
     issues: issues,
     duration: const Duration(milliseconds: 100),
@@ -36,6 +37,7 @@ void main() {
   setUp(() {
     terminal = MockTerminal();
     service = ReportService(terminal: terminal);
+    when(() => terminal.writeLine(any())).thenReturn(null);
   });
 
   group('ReportService', () {
@@ -67,24 +69,62 @@ void main() {
         expect(report.firebaseVersion, isNull);
         expect(report.environment, isEmpty);
       });
+
+      test('computes healthScore by default', () {
+        final report = service.generateReport(results: []);
+        expect(report.healthScore, isNotNull);
+        expect(report.healthScore!.overallScore, equals(100.0));
+      });
+
+      test('can skip healthScore computation', () {
+        final report = service.generateReport(
+          results: [],
+          computeHealthScore: false,
+        );
+        expect(report.healthScore, isNull);
+      });
+
+      test('healthScore reflects issues in results', () {
+        final report = service.generateReport(
+          results: [
+            _result(CheckStatus.failed, [
+              _issue(Severity.error, code: 'FD400'),
+            ]),
+          ],
+        );
+        expect(report.healthScore, isNotNull);
+        expect(report.healthScore!.overallScore, lessThan(100.0));
+        expect(report.healthScore!.priorityGroups[PriorityGroup.high]!.length,
+            equals(1));
+      });
     });
 
     group('printReport', () {
       test('does not throw when printing', () {
-        when(() => terminal.writeLine(any())).thenReturn(null);
-
         final report = service.generateReport(results: []);
         expect(() => service.printReport(report), returnsNormally);
       });
 
       test('prints report with issues', () {
-        when(() => terminal.writeLine(any())).thenReturn(null);
-
         final report = service.generateReport(
           results: [
             _result(CheckStatus.failed, [_issue(Severity.error)]),
           ],
           projectName: 'Test',
+        );
+
+        expect(() => service.printReport(report), returnsNormally);
+      });
+
+      test('prints health score sections when healthScore present', () {
+        final report = service.generateReport(
+          results: [
+            _result(CheckStatus.failed, [
+              _issue(Severity.error),
+              _issue(Severity.warning),
+            ]),
+          ],
+          projectName: 'HealthTest',
         );
 
         expect(() => service.printReport(report), returnsNormally);
@@ -137,11 +177,68 @@ void main() {
         expect(decoded['passed'], isFalse);
         expect((decoded['results'] as List).length, equals(1));
       });
+
+      test('includes healthScore when present', () {
+        final report = service.generateReport(
+          results: [
+            _result(CheckStatus.failed, [
+              _issue(Severity.critical, code: 'FD000'),
+            ]),
+          ],
+        );
+
+        final jsonStr = service.toJson(report);
+        final decoded = json.decode(jsonStr) as Map<String, dynamic>;
+        expect(decoded.containsKey('healthScore'), isTrue);
+        final hs = decoded['healthScore'] as Map<String, dynamic>;
+        expect(hs.containsKey('overallScore'), isTrue);
+        expect(hs.containsKey('categoryScores'), isTrue);
+        expect(hs.containsKey('priorityGroups'), isTrue);
+        expect(hs.containsKey('recommendations'), isTrue);
+        expect(hs['overallScore'], equals(0.0));
+      });
+
+      test('healthScore JSON has correct structure', () {
+        final report = service.generateReport(
+          results: [
+            _result(CheckStatus.failed, [
+              _issue(Severity.error, code: 'FD400'),
+              _issue(Severity.warning, code: 'FD405'),
+            ], analyzerName: 'android'),
+          ],
+        );
+
+        final jsonStr = service.toJson(report);
+        final decoded = json.decode(jsonStr) as Map<String, dynamic>;
+        final hs = decoded['healthScore'] as Map<String, dynamic>;
+
+        expect(hs['overallScore'], isA<double>());
+        expect(hs['totalIssues'], equals(2));
+        expect(hs['categoryScores'], isA<List<dynamic>>());
+        expect((hs['categoryScores'] as List).length, equals(1));
+
+        final priorityGroups = hs['priorityGroups'] as Map<String, dynamic>;
+        expect(priorityGroups.containsKey('high'), isTrue);
+        expect(priorityGroups.containsKey('medium'), isTrue);
+
+        final recommendations = hs['recommendations'] as List<dynamic>;
+        expect(recommendations.length, greaterThan(0));
+      });
+
+      test('skips healthScore when not computed', () {
+        final report = service.generateReport(
+          results: [],
+          computeHealthScore: false,
+        );
+
+        final jsonStr = service.toJson(report);
+        final decoded = json.decode(jsonStr) as Map<String, dynamic>;
+        expect(decoded.containsKey('healthScore'), isFalse);
+      });
     });
 
     group('saveReport', () {
       test('writes JSON to filesystem', () async {
-        when(() => terminal.writeLine(any())).thenReturn(null);
         final fs = MockFileSystem();
         when(() => fs.writeAsStringAsync(any(), any()))
             .thenAnswer((_) async {});
