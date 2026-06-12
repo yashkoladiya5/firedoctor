@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'package:firedoctor/models/models.dart';
+import 'package:firedoctor/services/health_score_engine.dart';
 import 'package:firedoctor/terminal/terminal.dart';
 import 'package:firedoctor/filesystem/filesystem.dart';
 
 final class ReportService {
   final Terminal terminal;
+  final HealthScoreEngine healthScoreEngine;
 
-  const ReportService({required this.terminal});
+  const ReportService({
+    required this.terminal,
+    this.healthScoreEngine = const HealthScoreEngine(),
+  });
 
   DiagnosticReport generateReport({
     required List<DiagnosticResult> results,
@@ -14,8 +19,9 @@ final class ReportService {
     String? projectPath,
     String? firebaseVersion,
     Map<String, String>? environment,
+    bool computeHealthScore = true,
   }) {
-    return DiagnosticReport(
+    var report = DiagnosticReport(
       projectName: projectName ?? 'unknown',
       projectPath: projectPath ?? '',
       createdAt: DateTime.now(),
@@ -23,6 +29,12 @@ final class ReportService {
       firebaseVersion: firebaseVersion,
       environment: environment ?? {},
     );
+
+    if (computeHealthScore) {
+      report = report.computeHealthScore(engine: healthScoreEngine);
+    }
+
+    return report;
   }
 
   void printReport(DiagnosticReport report) {
@@ -31,23 +43,75 @@ final class ReportService {
     terminal.writeLine('  FireDoctor Diagnostic Report');
     terminal.writeLine('═══════════════════════════════════════════');
     terminal.writeLine('');
-    terminal.writeLine('  Project: ${report.projectName}');
-    terminal.writeLine('  Path: ${report.projectPath}');
+
+    terminal.writeLine('  ┌─ Project');
+    terminal.writeLine('  │ Project: ${report.projectName}');
+    terminal.writeLine('  │ Path: ${report.projectPath}');
+    terminal.writeLine('  └─');
+
+    if (report.healthScore != null) {
+      final hs = report.healthScore!;
+      terminal.writeLine('');
+      terminal.writeLine('  ┌─ Health Score');
+      terminal.writeLine(
+          '  │ Overall: ${_formatScore(hs.overallScore)}/100');
+      terminal.writeLine('  │ Issues: ${hs.totalIssues}');
+      terminal.writeLine(
+          '  │ Weight: ${hs.totalWeight}/${hs.maxPossibleWeight}');
+      terminal.writeLine('  └─');
+
+      terminal.writeLine('');
+      terminal.writeLine('  ┌─ Category Scores');
+      for (final cat in hs.categoryScores) {
+        final bar = _scoreBar(cat.score);
+        terminal.writeLine(
+          '  │ ${cat.displayName}: ${_formatScore(cat.score)}/100 $bar',
+        );
+      }
+      terminal.writeLine('  └─');
+
+      terminal.writeLine('');
+      terminal.writeLine('  ┌─ Priority Breakdown');
+      for (final group in PriorityGroup.values) {
+        final count = hs.priorityGroups[group]?.length ?? 0;
+        if (count > 0) {
+          terminal.writeLine('  │ ${group.label}: $count');
+        }
+      }
+      terminal.writeLine('  └─');
+
+      if (hs.recommendations.isNotEmpty) {
+        terminal.writeLine('');
+        terminal.writeLine('  ┌─ Recommended Next Actions');
+        for (var i = 0; i < hs.recommendations.length; i++) {
+          final rec = hs.recommendations[i];
+          terminal.writeLine(
+            '  │ ${i + 1}. ${rec.formatted}',
+          );
+        }
+        terminal.writeLine('  └─');
+      }
+    }
+
+    terminal.writeLine('');
+    terminal.writeLine('  ┌─ Analyzer Results');
+    for (final result in report.results) {
+      terminal.writeLine('  │ ${result.analyzerName}: ${result.status.label}');
+      for (final issue in result.issues) {
+        terminal.writeLine(
+            '  │   ${issue.severity.emoji} [${issue.code}] ${issue.title}');
+      }
+    }
+    terminal.writeLine('  └─');
+
+    terminal.writeLine('');
     terminal.writeLine('  Score: ${report.score.toStringAsFixed(1)}/100');
-    terminal.writeLine('  Status: ${report.passed ? "PASSED" : "FAILED"}');
+    terminal.writeLine(
+        '  Status: ${report.passed ? "PASSED" : "FAILED"}');
     terminal.writeLine('');
     terminal.writeLine('  Issues: ${report.totalIssues}');
     terminal.writeLine('  Errors: ${report.totalErrors}');
     terminal.writeLine('  Warnings: ${report.totalWarnings}');
-    terminal.writeLine('');
-
-    for (final result in report.results) {
-      terminal.writeLine('  ${result.analyzerName}: ${result.status.label}');
-      for (final issue in result.issues) {
-        terminal.writeLine(
-            '    ${issue.severity.emoji} [${issue.code}] ${issue.title}');
-      }
-    }
     terminal.writeLine('');
   }
 
@@ -80,12 +144,18 @@ final class ReportService {
                           if (i.recommendation != null)
                             'recommendation': i.recommendation,
                           if (i.filePath != null) 'filePath': i.filePath,
-                          if (i.lineNumber != null) 'lineNumber': i.lineNumber,
+                          if (i.lineNumber != null)
+                            'lineNumber': i.lineNumber,
                         })
                     .toList(),
               })
           .toList(),
     };
+
+    if (report.healthScore != null) {
+      map['healthScore'] = report.healthScore!.toJson();
+    }
+
     return const JsonEncoder.withIndent('  ').convert(map);
   }
 
@@ -93,5 +163,18 @@ final class ReportService {
       DiagnosticReport report, FileSystem fs, String outputPath) async {
     final json = toJson(report);
     await fs.writeAsStringAsync(outputPath, json);
+  }
+
+  String _formatScore(double score) => score.toStringAsFixed(1);
+
+  String _scoreBar(double score) {
+    final filled = (score / 20).round().clamp(0, 5);
+    final empty = 5 - filled;
+    final bar = StringBuffer();
+    bar.write('[');
+    bar.write('█' * filled);
+    bar.write('░' * empty);
+    bar.write(']');
+    return bar.toString();
   }
 }

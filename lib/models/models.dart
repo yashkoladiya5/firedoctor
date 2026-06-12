@@ -4,3 +4,5 @@ export 'diagnostic_issue.dart';
 export 'diagnostic_result.dart';
 export 'diagnostic_report.dart';
 export 'pubspec.dart';
+export 'score_weights.dart';
+export 'health_score.dart';

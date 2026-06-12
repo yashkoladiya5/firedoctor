@@ -1,4 +1,6 @@
 import 'package:firedoctor/models/diagnostic_result.dart';
+import 'package:firedoctor/models/health_score.dart';
+import 'package:firedoctor/services/health_score_engine.dart';
 
 final class DiagnosticReport {
   final String projectName;
@@ -7,6 +9,7 @@ final class DiagnosticReport {
   final List<DiagnosticResult> results;
   final String? firebaseVersion;
   final Map<String, String> environment;
+  final HealthScore? healthScore;
 
   const DiagnosticReport({
     required this.projectName,
@@ -15,6 +18,7 @@ final class DiagnosticReport {
     required this.results,
     this.firebaseVersion,
     this.environment = const {},
+    this.healthScore,
   });
 
   int get totalIssues => results.fold(0, (sum, r) => sum + r.issueCount);
@@ -31,4 +35,19 @@ final class DiagnosticReport {
   }
 
   bool get passed => results.every((r) => r.passed);
+
+  DiagnosticReport computeHealthScore({
+    HealthScoreEngine? engine,
+  }) {
+    final hse = engine ?? const HealthScoreEngine();
+    return DiagnosticReport(
+      projectName: projectName,
+      projectPath: projectPath,
+      createdAt: createdAt,
+      results: results,
+      firebaseVersion: firebaseVersion,
+      environment: environment,
+      healthScore: hse.compute(this),
+    );
+  }
 }
