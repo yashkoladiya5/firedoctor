@@ -1,32 +1,330 @@
 {
   "projectName": "00_minimal_firebase",
-  "description": "Minimal Firebase project with only firebase_core. No issues except recommended dependencies not present.",
   "expectedFindings": [
-    {"analyzerName": "project", "code": "FD101", "shouldBeFound": false},
-    {"analyzerName": "project", "code": "FD102", "shouldBeFound": false},
-    {"analyzerName": "project", "code": "FD103", "shouldBeFound": false},
-    {"analyzerName": "project", "code": "FD104", "shouldBeFound": false},
-    {"analyzerName": "dependency", "code": "FD200", "shouldBeFound": false},
-    {"analyzerName": "dependency", "code": "FD201", "shouldBeFound": false},
-    {"analyzerName": "dependency", "code": "FD202", "shouldBeFound": false},
-    {"analyzerName": "dependency", "code": "FD203", "shouldBeFound": true},
-    {"analyzerName": "dependency", "code": "FD204", "shouldBeFound": true},
-    {"analyzerName": "dependency", "code": "FD205", "shouldBeFound": true},
-    {"analyzerName": "firebase_core", "code": "FD300", "shouldBeFound": false},
-    {"analyzerName": "firebase_core", "code": "FD301", "shouldBeFound": false},
-    {"analyzerName": "firebase_core", "code": "FD302", "shouldBeFound": false},
-    {"analyzerName": "android", "code": "FD400", "shouldBeFound": false},
-    {"analyzerName": "android", "code": "FD401", "shouldBeFound": false},
-    {"analyzerName": "android", "code": "FD402", "shouldBeFound": false},
-    {"analyzerName": "android", "code": "FD403", "shouldBeFound": false},
-    {"analyzerName": "android", "code": "FD404", "shouldBeFound": false},
-    {"analyzerName": "android", "code": "FD405", "shouldBeFound": false},
-    {"analyzerName": "ios", "code": "FD500", "shouldBeFound": false},
-    {"analyzerName": "ios", "code": "FD501", "shouldBeFound": false},
-    {"analyzerName": "ios", "code": "FD502", "shouldBeFound": false},
-    {"analyzerName": "ios", "code": "FD504", "shouldBeFound": false},
-    {"analyzerName": "ios", "code": "FD509", "shouldBeFound": false},
-    {"analyzerName": "fcm", "code": "FD600", "shouldBeFound": false},
-    {"analyzerName": "crashlytics", "code": "FD700", "shouldBeFound": false}
+    {
+      "code": "MISSING_PUBSPEC",
+      "shouldBeFound": false,
+      "analyzerName": "project"
+    },
+    {
+      "code": "INVALID_PUBSPEC",
+      "shouldBeFound": false,
+      "analyzerName": "project"
+    },
+    {
+      "code": "NOT_FLUTTER_PROJECT",
+      "shouldBeFound": false,
+      "analyzerName": "project"
+    },
+    {
+      "code": "MISSING_ANDROID",
+      "shouldBeFound": false,
+      "analyzerName": "project"
+    },
+    {
+      "code": "MISSING_IOS",
+      "shouldBeFound": false,
+      "analyzerName": "project"
+    },
+    {
+      "code": "MISSING_LIB",
+      "shouldBeFound": false,
+      "analyzerName": "project"
+    },
+    {
+      "code": "MISSING_TEST",
+      "shouldBeFound": true,
+      "analyzerName": "project"
+    },
+    {
+      "code": "FLUTTER_SDK_CONSTRAINT",
+      "shouldBeFound": true,
+      "analyzerName": "project"
+    },
+    {
+      "code": "FD200",
+      "shouldBeFound": false,
+      "analyzerName": "dependency"
+    },
+    {
+      "code": "FD201",
+      "shouldBeFound": false,
+      "analyzerName": "dependency"
+    },
+    {
+      "code": "FD202",
+      "shouldBeFound": false,
+      "analyzerName": "dependency"
+    },
+    {
+      "code": "FD203",
+      "shouldBeFound": true,
+      "analyzerName": "dependency"
+    },
+    {
+      "code": "FD204",
+      "shouldBeFound": true,
+      "analyzerName": "dependency"
+    },
+    {
+      "code": "FD205",
+      "shouldBeFound": true,
+      "analyzerName": "dependency"
+    },
+    {
+      "code": "FD300",
+      "shouldBeFound": false,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD301",
+      "shouldBeFound": true,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD302",
+      "shouldBeFound": false,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD303",
+      "shouldBeFound": true,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD304",
+      "shouldBeFound": false,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD305",
+      "shouldBeFound": false,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD306",
+      "shouldBeFound": false,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD307",
+      "shouldBeFound": false,
+      "analyzerName": "firebase_core"
+    },
+    {
+      "code": "FD400",
+      "shouldBeFound": true,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD401",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD402",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD403",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD404",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD405",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD406",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD407",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD408",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD409",
+      "shouldBeFound": false,
+      "analyzerName": "android"
+    },
+    {
+      "code": "FD500",
+      "shouldBeFound": true,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD501",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD502",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD503",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD504",
+      "shouldBeFound": true,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD505",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD506",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD507",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD508",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD509",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD510",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD511",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD512",
+      "shouldBeFound": false,
+      "analyzerName": "ios"
+    },
+    {
+      "code": "FD600",
+      "shouldBeFound": false,
+      "analyzerName": "fcm"
+    },
+    {
+      "code": "FD601",
+      "shouldBeFound": false,
+      "analyzerName": "fcm"
+    },
+    {
+      "code": "FD602",
+      "shouldBeFound": false,
+      "analyzerName": "fcm"
+    },
+    {
+      "code": "FD603",
+      "shouldBeFound": false,
+      "analyzerName": "fcm"
+    },
+    {
+      "code": "FD604",
+      "shouldBeFound": false,
+      "analyzerName": "fcm"
+    },
+    {
+      "code": "FD605",
+      "shouldBeFound": false,
+      "analyzerName": "fcm"
+    },
+    {
+      "code": "FD700",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD701",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD702",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD703",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD704",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD705",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD706",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD707",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD708",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD709",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD710",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD711",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD712",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    },
+    {
+      "code": "FD713",
+      "shouldBeFound": false,
+      "analyzerName": "crashlytics"
+    }
   ]
 }

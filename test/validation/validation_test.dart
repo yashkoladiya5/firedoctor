@@ -215,7 +215,7 @@ void main() {
       expect(report.totalTruePositives, equals(2));
       expect(report.totalFalsePositives, equals(1));
       expect(report.totalFalseNegatives, equals(1));
-      expect(report.overallAccuracy, closeTo((0.333 + 1.0) / 2, 0.001));
+      expect(report.overallAccuracy, closeTo(0.8, 0.001));
       expect(report.overallPrecision, closeTo((0.5 + 1.0) / 2, 0.001));
       expect(report.overallRecall, closeTo((0.5 + 1.0) / 2, 0.001));
     });

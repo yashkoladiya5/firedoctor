@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 import 'package:firedoctor/analyzers/fcm/fcm_analyzer.dart';
-import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/models/models.dart';
 import '../../shared/mocks.dart';
 
@@ -179,7 +178,7 @@ void main() {
       test('returns skipped when pubspec.yaml does not exist', () async {
         final fs = FakeFileSystem();
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -190,7 +189,7 @@ void main() {
         final fs = FakeFileSystem();
         fs.addFile('/project/pubspec.yaml', '{{{');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.skipped));
@@ -208,7 +207,7 @@ void main() {
           hasIosConfig: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD600'), isTrue);
@@ -226,7 +225,7 @@ void main() {
           hasAndroidConfig: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD600'), isTrue);
@@ -241,7 +240,7 @@ void main() {
           hasIosConfig: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD600'), isEmpty);
@@ -255,7 +254,7 @@ void main() {
           withFirebaseMessaging: false,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD600'), isEmpty);
@@ -276,7 +275,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD601'), isTrue);
@@ -292,7 +291,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD601'), isEmpty);
@@ -306,7 +305,7 @@ void main() {
           withFirebaseMessaging: false,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD601'), isEmpty);
@@ -322,7 +321,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD602'), isTrue);
@@ -336,7 +335,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD602'), isEmpty);
@@ -348,7 +347,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD602'), isEmpty);
@@ -364,7 +363,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD603'), isTrue);
@@ -380,7 +379,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
@@ -392,7 +391,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD603'), isEmpty);
@@ -415,7 +414,7 @@ void main() {
           },
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD604'), isTrue);
@@ -439,7 +438,7 @@ void main() {
           },
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
@@ -460,7 +459,7 @@ void main() {
           },
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
@@ -475,7 +474,7 @@ void main() {
           hasIosDir: false,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD604'), isEmpty);
@@ -491,7 +490,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.any((i) => i.code == 'FD605'), isTrue);
@@ -505,7 +504,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
@@ -517,7 +516,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
@@ -529,7 +528,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.issues.where((i) => i.code == 'FD605'), isEmpty);
@@ -544,7 +543,7 @@ void main() {
           hasIosConfig: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
@@ -558,7 +557,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.warning));
@@ -577,7 +576,7 @@ void main() {
           },
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // FD604 is warning (false proxy) -> status should be warning
@@ -595,7 +594,7 @@ void main() {
           withFirebaseMessaging: false,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.status, equals(CheckStatus.passed));
@@ -611,7 +610,7 @@ void main() {
         fs.addDirectory('/project/lib');
 
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Should have FD601 (FCM not used), but no FD602/603/605 (no FCM usage)
@@ -641,7 +640,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // FirebaseMessaging only appears inside string literals, which are
@@ -676,7 +675,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // All FirebaseMessaging references are in comments (stripped), and the
@@ -704,7 +703,7 @@ void main() {
           withFirebaseMessaging: true,
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Lowercase firebasemessaging should NOT match FirebaseMessaging
@@ -739,7 +738,7 @@ void setupFcm() {
           },
         );
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         // Permission in main.dart, handler setup in listener.dart
@@ -756,7 +755,7 @@ void setupFcm() {
       test('result has correct analyzerName', () async {
         final fs = _createProjectWithMain('void main() {}');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.analyzerName, equals('fcm'));
@@ -765,7 +764,7 @@ void setupFcm() {
       test('result has non-zero duration', () async {
         final fs = _createProjectWithMain('void main() {}');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.duration.inMicroseconds, greaterThanOrEqualTo(0));
@@ -774,7 +773,7 @@ void setupFcm() {
       test('result has a recent timestamp', () async {
         final fs = _createProjectWithMain('void main() {}');
         final context =
-            AnalyzerContext(projectPath: '/project', fileSystem: fs);
+            createAnalyzerContext(projectPath: '/project', fileSystem: fs);
         final result = await analyzer.analyze(context);
 
         expect(result.timestamp.isAfter(DateTime(2020, 1, 1)), isTrue);

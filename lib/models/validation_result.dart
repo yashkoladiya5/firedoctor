@@ -90,7 +90,14 @@ final class ValidationReport {
   int get totalFalseNegatives =>
       entries.fold(0, (sum, e) => sum + e.falseNegatives.length);
 
-  double get overallAccuracy => _safeAvg(entries.map((e) => e.accuracy));
+  double get overallAccuracy {
+    if (entries.isEmpty) return 0.0;
+    final totalTP = entries.fold(0, (sum, e) => sum + e.truePositives.length);
+    final totalFP = entries.fold(0, (sum, e) => sum + e.falsePositives.length);
+    final totalChecks = entries.fold(0, (sum, e) => sum + e.totalChecks);
+    final totalCorrect = totalTP + (totalChecks - totalTP - totalFP);
+    return totalChecks > 0 ? totalCorrect / totalChecks : 0.0;
+  }
   double get overallPrecision => _safeAvg(entries.map((e) => e.precision));
   double get overallRecall => _safeAvg(entries.map((e) => e.recall));
 
@@ -101,7 +108,7 @@ final class ValidationReport {
         map.putIfAbsent(tp.analyzerName, () => []).add(1.0);
       }
       for (final fp in entry.falsePositives) {
-        final an = fp.code.length >= 4 ? '${fp.code[0]}${fp.code[1]}${fp.code[2]}' : 'unknown';
+        final an = _analyzerNameFromCode(fp.code);
         map.putIfAbsent(an, () => []).add(0.0);
       }
     }
@@ -145,6 +152,20 @@ final class ValidationReport {
       'entries': entries.map((e) => e.toJson()).toList(),
     };
     return const JsonEncoder.withIndent('  ').convert(map);
+  }
+
+  static String _analyzerNameFromCode(String code) {
+    final prefix = code.length >= 3 ? code.substring(0, 3) : '';
+    return switch (prefix) {
+      'FD1' => 'project',
+      'FD2' => 'dependency',
+      'FD3' => 'firebase_core',
+      'FD4' => 'android',
+      'FD5' => 'ios',
+      'FD6' => 'fcm',
+      'FD7' => 'crashlytics',
+      _ => 'project',
+    };
   }
 
   static double _safeAvg(Iterable<double> values) {

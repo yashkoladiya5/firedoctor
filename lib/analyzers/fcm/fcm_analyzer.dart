@@ -1,6 +1,5 @@
 import 'package:firedoctor/analyzers/analyzer.dart';
 import 'package:firedoctor/analyzers/analyzer_context.dart';
-import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/parsers/pubspec_parser.dart';
 import 'package:firedoctor/analyzers/ios/parsers/plist_parser.dart';
@@ -81,41 +80,34 @@ final class FCMAnalyzer extends Analyzer {
     }
 
     // Scan Dart files for FCM usage, permission requests, background handler, token refresh
-    final libPath = fs.join(projectPath, 'lib');
     bool hasFcmUsage = false;
     bool hasPermissionRequest = false;
     bool hasBackgroundHandler = false;
     bool hasTokenRefresh = false;
 
-    if (hasFirebaseMessaging &&
-        fs.exists(libPath) &&
-        fs.isDirectory(libPath)) {
-      final dartFiles = _findDartFiles(fs, libPath);
+    if (hasFirebaseMessaging) {
+      final dartFiles = context.sourceFileCache?.getDartFiles(projectPath) ?? [];
 
       for (final filePath in dartFiles) {
-        try {
-          final content = fs.readAsString(filePath);
-          final cleaned = _stripCommentsAndStrings(content);
-          final lines = cleaned.split('\n');
+        final lines = context.sourceFileCache?.getLines(filePath);
+        if (lines == null) continue;
 
-          for (final line in lines) {
-            if (line.contains('FirebaseMessaging')) {
-              hasFcmUsage = true;
-            }
-            if (line.contains('requestPermission(') ||
-                line.contains('requestPermission()')) {
-              hasPermissionRequest = true;
-            }
-            if (line.contains('FirebaseMessaging.onBackgroundMessage(')) {
-              hasBackgroundHandler = true;
-            }
-            if (line.contains('onTokenRefresh') ||
-                line.contains('getToken(') ||
-                line.contains('.getToken()')) {
-              hasTokenRefresh = true;
-            }
+        for (final line in lines) {
+          if (line.contains('FirebaseMessaging')) {
+            hasFcmUsage = true;
           }
-        } catch (_) {
+          if (line.contains('requestPermission(') ||
+              line.contains('requestPermission()')) {
+            hasPermissionRequest = true;
+          }
+          if (line.contains('FirebaseMessaging.onBackgroundMessage(')) {
+            hasBackgroundHandler = true;
+          }
+          if (line.contains('onTokenRefresh') ||
+              line.contains('getToken(') ||
+              line.contains('.getToken()')) {
+            hasTokenRefresh = true;
+          }
         }
       }
     }
@@ -243,93 +235,5 @@ final class FCMAnalyzer extends Analyzer {
       duration: DateTime.now().difference(startTime),
       timestamp: DateTime.now(),
     );
-  }
-
-  List<String> _findDartFiles(FileSystem fs, String dirPath) {
-    final files = <String>[];
-    if (!fs.exists(dirPath) || !fs.isDirectory(dirPath)) return files;
-
-    for (final entry in fs.listDirectory(dirPath)) {
-      if (fs.isDirectory(entry)) {
-        files.addAll(_findDartFiles(fs, entry));
-      } else if (entry.endsWith('.dart')) {
-        files.add(entry);
-      }
-    }
-    return files;
-  }
-
-  String _stripCommentsAndStrings(String source) {
-    final buffer = StringBuffer();
-    var i = 0;
-    while (i < source.length) {
-      if (i < source.length - 1 && source[i] == '/' && source[i + 1] == '/') {
-        buffer.write(' ');
-        i++;
-        while (i < source.length && source[i] != '\n') {
-          buffer.write(' ');
-          i++;
-        }
-        if (i < source.length) {
-          buffer.write(source[i]);
-          i++;
-        }
-        continue;
-      }
-      if (i < source.length - 1 && source[i] == '/' && source[i + 1] == '*') {
-        buffer.write('  ');
-        i += 2;
-        while (i < source.length - 1 &&
-            !(source[i] == '*' && source[i + 1] == '/')) {
-          buffer.write(source[i] == '\n' ? '\n' : ' ');
-          i++;
-        }
-        if (i < source.length - 1) {
-          buffer.write('  ');
-          i += 2;
-        }
-        continue;
-      }
-      if (source[i] == '"' || source[i] == "'") {
-        final quote = source[i];
-        buffer.write(quote);
-        i++;
-        if (i + 1 < source.length &&
-            source[i] == quote &&
-            source[i + 1] == quote) {
-          buffer.write('$quote$quote');
-          i += 2;
-          while (i < source.length - 2 &&
-              !(source[i] == quote &&
-                  source[i + 1] == quote &&
-                  source[i + 2] == quote)) {
-            buffer.write(source[i] == '\n' ? '\n' : ' ');
-            i++;
-          }
-          if (i < source.length - 2) {
-            buffer.write('$quote$quote$quote');
-            i += 3;
-          }
-        } else {
-          while (i < source.length && source[i] != quote) {
-            if (source[i] == '\\' && i + 1 < source.length) {
-              buffer.write('  ');
-              i += 2;
-            } else {
-              buffer.write(source[i] == '\n' ? '\n' : ' ');
-              i++;
-            }
-          }
-          if (i < source.length) {
-            buffer.write(quote);
-            i++;
-          }
-        }
-        continue;
-      }
-      buffer.write(source[i]);
-      i++;
-    }
-    return buffer.toString();
   }
 }

@@ -2,6 +2,7 @@ import 'package:firedoctor/analyzers/analyzer.dart';
 import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/models/models.dart';
+import 'package:firedoctor/parsers/pubspec_parser.dart';
 import 'parsers/parsers.dart';
 
 final class IOSAnalyzer extends Analyzer {
@@ -206,7 +207,21 @@ final class IOSAnalyzer extends Analyzer {
       ));
     }
 
+    // Only flag missing remote-notification background mode if the project
+    // actually uses Firebase Cloud Messaging
+    bool needsRemoteNotifications = false;
+    if (!needsRemoteNotifications) {
+      final pubspecPath = fs.join(projectPath, 'pubspec.yaml');
+      if (fs.exists(pubspecPath)) {
+        final pubspec = await PubspecParser.parseFromFile(pubspecPath, fs);
+        needsRemoteNotifications = pubspec != null &&
+            (pubspec.hasDependency('firebase_messaging') ||
+                pubspec.hasDevDependency('firebase_messaging'));
+      }
+    }
+
     if (infoPlistInfo != null &&
+        needsRemoteNotifications &&
         !infoPlistInfo.backgroundModes.contains('remote-notification')) {
       issues.add(DiagnosticIssue(
         severity: Severity.warning,

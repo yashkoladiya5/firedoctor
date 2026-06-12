@@ -89,10 +89,10 @@ class ValidationService {
     final totalChecks = expectedFindings.length;
     // correct = truePositives + trueNegatives
     // trueNegatives = expected where shouldBeFound:false AND not in falsePositives
-    final trueNegatives = expectedFindings
-        .where((e) => !e.shouldBeFound)
-        .length - falsePositives.length;
-    final accuracy = totalChecks > 0 ? (truePositives.length + trueNegatives) / totalChecks : 1.0;
+    final shouldBeFalseCount = expectedFindings.where((e) => !e.shouldBeFound).length;
+    final trueNegatives = (shouldBeFalseCount - falsePositives.length).clamp(0, shouldBeFalseCount);
+    final totalCorrect = truePositives.length + trueNegatives;
+    final accuracy = totalChecks > 0 ? totalCorrect / totalChecks : 1.0;
     final precision = (truePositives.length + falsePositives.length) > 0
         ? truePositives.length / (truePositives.length + falsePositives.length)
         : 1.0;
@@ -151,16 +151,19 @@ class ValidationService {
   }
 
   String _analyzerNameForCode(String code) {
-    final prefix = code.length >= 4 ? code.substring(0, 4) : '';
+    // Match first 3 chars of FD-prefixed codes (FD2, FD3, etc.)
+    final prefix = code.length >= 3 ? code.substring(0, 3) : '';
     return switch (prefix) {
-      'FD10' => 'project',
-      'FD20' => 'dependency',
-      'FD30' => 'firebase_core',
-      'FD40' => 'android',
-      'FD50' => 'ios',
-      'FD60' => 'fcm',
-      'FD70' => 'crashlytics',
-      _ => 'unknown',
+      'FD1' => 'project',
+      'FD2' => 'dependency',
+      'FD3' => 'firebase_core',
+      'FD4' => 'android',
+      'FD5' => 'ios',
+      'FD6' => 'fcm',
+      'FD7' => 'crashlytics',
+      // Non-FD codes (MISSING_*, NOT_FLUTTER_PROJECT, INVALID_PUBSPEC, FLUTTER_*)
+      // all come from the project analyzer
+      _ => 'project',
     };
   }
 }

@@ -109,6 +109,43 @@ final class DependencyAnalyzer extends Analyzer {
       ));
     }
 
+    final allPackageNames = installed.map((p) => p.packageName).toSet()
+      ..addAll(devDependencyPackages.map((p) => p.packageName));
+
+    final usesFirebase = hasCore || hasNonCore;
+    if (usesFirebase && !allPackageNames.contains('firebase_analytics')) {
+      issues.add(DiagnosticIssue(
+        severity: Severity.info,
+        code: 'FD203',
+        title: 'firebase_analytics not installed',
+        description: 'firebase_analytics is recommended for understanding user engagement. Consider adding if you need analytics.',
+        recommendation: 'Add firebase_analytics to your dependencies:\n  firebase_analytics: ^11.0.0',
+        filePath: pubspecPath,
+      ));
+    }
+
+    if (usesFirebase && !allPackageNames.contains('cloud_firestore')) {
+      issues.add(DiagnosticIssue(
+        severity: Severity.info,
+        code: 'FD204',
+        title: 'cloud_firestore not installed',
+        description: 'cloud_firestore is recommended for persistent data storage. Consider adding if you need Firestore.',
+        recommendation: 'Add cloud_firestore to your dependencies:\n  cloud_firestore: ^5.0.0',
+        filePath: pubspecPath,
+      ));
+    }
+
+    if (usesFirebase && !allPackageNames.contains('firebase_auth')) {
+      issues.add(DiagnosticIssue(
+        severity: Severity.info,
+        code: 'FD205',
+        title: 'firebase_auth not installed',
+        description: 'firebase_auth is recommended for user authentication. Consider adding if you need Auth.',
+        recommendation: 'Add firebase_auth to your dependencies:\n  firebase_auth: ^5.0.0',
+        filePath: pubspecPath,
+      ));
+    }
+
     final hasCriticalOrError = issues.any(
       (i) => i.severity == Severity.critical || i.severity == Severity.error,
     );

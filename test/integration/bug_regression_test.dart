@@ -1,7 +1,6 @@
 import 'package:test/test.dart';
 import 'package:firedoctor/analyzers/project/project_analyzer.dart';
 import 'package:firedoctor/analyzers/firebase_core/firebase_core_analyzer.dart';
-import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/cli/commands/doctor_command.dart';
 import 'package:firedoctor/cli/commands/report_command.dart';
@@ -81,7 +80,7 @@ dev_dependencies: {}
       fs.addFile('/project/lib/main.dart', 'void main() {}');
 
       final analyzer = ProjectAnalyzer();
-      final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
       final result = await analyzer.analyze(context);
 
       expect(result.projectName, equals('my_test_project'));
@@ -179,7 +178,7 @@ class MyApp extends StatelessWidget {
         mainContent: mainContent,
         addFirebaseOptions: true,
       );
-      final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
       final analyzer = FirebaseCoreAnalyzer();
       final result = await analyzer.analyze(context);
 
@@ -216,7 +215,7 @@ class MyApp extends StatelessWidget {
 }
 ''';
       final fs = _createFlutterProject(mainContent: mainContent);
-      final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
       final analyzer = FirebaseCoreAnalyzer();
       final result = await analyzer.analyze(context);
 
@@ -245,7 +244,7 @@ class MyApp extends StatelessWidget {
 }
 ''';
       final fs = _createFlutterProject(mainContent: mainContent);
-      final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
       final analyzer = FirebaseCoreAnalyzer();
       final result = await analyzer.analyze(context);
 
@@ -287,7 +286,7 @@ Future<void> initializeFirebase() async {
 ''',
         },
       );
-      final context = AnalyzerContext(projectPath: '/project', fileSystem: fs);
+      final context = createAnalyzerContext(projectPath: '/project', fileSystem: fs);
       final analyzer = FirebaseCoreAnalyzer();
       final result = await analyzer.analyze(context);
 

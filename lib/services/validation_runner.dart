@@ -53,15 +53,15 @@ final class ValidationRunner {
   }
 
   String _categoryForCode(String code) {
-    final prefix = code.length >= 4 ? code.substring(0, 4) : '';
+    final prefix = code.length >= 3 ? code.substring(0, 3) : '';
     return switch (prefix) {
-      'FD10' => 'project',
-      'FD20' => 'dependency',
-      'FD30' => 'firebase_core',
-      'FD40' => 'android',
-      'FD50' => 'ios',
-      'FD60' => 'fcm',
-      'FD70' => 'crashlytics',
+      'FD1' => 'project',
+      'FD2' => 'dependency',
+      'FD3' => 'firebase_core',
+      'FD4' => 'android',
+      'FD5' => 'ios',
+      'FD6' => 'fcm',
+      'FD7' => 'crashlytics',
       _ => 'unknown',
     };
   }

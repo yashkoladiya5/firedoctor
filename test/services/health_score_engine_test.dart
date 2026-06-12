@@ -35,7 +35,7 @@ void main() {
 
         expect(score.overallScore, equals(100.0));
         expect(score.totalWeight, equals(0));
-        expect(score.maxPossibleWeight, equals(0));
+        expect(score.maxPossibleWeight, equals(1));
         expect(score.categoryScores, isEmpty);
         expect(score.recommendations, isEmpty);
         for (final group in PriorityGroup.values) {
@@ -51,7 +51,7 @@ void main() {
 
         expect(score.overallScore, equals(100.0));
         expect(score.totalWeight, equals(0));
-        expect(score.maxPossibleWeight, equals(0));
+        expect(score.maxPossibleWeight, equals(1));
         expect(score.categoryScores, hasLength(2));
         for (final cat in score.categoryScores) {
           expect(cat.score, equals(100.0));
@@ -371,6 +371,103 @@ void main() {
             equals(fromResults.categoryScores.length));
         expect(fromReport.recommendations.length,
             equals(fromResults.recommendations.length));
+      });
+    });
+
+    group('regression', () {
+      test('empty issues yields overall score 100.0', () {
+        final score = engine.computeFromResults([
+          _result('project', []),
+        ]);
+
+        expect(score.overallScore, equals(100.0));
+        expect(score.categoryScores.first.score, equals(100.0));
+      });
+
+      test('all critical issues yields overall score 0.0', () {
+        final score = engine.computeFromResults([
+          _result('project', [
+            _issue(Severity.critical),
+            _issue(Severity.critical),
+            _issue(Severity.critical),
+          ]),
+        ]);
+
+        expect(score.overallScore, equals(0.0));
+        for (final cat in score.categoryScores) {
+          expect(cat.score, equals(0.0));
+        }
+      });
+
+      test('mixed severities produces score in [0, 100]', () {
+        final score = engine.computeFromResults([
+          _result('project', [
+            _issue(Severity.critical),
+            _issue(Severity.warning),
+            _issue(Severity.info),
+          ]),
+        ]);
+
+        expect(score.overallScore, greaterThanOrEqualTo(0.0));
+        expect(score.overallScore, lessThanOrEqualTo(100.0));
+      });
+
+      test('single issue produces correct score', () {
+        final score = engine.computeFromResults([
+          _result('project', [_issue(Severity.error)]),
+        ]);
+
+        expect(score.overallScore, closeTo(40.0, 0.01));
+        expect(score.categoryScores.first.score, closeTo(40.0, 0.01));
+      });
+
+      test('no issues across categories yields 100.0 overall', () {
+        final score = engine.computeFromResults([
+          _result('project', []),
+          _result('android', []),
+          _result('ios', []),
+        ]);
+
+        expect(score.overallScore, equals(100.0));
+        for (final cat in score.categoryScores) {
+          expect(cat.score, equals(100.0));
+        }
+      });
+
+      test('negative score regression — score never drops below 0', () {
+        const custom = HealthScoreEngine(
+          weights: ScoreWeights(critical: 10, error: 20),
+        );
+        final score = custom.computeFromResults([
+          _result('project', [
+            _issue(Severity.error),
+            _issue(Severity.error),
+          ]),
+        ]);
+
+        expect(score.overallScore, isNonNegative);
+        expect(score.overallScore, equals(0.0));
+      });
+
+      test('overflow regression — score never exceeds 100', () {
+        final score = engine.computeFromResults([
+          _result('project', [
+            _issue(Severity.info),
+            _issue(Severity.info),
+          ]),
+        ]);
+
+        expect(score.overallScore, lessThanOrEqualTo(100.0));
+        expect(score.overallScore, closeTo(96.0, 0.01));
+      });
+
+      test('category with 1 critical yields category score 0.0', () {
+        final score = engine.computeFromResults([
+          _result('project', [_issue(Severity.critical)]),
+        ]);
+
+        expect(score.categoryScores.first.score, equals(0.0));
+        expect(score.overallScore, equals(0.0));
       });
     });
   });

@@ -1,6 +1,5 @@
 import 'package:firedoctor/analyzers/analyzer.dart';
 import 'package:firedoctor/analyzers/analyzer_context.dart';
-import 'package:firedoctor/filesystem/file_system_interface.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/parsers/pubspec_parser.dart';
 
@@ -47,9 +46,6 @@ final class CrashlyticsAnalyzer extends Analyzer {
         pubspec.hasDependency('firebase_crashlytics') ||
             pubspec.hasDevDependency('firebase_crashlytics');
 
-    final libPath = fs.join(projectPath, 'lib');
-    final hasLibDir = fs.exists(libPath) && fs.isDirectory(libPath);
-
     // Dart analysis
     bool hasCrashlyticsUsage = false;
     bool hasFlutterErrorOnError = false;
@@ -60,47 +56,43 @@ final class CrashlyticsAnalyzer extends Analyzer {
     bool hasCustomKey = false;
     bool hasUserIdentifier = false;
 
-    if (hasCrashlyticsDependency && hasLibDir) {
-      final dartFiles = _findDartFiles(fs, libPath);
+    // Scan Dart files for crashlytics usage regardless of dependency status
+    final dartFiles = context.sourceFileCache?.getDartFiles(projectPath) ?? [];
 
-      for (final filePath in dartFiles) {
-        try {
-          final content = fs.readAsString(filePath);
-          final cleaned = _stripCommentsAndStrings(content);
-          final lines = cleaned.split('\n');
+    for (final filePath in dartFiles) {
+      final lines = context.sourceFileCache?.getLines(filePath);
+      if (lines == null) continue;
 
-          for (final line in lines) {
-            if (line.contains('FirebaseCrashlytics')) {
-              hasCrashlyticsUsage = true;
-            }
-            if (line.contains('FlutterError.onError')) {
-              hasFlutterErrorOnError = true;
-            }
-            if (line.contains('PlatformDispatcher.instance.onError')) {
-              hasPlatformDispatcherOnError = true;
-            }
-            if (line.contains('runZonedGuarded')) {
-              hasRunZonedGuarded = true;
-            }
-            if (line.contains('setCrashlyticsCollectionEnabled')) {
-              hasCollectionEnabled = true;
-            }
-            if (line.contains('.recordError(')) {
-              hasRecordError = true;
-            }
-            if (line.contains('setCustomKey(')) {
-              hasCustomKey = true;
-            }
-            if (line.contains('setUserIdentifier(')) {
-              hasUserIdentifier = true;
-            }
-          }
-        } catch (_) {}
+      for (final line in lines) {
+        if (line.contains('FirebaseCrashlytics')) {
+          hasCrashlyticsUsage = true;
+        }
+        if (line.contains('FlutterError.onError')) {
+          hasFlutterErrorOnError = true;
+        }
+        if (line.contains('PlatformDispatcher.instance.onError')) {
+          hasPlatformDispatcherOnError = true;
+        }
+        if (line.contains('runZonedGuarded')) {
+          hasRunZonedGuarded = true;
+        }
+        if (line.contains('setCrashlyticsCollectionEnabled')) {
+          hasCollectionEnabled = true;
+        }
+        if (line.contains('.recordError(')) {
+          hasRecordError = true;
+        }
+        if (line.contains('setCustomKey(')) {
+          hasCustomKey = true;
+        }
+        if (line.contains('setUserIdentifier(')) {
+          hasUserIdentifier = true;
+        }
       }
     }
 
     // FD700: firebase_crashlytics dependency missing
-    if (!hasCrashlyticsDependency) {
+    if (!hasCrashlyticsDependency && hasCrashlyticsUsage) {
       issues.add(DiagnosticIssue(
         severity: Severity.warning,
         code: 'FD700',
@@ -306,7 +298,7 @@ final class CrashlyticsAnalyzer extends Analyzer {
       }
     }
 
-    if (gradleContent != null) {
+    if (gradleContent != null && hasCrashlyticsUsage) {
       if (!hasCrashlyticsGradlePlugin) {
         issues.add(DiagnosticIssue(
           severity: Severity.error,
@@ -373,36 +365,38 @@ final class CrashlyticsAnalyzer extends Analyzer {
         }
       }
 
-      if (!hasCrashlyticsPod) {
-        issues.add(DiagnosticIssue(
-          severity: Severity.error,
-          code: 'FD710',
-          title: 'Missing Crashlytics CocoaPods pod',
-          description:
-              'The Firebase/Crashlytics pod is not found in Podfile or Podfile.lock. '
-              'Crashlytics requires this pod for iOS crash reporting.',
-          recommendation:
-              'Add the Crashlytics pod to your Podfile:\n'
-              "  pod 'Firebase/Crashlytics'",
-          filePath: podfilePath,
-        ));
-      }
+      if (hasCrashlyticsUsage) {
+        if (!hasCrashlyticsPod) {
+          issues.add(DiagnosticIssue(
+            severity: Severity.error,
+            code: 'FD710',
+            title: 'Missing Crashlytics CocoaPods pod',
+            description:
+                'The Firebase/Crashlytics pod is not found in Podfile or Podfile.lock. '
+                'Crashlytics requires this pod for iOS crash reporting.',
+            recommendation:
+                'Add the Crashlytics pod to your Podfile:\n'
+                "  pod 'Firebase/Crashlytics'",
+            filePath: podfilePath,
+          ));
+        }
 
-      if (!hasDsymConfig) {
-        issues.add(DiagnosticIssue(
-          severity: Severity.info,
-          code: 'FD711',
-          title: 'Missing dSYM upload configuration',
-          description:
-              'dSYM upload script for Crashlytics not detected. '
-              'Without dSYM uploads, crash reports may not be symbolicated.',
-          recommendation:
-              'Ensure dSYM upload is configured in your Xcode build phases:\n'
-              '  "\${PODS_ROOT}/FirebaseCrashlytics/upload-symbols" '
-              '-gsp "\${PROJECT_DIR}/Runner/GoogleService-Info.plist" '
-              '-p ios "\${DWARF_DSYM_FOLDER_PATH}/\${DWARF_DSYM_FILE_NAME}"',
-          filePath: podfileLockPath,
-        ));
+        if (!hasDsymConfig) {
+          issues.add(DiagnosticIssue(
+            severity: Severity.info,
+            code: 'FD711',
+            title: 'Missing dSYM upload configuration',
+            description:
+                'dSYM upload script for Crashlytics not detected. '
+                'Without dSYM uploads, crash reports may not be symbolicated.',
+            recommendation:
+                'Ensure dSYM upload is configured in your Xcode build phases:\n'
+                '  "\${PODS_ROOT}/FirebaseCrashlytics/upload-symbols" '
+                '-gsp "\${PROJECT_DIR}/Runner/GoogleService-Info.plist" '
+                '-p ios "\${DWARF_DSYM_FOLDER_PATH}/\${DWARF_DSYM_FILE_NAME}"',
+            filePath: podfileLockPath,
+          ));
+        }
       }
     }
 
@@ -427,93 +421,5 @@ final class CrashlyticsAnalyzer extends Analyzer {
       duration: DateTime.now().difference(startTime),
       timestamp: DateTime.now(),
     );
-  }
-
-  List<String> _findDartFiles(FileSystem fs, String dirPath) {
-    final files = <String>[];
-    if (!fs.exists(dirPath) || !fs.isDirectory(dirPath)) return files;
-
-    for (final entry in fs.listDirectory(dirPath)) {
-      if (fs.isDirectory(entry)) {
-        files.addAll(_findDartFiles(fs, entry));
-      } else if (entry.endsWith('.dart')) {
-        files.add(entry);
-      }
-    }
-    return files;
-  }
-
-  String _stripCommentsAndStrings(String source) {
-    final buffer = StringBuffer();
-    var i = 0;
-    while (i < source.length) {
-      if (i < source.length - 1 && source[i] == '/' && source[i + 1] == '/') {
-        buffer.write(' ');
-        i++;
-        while (i < source.length && source[i] != '\n') {
-          buffer.write(' ');
-          i++;
-        }
-        if (i < source.length) {
-          buffer.write(source[i]);
-          i++;
-        }
-        continue;
-      }
-      if (i < source.length - 1 && source[i] == '/' && source[i + 1] == '*') {
-        buffer.write('  ');
-        i += 2;
-        while (i < source.length - 1 &&
-            !(source[i] == '*' && source[i + 1] == '/')) {
-          buffer.write(source[i] == '\n' ? '\n' : ' ');
-          i++;
-        }
-        if (i < source.length - 1) {
-          buffer.write('  ');
-          i += 2;
-        }
-        continue;
-      }
-      if (source[i] == '"' || source[i] == "'") {
-        final quote = source[i];
-        buffer.write(quote);
-        i++;
-        if (i + 1 < source.length &&
-            source[i] == quote &&
-            source[i + 1] == quote) {
-          buffer.write('$quote$quote');
-          i += 2;
-          while (i < source.length - 2 &&
-              !(source[i] == quote &&
-                  source[i + 1] == quote &&
-                  source[i + 2] == quote)) {
-            buffer.write(source[i] == '\n' ? '\n' : ' ');
-            i++;
-          }
-          if (i < source.length - 2) {
-            buffer.write('$quote$quote$quote');
-            i += 3;
-          }
-        } else {
-          while (i < source.length && source[i] != quote) {
-            if (source[i] == '\\' && i + 1 < source.length) {
-              buffer.write('  ');
-              i += 2;
-            } else {
-              buffer.write(source[i] == '\n' ? '\n' : ' ');
-              i++;
-            }
-          }
-          if (i < source.length) {
-            buffer.write(quote);
-            i++;
-          }
-        }
-        continue;
-      }
-      buffer.write(source[i]);
-      i++;
-    }
-    return buffer.toString();
   }
 }
