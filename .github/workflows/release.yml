@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v0.1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.PUB_CACHE }}
+            .dart_tool
+            **/.packages
+            **/.dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock', '**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Print Dart version
+        run: dart --version
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Run tests
+        run: dart test
+
+      - name: Determine tag name
+        id: tag
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ github.event.inputs.version }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "version=${TAG#v}" >> "${GITHUB_OUTPUT}"
+
+      - name: Compile binary
+        run: |
+          dart compile exe bin/firedoctor.dart -o firedoctor
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          sha256sum firedoctor > firedoctor.sha256
+          md5sum firedoctor > firedoctor.md5
+
+      - name: Generate release changelog
+        id: changelog
+        shell: bash
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | head -n 2 | tail -n 1 || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            LOG_RANGE="${GITHUB_REF#refs/tags/}"
+          else
+            LOG_RANGE="${PREV_TAG}..${GITHUB_REF#refs/tags/}"
+          fi
+          {
+            echo 'changelog<<EOFCHANGELOG'
+            git log "${LOG_RANGE}" --oneline --no-decorate || true
+            echo 'EOFCHANGELOG'
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.version }}
+          body: |
+            ## FireDoctor ${{ steps.tag.outputs.version }}
+
+            ### Changelog
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ### Assets
+
+            - `firedoctor` – compiled binary for linux-x64
+            - `firedoctor.sha256` – SHA-256 checksum
+            - `firedoctor.md5` – MD5 checksum
+
+            ### Installation
+
+            ```shell
+            # Download and verify
+            curl -LO https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag }}/firedoctor
+            curl -LO https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag }}/firedoctor.sha256
+            sha256sum -c firedoctor.sha256
+
+            # Make executable and run
+            chmod +x firedoctor
+            ./firedoctor --help
+            ```
+          files: |
+            firedoctor
+            firedoctor.sha256
+            firedoctor.md5
+          draft: false
+          prerelease: ${{ contains(steps.tag.outputs.tag, '-') }}

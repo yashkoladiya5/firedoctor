@@ -71,7 +71,7 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -99,7 +99,7 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -118,7 +118,7 @@ void main() {
     test('saves report to file with --output flag', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -143,7 +143,7 @@ void main() {
     test('saves JSON report with --json --output flags combined', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -180,7 +180,7 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -208,7 +208,7 @@ void main() {
 
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -228,7 +228,7 @@ void main() {
       when(() => fileSystem.currentDirectory).thenReturn('/cwd');
       when(() => fileSystem.exists('/cwd')).thenReturn(true);
       when(() => fileSystem.isDirectory('/cwd')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,
@@ -254,7 +254,7 @@ void main() {
     test('returns exitInternalFailure when analyzer service throws', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any()))
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger')))
           .thenThrow(Exception('Report failed'));
 
       final exitCode = await command.execute(['/project']);
@@ -267,7 +267,7 @@ void main() {
     test('returns exitCriticalIssues when critical issues found', () async {
       when(() => fileSystem.exists('/project')).thenReturn(true);
       when(() => fileSystem.isDirectory('/project')).thenReturn(true);
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.failed,
@@ -294,7 +294,7 @@ void main() {
       when(() => fileSystem.isDirectory('/my_project')).thenReturn(true);
       when(() => fileSystem.writeAsStringAsync(any(), any()))
           .thenAnswer((_) async {});
-      when(() => analyzerService.runAll(any())).thenAnswer((_) async => [
+      when(() => analyzerService.runAll(any(), progressLogger: any(named: 'progressLogger'))).thenAnswer((_) async => [
             DiagnosticResult(
               analyzerName: 'project',
               status: CheckStatus.passed,

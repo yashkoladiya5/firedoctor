@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/cli/command.dart';
 import 'package:firedoctor/constants/app_constants.dart';
@@ -8,6 +9,29 @@ import 'package:firedoctor/models/severity.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/services/report_service.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
+
+/// Routes all output to stderr. Used when --json flag is active to keep
+/// progress messages off stdout so the JSON pipe stays clean.
+final class _StderrTerminal implements Terminal {
+  const _StderrTerminal();
+
+  @override
+  void write(String message) => stderr.write(message);
+  @override
+  void writeLine(String message) => stderr.writeln(message);
+  @override
+  void writeSuccess(String message) => stderr.writeln(message);
+  @override
+  void writeWarning(String message) => stderr.writeln('[WARN] $message');
+  @override
+  void writeError(String message) => stderr.writeln('ERROR: $message');
+  @override
+  void writeInfo(String message) => stderr.writeln(message);
+  @override
+  String? readLine() => null;
+  @override
+  void clear() {}
+}
 
 final class ReportCommand extends Command {
   @override
@@ -48,7 +72,13 @@ final class ReportCommand extends Command {
         }
       } else if (arg == '--fail-on') {
         if (i + 1 < args.length) {
-          failOn = _parseSeverity(args[++i]);
+          final parsed = _tryParseSeverity(args[++i]);
+          if (parsed == null) {
+            terminal.writeError(
+                'Invalid --fail-on value. Must be one of: warning, error, critical.');
+            return AppConstants.exitInternalFailure;
+          }
+          failOn = parsed;
         } else {
           terminal.writeError('Missing value for --fail-on flag');
           return AppConstants.exitInternalFailure;
@@ -79,23 +109,31 @@ final class ReportCommand extends Command {
       return AppConstants.exitInternalFailure;
     }
 
-    terminal.writeLine('Generating report for $projectPath...');
-    terminal.writeLine('');
-
     final context = AnalyzerContext(
       projectPath: projectPath,
       fileSystem: fileSystem,
     );
 
+    // When --json is used without --output, route progress messages to stderr
+    // so the JSON payload on stdout stays clean for piping.
+    final Terminal progressTerminal = asJson && outputPath == null
+        ? const _StderrTerminal()
+        : terminal;
+
+    final Logger progressLogger = asJson && outputPath == null
+        ? Logger(terminal: progressTerminal)
+        : logger;
+
     List<DiagnosticResult> results;
     try {
-      results = await analyzerService.runAll(context);
+      results = await analyzerService.runAll(context,
+          progressLogger: progressLogger);
     } catch (e) {
       terminal.writeError('Report generation failed: $e');
       return AppConstants.exitInternalFailure;
     }
 
-    final reportService = ReportService(terminal: terminal);
+    final reportService = ReportService(terminal: progressTerminal);
 
     final projectName = results
         .map((r) => r.projectName)
@@ -114,15 +152,22 @@ final class ReportCommand extends Command {
 
     if (asJson && outputPath != null) {
       await reportService.saveReport(report, fileSystem, outputPath);
-      terminal.writeSuccess('Report saved to $outputPath');
-      terminal.writeLine('');
+      progressTerminal.writeSuccess('Report saved to $outputPath');
+      progressTerminal.writeLine('');
     } else if (asJson) {
+      // JSON payload goes through the original terminal (stdout in prod,
+      // fake terminal in tests) so it can be piped.
       terminal.writeLine(reportService.toJson(report));
     } else if (outputPath != null) {
+      progressTerminal.writeLine('Generating report for $projectPath...');
+      progressTerminal.writeLine('');
       await reportService.saveReport(report, fileSystem, outputPath);
-      terminal.writeSuccess('Report saved to $outputPath');
-      terminal.writeLine('');
+      progressTerminal.writeSuccess('Report saved to $outputPath');
+      progressTerminal.writeLine('');
+      reportService.printReport(report);
     } else {
+      progressTerminal.writeLine('Generating report for $projectPath...');
+      progressTerminal.writeLine('');
       reportService.printReport(report);
     }
 
@@ -146,7 +191,7 @@ final class ReportCommand extends Command {
     return AppConstants.exitNoIssues;
   }
 
-  Severity _parseSeverity(String value) {
+  Severity? _tryParseSeverity(String value) {
     switch (value.toLowerCase()) {
       case 'warning':
       case 'warn':
@@ -156,7 +201,7 @@ final class ReportCommand extends Command {
       case 'critical':
         return Severity.critical;
       default:
-        return Severity.error;
+        return null;
     }
   }
 }

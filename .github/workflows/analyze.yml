@@ -1,0 +1,71 @@
+name: Analyze
+
+on:
+  push:
+    branches: [main, master, develop, beta]
+  pull_request:
+    branches: [main, master, develop, beta]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.PUB_CACHE }}
+            .dart_tool
+            **/.packages
+            **/.dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock', '**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Print Dart version
+        run: dart --version
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze project
+        id: analyze
+        continue-on-error: true
+        run: dart analyze
+
+      - name: Upload analysis results on failure
+        if: steps.analyze.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: analyze-results-${{ matrix.os }}
+          path: |
+            .dart_tool/
+          retention-days: 7
+
+      - name: Fail step if analysis failed
+        if: steps.analyze.outcome == 'failure'
+        run: |
+          echo "::error::Dart analysis failed on ${{ matrix.os }}"
+          exit 1

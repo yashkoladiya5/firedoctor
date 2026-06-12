@@ -15,7 +15,6 @@ import 'package:firedoctor/services/analyzer_service.dart';
 export 'package:firedoctor/models/models.dart';
 export 'package:firedoctor/constants/constants.dart';
 export 'package:firedoctor/exceptions/exceptions.dart';
-export 'package:firedoctor/utils/utils.dart';
 export 'package:firedoctor/cli/cli.dart';
 export 'package:firedoctor/logging/logging.dart';
 export 'package:firedoctor/terminal/terminal.dart';

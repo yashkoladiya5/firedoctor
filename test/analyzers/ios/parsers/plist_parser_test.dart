@@ -280,7 +280,7 @@ trailing content after closing
 </plist>''');
         expect(result, isNotNull);
         expect(result!['FIRST'], equals('first'));
-        expect(result!['SECOND'], equals('second'));
+        expect(result['SECOND'], equals('second'));
       });
 
       test('handles array with text content between items', () {
