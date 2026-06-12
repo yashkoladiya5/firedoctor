@@ -736,6 +736,7 @@ void main() {
         () async {
           final fs = _createProject(
             files: {
+              '/project/pubspec.yaml': 'dependencies:\n  firebase_messaging: ^15.0.0\n',
               '/project/ios/Runner/GoogleService-Info.plist': validPlist,
               '/project/ios/Runner/Info.plist': infoPlistNoBackgroundModes,
               '/project/ios/Runner.xcodeproj/project.pbxproj': validPbxproj,
@@ -759,6 +760,7 @@ void main() {
         () async {
           final fs = _createProject(
             files: {
+              '/project/pubspec.yaml': 'dependencies:\n  firebase_messaging: ^15.0.0\n',
               '/project/ios/Runner/GoogleService-Info.plist': validPlist,
               '/project/ios/Runner/Info.plist':
                   infoPlistWithFirebaseProxyEnabled,

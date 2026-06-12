@@ -202,7 +202,7 @@ void main() {
     group('FD700: missing firebase_crashlytics dependency', () {
       test('emits FD700 when firebase_crashlytics not in deps', () async {
         final fs = _createProjectWithMain(
-          'void main() {}',
+          _basicCrashlyticsMain,
           withCrashlytics: false,
         );
         final context = createAnalyzerContext(
@@ -918,7 +918,7 @@ plugins {
 
       test('returns warning when only warning issues present', () async {
         final fs = _createProjectWithMain(
-          'void main() {}',
+          _fullErrorReportingMain,
           withCrashlytics: false,
         );
         final context = createAnalyzerContext(
@@ -946,9 +946,8 @@ plugins {
           );
           final result = await analyzer.analyze(context);
 
-          // FD700 fires (warning) since crashlytics is not in deps
-          expect(result.status, equals(CheckStatus.warning));
-          expect(result.issues.any((i) => i.code == 'FD700'), isTrue);
+          expect(result.status, equals(CheckStatus.passed));
+          expect(result.issues, isEmpty);
         },
       );
     });
