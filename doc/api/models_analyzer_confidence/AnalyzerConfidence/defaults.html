@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the defaults property from the AnalyzerConfidence class, for the Dart programming language.">
+  <title>defaults property - AnalyzerConfidence class - analyzer_confidence library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../models_analyzer_confidence/">models&#47;analyzer_confidence.dart</a></li>
+    <li><a href="../../models_analyzer_confidence/AnalyzerConfidence-class.html">AnalyzerConfidence</a></li>
+    <li class="self-crumb">defaults property</li>
+  </ol>
+  <div class="self-name">defaults</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="models_analyzer_confidence&#47;AnalyzerConfidence-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-property">defaults</span> property 
+</h1></div>
+
+    
+
+    
+        
+  <section id="getter">
+    <section class="multi-line-signature">
+      
+      <span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="../../models_analyzer_confidence/AnalyzerConfidence-class.html">AnalyzerConfidence</a></span>&gt;</span></span>
+      get
+      <span class="name ">defaults</span>
+      
+
+    </section>
+    
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">static Map&lt;String, AnalyzerConfidence&gt; get defaults =&gt; {
+  &#47;&#47; Project Analyzer
+  &#39;FD101&#39;: const AnalyzerConfidence(
+    code: &#39;FD101&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic YAML parse check&#39;,
+  ),
+  &#39;FD102&#39;: const AnalyzerConfidence(
+    code: &#39;FD102&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Filesystem check — low FP risk&#39;,
+  ),
+  &#39;FD103&#39;: const AnalyzerConfidence(
+    code: &#39;FD103&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Filesystem check — low FP risk&#39;,
+  ),
+  &#39;FD104&#39;: const AnalyzerConfidence(
+    code: &#39;FD104&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Filesystem check — low FP risk&#39;,
+  ),
+  &#39;FD105&#39;: const AnalyzerConfidence(
+    code: &#39;FD105&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Filesystem check — web directory optional&#39;,
+  ),
+  &#39;FD106&#39;: const AnalyzerConfidence(
+    code: &#39;FD106&#39;,
+    confidence: 0.90,
+    reasoning: &#39;YAML constraint parse — semantic versioning&#39;,
+  ),
+  &#47;&#47; Dependency Analyzer
+  &#39;FD201&#39;: const AnalyzerConfidence(
+    code: &#39;FD201&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic YAML dependency check&#39;,
+  ),
+  &#39;FD202&#39;: const AnalyzerConfidence(
+    code: &#39;FD202&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic version comparison&#39;,
+  ),
+  &#39;FD203&#39;: const AnalyzerConfidence(
+    code: &#39;FD203&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Recommended dependency — project may not need analytics&#39;,
+  ),
+  &#39;FD204&#39;: const AnalyzerConfidence(
+    code: &#39;FD204&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Recommended dependency — project may not need Firestore&#39;,
+  ),
+  &#39;FD205&#39;: const AnalyzerConfidence(
+    code: &#39;FD205&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Recommended dependency — project may not need Auth&#39;,
+  ),
+  &#47;&#47; Firebase Core Analyzer
+  &#39;FD301&#39;: const AnalyzerConfidence(
+    code: &#39;FD301&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic code pattern match for initializeApp&#39;,
+  ),
+  &#39;FD302&#39;: const AnalyzerConfidence(
+    code: &#39;FD302&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Options presence check — low FP risk&#39;,
+  ),
+  &#39;FD303&#39;: const AnalyzerConfidence(
+    code: &#39;FD303&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Main function heuristic — init could be in helper&#39;,
+  ),
+  &#39;FD304&#39;: const AnalyzerConfidence(
+    code: &#39;FD304&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Multiple init detection — reliable pattern match&#39;,
+  ),
+  &#39;FD305&#39;: const AnalyzerConfidence(
+    code: &#39;FD305&#39;,
+    confidence: 0.80,
+    reasoning: &#39;Conditional init heuristic — complex code paths&#39;,
+  ),
+  &#39;FD306&#39;: const AnalyzerConfidence(
+    code: &#39;FD306&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Platform channel init — pattern match&#39;,
+  ),
+  &#47;&#47; Android Analyzer
+  &#39;FD401&#39;: const AnalyzerConfidence(
+    code: &#39;FD401&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic filesystem check&#39;,
+  ),
+  &#39;FD402&#39;: const AnalyzerConfidence(
+    code: &#39;FD402&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic build.gradle parse&#39;,
+  ),
+  &#39;FD403&#39;: const AnalyzerConfidence(
+    code: &#39;FD403&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic build.gradle plugin parse&#39;,
+  ),
+  &#39;FD404&#39;: const AnalyzerConfidence(
+    code: &#39;FD404&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic minSdkVersion parse&#39;,
+  ),
+  &#39;FD405&#39;: const AnalyzerConfidence(
+    code: &#39;FD405&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic compileSdkVersion parse&#39;,
+  ),
+  &#39;FD406&#39;: const AnalyzerConfidence(
+    code: &#39;FD406&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic targetSdkVersion parse&#39;,
+  ),
+  &#39;FD407&#39;: const AnalyzerConfidence(
+    code: &#39;FD407&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Play services version — minor parse ambiguity&#39;,
+  ),
+  &#39;FD408&#39;: const AnalyzerConfidence(
+    code: &#39;FD408&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Build config recommendation — heuristic&#39;,
+  ),
+  &#39;FD409&#39;: const AnalyzerConfidence(
+    code: &#39;FD409&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic filesystem check&#39;,
+  ),
+  &#39;FD410&#39;: const AnalyzerConfidence(
+    code: &#39;FD410&#39;,
+    confidence: 0.90,
+    reasoning: &#39;AndroidX detection — build.gradle parse&#39;,
+  ),
+  &#47;&#47; iOS Analyzer
+  &#39;FD501&#39;: const AnalyzerConfidence(
+    code: &#39;FD501&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic filesystem check&#39;,
+  ),
+  &#39;FD502&#39;: const AnalyzerConfidence(
+    code: &#39;FD502&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Podfile parse — minor edge cases&#39;,
+  ),
+  &#39;FD503&#39;: const AnalyzerConfidence(
+    code: &#39;FD503&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Bundle ID comparison across files&#39;,
+  ),
+  &#39;FD504&#39;: const AnalyzerConfidence(
+    code: &#39;FD504&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Xcode project target parse&#39;,
+  ),
+  &#39;FD505&#39;: const AnalyzerConfidence(
+    code: &#39;FD505&#39;,
+    confidence: 0.95,
+    reasoning: &#39;iOS version parse from Podfile&#39;,
+  ),
+  &#39;FD506&#39;: const AnalyzerConfidence(
+    code: &#39;FD506&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Swift&#47;ObjC bridging detection&#39;,
+  ),
+  &#39;FD507&#39;: const AnalyzerConfidence(
+    code: &#39;FD507&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Plist background mode parse&#39;,
+  ),
+  &#39;FD508&#39;: const AnalyzerConfidence(
+    code: &#39;FD508&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Signing capability detection&#39;,
+  ),
+  &#39;FD509&#39;: const AnalyzerConfidence(
+    code: &#39;FD509&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Platform version in Podfile&#39;,
+  ),
+  &#39;FD510&#39;: const AnalyzerConfidence(
+    code: &#39;FD510&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Push capability detection&#39;,
+  ),
+  &#39;FD511&#39;: const AnalyzerConfidence(
+    code: &#39;FD511&#39;,
+    confidence: 0.90,
+    reasoning: &#39;ATS plist configuration&#39;,
+  ),
+  &#39;FD512&#39;: const AnalyzerConfidence(
+    code: &#39;FD512&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Delegate proxy plist detection&#39;,
+  ),
+  &#47;&#47; FCM Analyzer
+  &#39;FD600&#39;: const AnalyzerConfidence(
+    code: &#39;FD600&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic dependency check&#39;,
+  ),
+  &#39;FD601&#39;: const AnalyzerConfidence(
+    code: &#39;FD601&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Dart code pattern match — false positive risk from comments&#39;,
+  ),
+  &#39;FD602&#39;: const AnalyzerConfidence(
+    code: &#39;FD602&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Permission code pattern — may miss dynamic permission flows&#39;,
+  ),
+  &#39;FD603&#39;: const AnalyzerConfidence(
+    code: &#39;FD603&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Background handler pattern — may miss named function refs&#39;,
+  ),
+  &#39;FD604&#39;: const AnalyzerConfidence(
+    code: &#39;FD604&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Plist delegate proxy flag&#39;,
+  ),
+  &#39;FD605&#39;: const AnalyzerConfidence(
+    code: &#39;FD605&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Token refresh pattern — may miss wrapped calls&#39;,
+  ),
+  &#47;&#47; Crashlytics Analyzer
+  &#39;FD700&#39;: const AnalyzerConfidence(
+    code: &#39;FD700&#39;,
+    confidence: 1.0,
+    reasoning: &#39;Deterministic dependency check&#39;,
+  ),
+  &#39;FD701&#39;: const AnalyzerConfidence(
+    code: &#39;FD701&#39;,
+    confidence: 0.95,
+    reasoning: &#39;Crashlytics init pattern match&#39;,
+  ),
+  &#39;FD702&#39;: const AnalyzerConfidence(
+    code: &#39;FD702&#39;,
+    confidence: 0.85,
+    reasoning: &#39;Error reporting pattern — heuristic&#39;,
+  ),
+  &#39;FD703&#39;: const AnalyzerConfidence(
+    code: &#39;FD703&#39;,
+    confidence: 0.80,
+    reasoning: &#39;Catch block analysis — complex coverage&#39;,
+  ),
+  &#39;FD704&#39;: const AnalyzerConfidence(
+    code: &#39;FD704&#39;,
+    confidence: 0.90,
+    reasoning: &#39;NDK build.gradle detection&#39;,
+  ),
+  &#39;FD705&#39;: const AnalyzerConfidence(
+    code: &#39;FD705&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Debug disable pattern detection&#39;,
+  ),
+  &#39;FD706&#39;: const AnalyzerConfidence(
+    code: &#39;FD706&#39;,
+    confidence: 0.80,
+    reasoning: &#39;Test crash path — heuristic&#39;,
+  ),
+  &#39;FD707&#39;: const AnalyzerConfidence(
+    code: &#39;FD707&#39;,
+    confidence: 0.90,
+    reasoning: &#39;Upload symbols build.gradle detection&#39;,
+  ),
+  &#39;FD708&#39;: const AnalyzerConfidence(
+    code: &#39;FD708&#39;,
+    confidence: 0.80,
+    reasoning: &#39;User ID pattern — heuristic&#39;,
+  ),
+  &#39;FD709&#39;: const AnalyzerConfidence(
+    code: &#39;FD709&#39;,
+    confidence: 0.90,
+    reasoning: &#39;SDK version comparison — minor edge cases&#39;,
+  ),
+};</code></pre>
+</section>
+
+  </section>
+
+
+</div> <!-- /.main-content -->
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../models_analyzer_confidence/">analyzer_confidence</a></li>
+    <li><a href="../../models_analyzer_confidence/AnalyzerConfidence-class.html">AnalyzerConfidence</a></li>
+    <li class="self-crumb">defaults property</li>
+</ol>
+
+  <h5>AnalyzerConfidence class</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div><!--/.sidebar-offcanvas-->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

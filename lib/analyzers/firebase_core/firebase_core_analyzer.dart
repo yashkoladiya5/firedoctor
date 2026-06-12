@@ -3,6 +3,7 @@ import 'package:firedoctor/analyzers/analyzer_context.dart';
 import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/parsers/pubspec_parser.dart';
 
+/// Core class.
 final class FirebaseCoreAnalyzer extends Analyzer {
   @override
   String get name => 'firebase_core';
@@ -15,6 +16,7 @@ final class FirebaseCoreAnalyzer extends Analyzer {
   String get category => 'firebase_core';
 
   @override
+  /// Public method or function.
   Future<DiagnosticResult> analyze(AnalyzerContext context) async {
     final startTime = DateTime.now();
     final issues = <DiagnosticIssue>[];
@@ -348,8 +350,11 @@ final class FirebaseCoreAnalyzer extends Analyzer {
 }
 
 final class _InitCall {
+  /// Public property or field.
   final String filePath;
+  /// Public property or field.
   final int lineNumber;
+  /// Public property or field.
   final bool isAwaited;
 
   const _InitCall({

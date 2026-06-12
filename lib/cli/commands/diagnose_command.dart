@@ -11,15 +11,20 @@ import 'package:firedoctor/models/severity.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
+/// Core class.
 final class DiagnoseCommand extends Command {
   @override
   String get name => 'diagnose';
   @override
   String get description => 'Run Firebase diagnostics on the project';
 
+  /// Public property or field.
   final Logger logger;
+  /// Public property or field.
   final Terminal terminal;
+  /// Public property or field.
   final FileSystem fileSystem;
+  /// Public property or field.
   final AnalyzerService analyzerService;
 
   DiagnoseCommand({
@@ -30,6 +35,7 @@ final class DiagnoseCommand extends Command {
   });
 
   @override
+  /// Public method or function.
   Future<int> execute(List<String> args) async {
     final projectPath = args.isNotEmpty
         ? args.first

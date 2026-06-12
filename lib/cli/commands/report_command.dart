@@ -16,32 +16,44 @@ final class _StderrTerminal implements Terminal {
   const _StderrTerminal();
 
   @override
+  /// Public method or function.
   void write(String message) => stderr.write(message);
   @override
+  /// Public method or function.
   void writeLine(String message) => stderr.writeln(message);
   @override
+  /// Public method or function.
   void writeSuccess(String message) => stderr.writeln(message);
   @override
+  /// Public method or function.
   void writeWarning(String message) => stderr.writeln('[WARN] $message');
   @override
+  /// Public method or function.
   void writeError(String message) => stderr.writeln('ERROR: $message');
   @override
+  /// Public method or function.
   void writeInfo(String message) => stderr.writeln(message);
   @override
   String? readLine() => null;
   @override
+  /// Public method or function.
   void clear() {}
 }
 
+/// Core class.
 final class ReportCommand extends Command {
   @override
   String get name => 'report';
   @override
   String get description => 'Generate a diagnostic report for the project';
 
+  /// Public property or field.
   final Logger logger;
+  /// Public property or field.
   final Terminal terminal;
+  /// Public property or field.
   final FileSystem fileSystem;
+  /// Public property or field.
   final AnalyzerService analyzerService;
 
   ReportCommand({
@@ -52,6 +64,7 @@ final class ReportCommand extends Command {
   });
 
   @override
+  /// Public method or function.
   Future<int> execute(List<String> args) async {
     var asJson = false;
     Severity failOn = Severity.error;

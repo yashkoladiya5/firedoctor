@@ -5,6 +5,7 @@ import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/parsers/pubspec_parser.dart';
 import 'parsers/parsers.dart';
 
+/// Core class.
 final class IOSAnalyzer extends Analyzer {
   final PlistParser _plistParser;
   final PodfileParser _podfileParser;
@@ -31,6 +32,7 @@ final class IOSAnalyzer extends Analyzer {
   String get category => 'ios';
 
   @override
+  /// Public method or function.
   Future<DiagnosticResult> analyze(AnalyzerContext context) async {
     final startTime = DateTime.now();
     final issues = <DiagnosticIssue>[];

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the validateProject method from the ValidationService class, for the Dart programming language.">
+  <title>validateProject method - ValidationService class - validation_service library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../services_validation_service/">services&#47;validation_service.dart</a></li>
+    <li><a href="../../services_validation_service/ValidationService-class.html">ValidationService</a></li>
+    <li class="self-crumb">validateProject method</li>
+  </ol>
+  <div class="self-name">validateProject</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="services_validation_service&#47;ValidationService-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">validateProject</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_validation_result/ValidationEntry-class.html">ValidationEntry</a></span>&gt;</span></span>
+<span class="name ">validateProject</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="validateProject-param-projectPath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">projectPath</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Run all analyzers on a single project and produce a ValidationEntry</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;ValidationEntry&gt; validateProject(String projectPath) async {
+  final expectedFindings = await loadExpectedFindings(projectPath);
+
+  &#47;&#47; Extract project name from expected_findings.json
+  final content = await fileSystem.readAsStringAsync(
+    fileSystem.join(projectPath, &#39;expected_findings.json&#39;),
+  );
+  final json = jsonDecode(content) as Map&lt;String, dynamic&gt;;
+  final projectName =
+      json[&#39;projectName&#39;] as String? ?? projectPath.split(&#39;&#47;&#39;).last;
+
+  &#47;&#47; Run all analyzers
+  final context = AnalyzerContext(
+    projectPath: projectPath,
+    fileSystem: fileSystem,
+  );
+  final results = await analyzerService.runAll(context);
+
+  &#47;&#47; Collect all actual findings
+  final actualFindings = &lt;DiagnosticIssue&gt;[];
+  for (final result in results) {
+    for (final issue in result.issues) {
+      actualFindings.add(issue);
+    }
+  }
+
+  &#47;&#47; Match expected vs actual
+  final matchedExpected = &lt;int&gt;{};
+  final truePositives = &lt;ExpectedFinding&gt;[];
+  final falsePositives = &lt;DiagnosticIssue&gt;[];
+
+  for (final actual in actualFindings) {
+    var matched = false;
+    for (var i = 0; i &lt; expectedFindings.length; i++) {
+      final expected = expectedFindings[i];
+      if (expected.shouldBeFound &amp;&amp;
+          expected.code == actual.code &amp;&amp;
+          expected.analyzerName == _analyzerNameForCode(actual.code)) {
+        matchedExpected.add(i);
+        matched = true;
+        break;
+      }
+    }
+    if (matched) {
+      truePositives.add(expectedFindings.elementAt(matchedExpected.last));
+    } else {
+      falsePositives.add(actual);
+    }
+  }
+
+  &#47;&#47; False negatives: expected to be found but weren&#39;t
+  final falseNegatives = &lt;ExpectedFinding&gt;[];
+  for (var i = 0; i &lt; expectedFindings.length; i++) {
+    if (expectedFindings[i].shouldBeFound &amp;&amp; !matchedExpected.contains(i)) {
+      falseNegatives.add(expectedFindings[i]);
+    }
+  }
+
+  &#47;&#47; Unmatched not-should-be-found = correct true negatives (not explicitly tracked)
+  &#47;&#47; Total checks = all expected findings
+  final totalChecks = expectedFindings.length;
+  &#47;&#47; correct = truePositives + trueNegatives
+  &#47;&#47; trueNegatives = expected where shouldBeFound:false AND not in falsePositives
+  final shouldBeFalseCount = expectedFindings
+      .where((e) =&gt; !e.shouldBeFound)
+      .length;
+  final trueNegatives = (shouldBeFalseCount - falsePositives.length).clamp(
+    0,
+    shouldBeFalseCount,
+  );
+  final totalCorrect = truePositives.length + trueNegatives;
+  final accuracy = totalChecks &gt; 0 ? totalCorrect &#47; totalChecks : 1.0;
+  final precision = (truePositives.length + falsePositives.length) &gt; 0
+      ? truePositives.length &#47; (truePositives.length + falsePositives.length)
+      : 1.0;
+  final recall = (truePositives.length + falseNegatives.length) &gt; 0
+      ? truePositives.length &#47; (truePositives.length + falseNegatives.length)
+      : 1.0;
+
+  return ValidationEntry(
+    projectName: projectName,
+    projectPath: projectPath,
+    totalChecks: totalChecks,
+    truePositives: truePositives,
+    falseNegatives: falseNegatives,
+    falsePositives: falsePositives,
+    accuracy: accuracy,
+    precision: precision,
+    recall: recall,
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../services_validation_service/">validation_service</a></li>
+    <li><a href="../../services_validation_service/ValidationService-class.html">ValidationService</a></li>
+    <li class="self-crumb">validateProject method</li>
+</ol>
+
+    <h5>ValidationService class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

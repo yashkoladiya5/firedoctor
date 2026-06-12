@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the analyze method from the DependencyAnalyzer class, for the Dart programming language.">
+  <title>analyze method - DependencyAnalyzer class - dependency_analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_dependency_dependency_analyzer/">analyzers&#47;dependency&#47;dependency_analyzer.dart</a></li>
+    <li><a href="../../analyzers_dependency_dependency_analyzer/DependencyAnalyzer-class.html">DependencyAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+  </ol>
+  <div class="self-name">analyze</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzers_dependency_dependency_analyzer&#47;DependencyAnalyzer-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">analyze</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_diagnostic_result/DiagnosticResult-class.html">DiagnosticResult</a></span>&gt;</span></span>
+<span class="name ">analyze</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="analyze-param-context"><span class="type-annotation"><a href="../../analyzers_analyzer_context/AnalyzerContext-class.html">AnalyzerContext</a></span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Public method or function.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+&#47;&#47;&#47; Public method or function.
+Future&lt;DiagnosticResult&gt; analyze(AnalyzerContext context) async {
+  final startTime = DateTime.now();
+  final issues = &lt;DiagnosticIssue&gt;[];
+  final fs = context.fileSystem;
+  final projectPath = context.projectPath;
+  final pubspecPath = fs.join(projectPath, &#39;pubspec.yaml&#39;);
+
+  if (!fs.exists(pubspecPath)) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final pubspec = await PubspecParser.parseFromFile(pubspecPath, fs);
+  if (pubspec == null) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final installed = &lt;FirebasePackage&gt;{};
+  final devDependencyPackages = &lt;FirebasePackage&gt;{};
+  final versionIssues = &lt;String, String&gt;{};
+
+  for (final pkg in FirebasePackage.all) {
+    if (pubspec.hasDependency(pkg.packageName)) {
+      installed.add(pkg);
+      final version = pubspec.dependencyVersion(pkg.packageName)!;
+      if (_hasVersionIssue(version)) {
+        versionIssues[pkg.packageName] = version;
+      }
+    }
+
+    if (pubspec.hasDevDependency(pkg.packageName)) {
+      devDependencyPackages.add(pkg);
+      final version = pubspec.devDependencies[pkg.packageName]!;
+      if (_hasVersionIssue(version)) {
+        versionIssues[pkg.packageName] = version;
+      }
+    }
+  }
+
+  final allFirebasePkgs = installed.union(devDependencyPackages);
+  final hasNonCore = allFirebasePkgs.any((p) =&gt; p != FirebasePackage.core);
+  final hasCore = allFirebasePkgs.contains(FirebasePackage.core);
+
+  if (hasNonCore &amp;&amp; !hasCore) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.critical,
+        code: &#39;FD200&#39;,
+        title: &#39;Missing firebase_core&#39;,
+        description:
+            &#39;Firebase packages are installed without firebase_core. &#39;
+            &#39;firebase_core is required by all Firebase services.&#39;,
+        recommendation:
+            &#39;Add firebase_core to your dependencies:\n&#39;
+            &#39;  firebase_core: ^3.0.0&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  for (final pkg in devDependencyPackages) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.error,
+        code: &#39;FD201&#39;,
+        title: &#39;${pkg.displayName} in dev_dependencies&#39;,
+        description:
+            &#39;${pkg.packageName} is placed in dev_dependencies. &#39;
+            &#39;Firebase packages should be in dependencies.&#39;,
+        recommendation:
+            &#39;Move ${pkg.packageName} from dev_dependencies to dependencies.&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  for (final entry in versionIssues.entries) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD202&#39;,
+        title: &#39;Loose version constraint for ${entry.key}&#39;,
+        description:
+            &#39;${entry.key} has a loose version constraint: &quot;${entry.value}&quot;. &#39;
+            &#39;This may lead to unexpected breaking changes.&#39;,
+        recommendation:
+            &#39;Use a caret constraint like ^2.0.0 instead of &quot;${entry.value}&quot;.&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  final allPackageNames = installed.map((p) =&gt; p.packageName).toSet()
+    ..addAll(devDependencyPackages.map((p) =&gt; p.packageName));
+
+  final usesFirebase = hasCore || hasNonCore;
+  if (usesFirebase &amp;&amp; !allPackageNames.contains(&#39;firebase_analytics&#39;)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD203&#39;,
+        title: &#39;firebase_analytics not installed&#39;,
+        description:
+            &#39;firebase_analytics is recommended for understanding user engagement. Consider adding if you need analytics.&#39;,
+        recommendation:
+            &#39;Add firebase_analytics to your dependencies:\n  firebase_analytics: ^11.0.0&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  if (usesFirebase &amp;&amp; !allPackageNames.contains(&#39;cloud_firestore&#39;)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD204&#39;,
+        title: &#39;cloud_firestore not installed&#39;,
+        description:
+            &#39;cloud_firestore is recommended for persistent data storage. Consider adding if you need Firestore.&#39;,
+        recommendation:
+            &#39;Add cloud_firestore to your dependencies:\n  cloud_firestore: ^5.0.0&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  if (usesFirebase &amp;&amp; !allPackageNames.contains(&#39;firebase_auth&#39;)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD205&#39;,
+        title: &#39;firebase_auth not installed&#39;,
+        description:
+            &#39;firebase_auth is recommended for user authentication. Consider adding if you need Auth.&#39;,
+        recommendation:
+            &#39;Add firebase_auth to your dependencies:\n  firebase_auth: ^5.0.0&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  final hasCriticalOrError = issues.any(
+    (i) =&gt; i.severity == Severity.critical || i.severity == Severity.error,
+  );
+  final hasWarning = issues.any((i) =&gt; i.severity == Severity.warning);
+
+  CheckStatus status;
+  if (hasCriticalOrError) {
+    status = CheckStatus.failed;
+  } else if (hasWarning) {
+    status = CheckStatus.warning;
+  } else {
+    status = CheckStatus.passed;
+  }
+
+  return DiagnosticResult(
+    analyzerName: name,
+    status: status,
+    issues: issues,
+    duration: DateTime.now().difference(startTime),
+    timestamp: DateTime.now(),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_dependency_dependency_analyzer/">dependency_analyzer</a></li>
+    <li><a href="../../analyzers_dependency_dependency_analyzer/DependencyAnalyzer-class.html">DependencyAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+</ol>
+
+    <h5>DependencyAnalyzer class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

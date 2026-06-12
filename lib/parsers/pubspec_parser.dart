@@ -2,6 +2,7 @@ import 'package:yaml/yaml.dart';
 import 'package:firedoctor/models/pubspec.dart';
 import 'package:firedoctor/filesystem/filesystem.dart';
 
+/// Core class.
 final class PubspecParser {
   static Pubspec parse(String content) {
     final parsed = loadYaml(content);

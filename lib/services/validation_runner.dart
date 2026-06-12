@@ -4,9 +4,13 @@ import 'package:firedoctor/models/models.dart';
 import 'package:firedoctor/services/analyzer_service.dart';
 import 'package:firedoctor/services/validation_service.dart';
 
+/// Core class.
 final class ValidationRunner {
+  /// Public property or field.
   final AnalyzerService analyzerService;
+  /// Public property or field.
   final FileSystem fileSystem;
+  /// Public property or field.
   final Logger? logger;
 
   ValidationRunner({
@@ -15,6 +19,7 @@ final class ValidationRunner {
     this.logger,
   });
 
+  /// Public method or function.
   Future<ValidationReport> runAll({String? projectsDir}) async {
     final dir =
         projectsDir ??
@@ -29,11 +34,13 @@ final class ValidationRunner {
     return service.validateAll(dir, progressLogger: logger);
   }
 
+  /// Public method or function.
   Future<void> saveReport(ValidationReport report, String outputPath) async {
     final json = report.toJsonString();
     await fileSystem.writeAsStringAsync(outputPath, json);
   }
 
+  /// Public method or function.
   Map<String, double> getConfidenceScores() {
     return AnalyzerConfidence.defaults.map(
       (key, value) => MapEntry(key, value.confidence),

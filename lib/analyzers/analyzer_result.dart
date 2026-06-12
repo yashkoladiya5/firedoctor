@@ -5,7 +5,9 @@ import 'package:firedoctor/models/severity.dart';
 extension AnalyzerResultExtension on DiagnosticResult {
   bool get hasCriticalIssues =>
       issues.any((i) => i.severity == Severity.critical);
+  /// Public method or function.
   bool get hasErrors => issues.any((i) => i.severity == Severity.error);
+  /// Public method or function.
   bool get hasWarnings => issues.any((i) => i.severity == Severity.warning);
 
   List<DiagnosticIssue> get issuesBySeverity {

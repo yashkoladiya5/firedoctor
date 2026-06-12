@@ -2,12 +2,19 @@ import 'package:firedoctor/models/check_status.dart';
 import 'package:firedoctor/models/diagnostic_issue.dart';
 import 'package:firedoctor/models/severity.dart';
 
+/// Core class.
 final class DiagnosticResult {
+  /// Public property or field.
   final String analyzerName;
+  /// Public property or field.
   final CheckStatus status;
+  /// Public property or field.
   final List<DiagnosticIssue> issues;
+  /// Public property or field.
   final Duration duration;
+  /// Public property or field.
   final DateTime timestamp;
+  /// Public property or field.
   final String? projectName;
 
   const DiagnosticResult({

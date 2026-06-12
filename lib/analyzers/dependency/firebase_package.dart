@@ -1,8 +1,14 @@
+/// Core class.
 final class FirebasePackage {
+  /// Public property or field.
   final String packageName;
+  /// Public property or field.
   final String displayName;
+  /// Public property or field.
   final String category;
+  /// Public property or field.
   final String documentationUrl;
+  /// Public property or field.
   final String description;
 
   const FirebasePackage({

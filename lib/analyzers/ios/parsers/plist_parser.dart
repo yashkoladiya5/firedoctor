@@ -1,6 +1,8 @@
+/// Core class.
 final class PlistParser {
   const PlistParser();
 
+  /// Public method or function.
   Map<String, String>? parseGoogleServiceInfoPlist(String content) {
     if (content.trim().isEmpty) return null;
     if (!content.contains('<dict>') || !content.contains('<plist')) {

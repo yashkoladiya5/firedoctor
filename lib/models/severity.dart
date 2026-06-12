@@ -1,11 +1,17 @@
+/// Core class.
 sealed class Severity implements Comparable<Severity> {
   const Severity();
+  /// Public property or field.
   String get name;
+  /// Public property or field.
   int get value;
+  /// Public property or field.
   String get label;
+  /// Public property or field.
   String get emoji;
 
   @override
+  /// Public method or function.
   int compareTo(Severity other) => value.compareTo(other.value);
 
   static const info = _SeverityInfo();

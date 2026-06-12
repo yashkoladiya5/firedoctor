@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the analyze method from the AndroidAnalyzer class, for the Dart programming language.">
+  <title>analyze method - AndroidAnalyzer class - android_analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_android_android_analyzer/">analyzers&#47;android&#47;android_analyzer.dart</a></li>
+    <li><a href="../../analyzers_android_android_analyzer/AndroidAnalyzer-class.html">AndroidAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+  </ol>
+  <div class="self-name">analyze</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzers_android_android_analyzer&#47;AndroidAnalyzer-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">analyze</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_diagnostic_result/DiagnosticResult-class.html">DiagnosticResult</a></span>&gt;</span></span>
+<span class="name ">analyze</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="analyze-param-context"><span class="type-annotation"><a href="../../analyzers_analyzer_context/AnalyzerContext-class.html">AnalyzerContext</a></span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Public method or function.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+&#47;&#47;&#47; Public method or function.
+Future&lt;DiagnosticResult&gt; analyze(AnalyzerContext context) async {
+  final startTime = DateTime.now();
+  final issues = &lt;DiagnosticIssue&gt;[];
+  final fs = context.fileSystem;
+  final projectPath = context.projectPath;
+
+  final androidPath = fs.join(projectPath, &#39;android&#39;);
+  if (!fs.exists(androidPath) || !fs.isDirectory(androidPath)) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final googleServicesPath = fs.join(
+    fs.join(projectPath, &#39;android&#39;, &#39;app&#39;),
+    &#39;google-services.json&#39;,
+  );
+
+  Map&lt;String, dynamic&gt;? googleServicesConfig;
+  if (!fs.exists(googleServicesPath)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.critical,
+        code: &#39;FD400&#39;,
+        title: &#39;Missing google-services.json&#39;,
+        description:
+            &#39;The android&#47;app&#47;google-services.json file is missing. &#39;
+            &#39;This file is required for Firebase services on Android.&#39;,
+        recommendation:
+            &#39;Run &quot;flutterfire configure&quot; to generate the &#39;
+            &#39;google-services.json file.&#39;,
+        filePath: googleServicesPath,
+      ),
+    );
+  } else {
+    final content = fs.readAsString(googleServicesPath);
+    googleServicesConfig = _parseGoogleServicesJson(content);
+    if (googleServicesConfig == null) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD401&#39;,
+          title: &#39;Invalid google-services.json&#39;,
+          description:
+              &#39;The android&#47;app&#47;google-services.json file contains invalid JSON.&#39;,
+          recommendation:
+              &#39;Regenerate the file using &quot;flutterfire configure&quot; &#39;
+              &#39;or fix the JSON syntax.&#39;,
+          filePath: googleServicesPath,
+        ),
+      );
+    }
+  }
+
+  final appDir = fs.join(projectPath, &#39;android&#39;, &#39;app&#39;);
+  final appBuildGradlePath = fs.join(appDir, &#39;build.gradle&#39;);
+  final appBuildGradleKtsPath = fs.join(appDir, &#39;build.gradle.kts&#39;);
+
+  String? gradleContent;
+  String? gradlePath;
+  if (fs.exists(appBuildGradlePath)) {
+    gradleContent = fs.readAsString(appBuildGradlePath);
+    gradlePath = appBuildGradlePath;
+  } else if (fs.exists(appBuildGradleKtsPath)) {
+    gradleContent = fs.readAsString(appBuildGradleKtsPath);
+    gradlePath = appBuildGradleKtsPath;
+  }
+
+  String? expectedPackageName;
+  if (gradleContent != null) {
+    final gradleInfo = _parseBuildGradle(gradleContent);
+
+    if (!gradleInfo.plugins.contains(&#39;com.google.gms.google-services&#39;)) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD403&#39;,
+          title: &#39;Missing google-services plugin&#39;,
+          description:
+              &#39;The com.google.gms.google-services plugin is not applied &#39;
+              &#39;in the app-level build.gradle.&#39;,
+          recommendation:
+              &#39;Add the plugin to your app-level build.gradle:\n&#39;
+              &#39;  plugins {\n&#39;
+              &#39;    id &quot;com.google.gms.google-services&quot; version &quot;4.4.0&quot;\n&#39;
+              &#39;  }&#39;,
+          filePath: gradlePath,
+        ),
+      );
+    }
+
+    if (gradleInfo.compileSdk != null &amp;&amp; gradleInfo.compileSdk! &lt; 34) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: &#39;FD407&#39;,
+          title: &#39;compileSdk version is below 34&#39;,
+          description:
+              &#39;The compileSdk is set to ${gradleInfo.compileSdk}. &#39;
+              &#39;Version 34 or higher is recommended for latest Firebase SDKs.&#39;,
+          recommendation:
+              &#39;Update compileSdk to 34 in your app-level build.gradle:\n&#39;
+              &#39;  android {\n&#39;
+              &#39;    compileSdk = 34\n&#39;
+              &#39;  }&#39;,
+          filePath: gradlePath,
+        ),
+      );
+    }
+
+    if (gradleInfo.minSdk != null &amp;&amp; gradleInfo.minSdk! &lt; 21) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.info,
+          code: &#39;FD408&#39;,
+          title: &#39;minSdk version is below 21&#39;,
+          description:
+              &#39;The minSdk is set to ${gradleInfo.minSdk}. &#39;
+              &#39;firebase_core requires a minimum SDK version of 21.&#39;,
+          recommendation:
+              &#39;Update minSdk to 21 in your app-level build.gradle:\n&#39;
+              &#39;  defaultConfig {\n&#39;
+              &#39;    minSdk = 21\n&#39;
+              &#39;  }&#39;,
+          filePath: gradlePath,
+        ),
+      );
+    }
+
+    if (gradleInfo.targetSdk != null &amp;&amp; gradleInfo.targetSdk! &lt; 34) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: &#39;FD409&#39;,
+          title: &#39;targetSdk version is below 34&#39;,
+          description:
+              &#39;The targetSdk is set to ${gradleInfo.targetSdk}. &#39;
+              &#39;Version 34 or higher is recommended.&#39;,
+          recommendation:
+              &#39;Update targetSdk to 34 in your app-level build.gradle:\n&#39;
+              &#39;  defaultConfig {\n&#39;
+              &#39;    targetSdk = 34\n&#39;
+              &#39;  }&#39;,
+          filePath: gradlePath,
+        ),
+      );
+    }
+
+    expectedPackageName = gradleInfo.applicationId;
+  }
+
+  if (googleServicesConfig != null &amp;&amp;
+      googleServicesConfig[&#39;package_name&#39;] != null &amp;&amp;
+      expectedPackageName != null) {
+    final gsPackageName = googleServicesConfig[&#39;package_name&#39;] as String;
+    if (gsPackageName != expectedPackageName) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD402&#39;,
+          title: &#39;Package name mismatch in google-services.json&#39;,
+          description:
+              &#39;The package name &quot;$gsPackageName&quot; in google-services.json &#39;
+              &#39;does not match the applicationId &quot;$expectedPackageName&quot; &#39;
+              &#39;in build.gradle.&#39;,
+          recommendation:
+              &#39;Update the applicationId in build.gradle or regenerate &#39;
+              &#39;google-services.json with &quot;flutterfire configure&quot;.&#39;,
+          filePath: googleServicesPath,
+        ),
+      );
+    }
+  }
+
+  final manifestPath = fs.join(
+    fs.join(fs.join(projectPath, &#39;android&#39;, &#39;app&#39;), &#39;src&#39;, &#39;main&#39;),
+    &#39;AndroidManifest.xml&#39;,
+  );
+
+  if (fs.exists(manifestPath)) {
+    final manifestContent = fs.readAsString(manifestPath);
+    final manifestInfo = _parseAndroidManifestXml(manifestContent);
+
+    if (!manifestInfo.permissions.contains(&#39;android.permission.INTERNET&#39;)) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.error,
+          code: &#39;FD404&#39;,
+          title: &#39;Missing INTERNET permission&#39;,
+          description:
+              &#39;The INTERNET permission is not declared in &#39;
+              &#39;AndroidManifest.xml.&#39;,
+          recommendation:
+              &#39;Add the INTERNET permission to your AndroidManifest.xml:\n&#39;
+              &#39;  &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;&#47;&gt;&#39;,
+          filePath: manifestPath,
+        ),
+      );
+    }
+
+    if (!manifestInfo.permissions.contains(
+      &#39;android.permission.POST_NOTIFICATIONS&#39;,
+    )) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.warning,
+          code: &#39;FD405&#39;,
+          title: &#39;Missing POST_NOTIFICATIONS permission&#39;,
+          description:
+              &#39;The POST_NOTIFICATIONS permission is not declared. &#39;
+              &#39;Required for Android 13+ (API level 33+) notification support.&#39;,
+          recommendation:
+              &#39;Add the POST_NOTIFICATIONS permission to &#39;
+              &#39;your AndroidManifest.xml:\n&#39;
+              &#39;  &lt;uses-permission &#39;
+              &#39;android:name=&quot;android.permission.POST_NOTIFICATIONS&quot;&#47;&gt;&#39;,
+          filePath: manifestPath,
+        ),
+      );
+    }
+
+    if (!manifestInfo.permissions.contains(&#39;android.permission.WAKE_LOCK&#39;)) {
+      issues.add(
+        DiagnosticIssue(
+          severity: Severity.info,
+          code: &#39;FD406&#39;,
+          title: &#39;Missing WAKE_LOCK permission&#39;,
+          description:
+              &#39;The WAKE_LOCK permission is not declared in &#39;
+              &#39;AndroidManifest.xml.&#39;,
+          recommendation:
+              &#39;Add the WAKE_LOCK permission to your AndroidManifest.xml:\n&#39;
+              &#39;  &lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot;&#47;&gt;&#39;,
+          filePath: manifestPath,
+        ),
+      );
+    }
+  }
+
+  final hasCriticalOrError = issues.any(
+    (i) =&gt; i.severity == Severity.critical || i.severity == Severity.error,
+  );
+  final hasWarning = issues.any((i) =&gt; i.severity == Severity.warning);
+
+  CheckStatus status;
+  if (hasCriticalOrError) {
+    status = CheckStatus.failed;
+  } else if (hasWarning) {
+    status = CheckStatus.warning;
+  } else {
+    status = CheckStatus.passed;
+  }
+
+  return DiagnosticResult(
+    analyzerName: name,
+    status: status,
+    issues: issues,
+    duration: DateTime.now().difference(startTime),
+    timestamp: DateTime.now(),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_android_android_analyzer/">android_analyzer</a></li>
+    <li><a href="../../analyzers_android_android_analyzer/AndroidAnalyzer-class.html">AndroidAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+</ol>
+
+    <h5>AndroidAnalyzer class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

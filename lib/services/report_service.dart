@@ -5,8 +5,11 @@ import 'package:firedoctor/services/health_score_engine.dart';
 import 'package:firedoctor/terminal/terminal.dart';
 import 'package:firedoctor/filesystem/filesystem.dart';
 
+/// Core class.
 final class ReportService {
+  /// Public property or field.
   final Terminal terminal;
+  /// Public property or field.
   final HealthScoreEngine healthScoreEngine;
 
   const ReportService({
@@ -38,6 +41,7 @@ final class ReportService {
     return report;
   }
 
+  /// Public method or function.
   void printReport(DiagnosticReport report) {
     terminal.writeLine('');
     terminal.writeLine('═══════════════════════════════════════════');
@@ -114,6 +118,7 @@ final class ReportService {
     terminal.writeLine('');
   }
 
+  /// Public method or function.
   String toJson(DiagnosticReport report) {
     final map = <String, dynamic>{
       'schemaVersion': AppConstants.jsonSchemaVersion,
@@ -179,6 +184,7 @@ final class ReportService {
     return const JsonEncoder.withIndent('  ').convert(map);
   }
 
+  /// Public method or function.
   Future<void> saveReport(
     DiagnosticReport report,
     FileSystem fs,

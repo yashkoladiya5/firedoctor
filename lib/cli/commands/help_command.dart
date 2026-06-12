@@ -4,6 +4,7 @@ import 'package:firedoctor/constants/app_constants.dart';
 import 'package:firedoctor/logging/logger.dart';
 import 'package:firedoctor/terminal/terminal_interface.dart';
 
+/// Core class.
 final class HelpCommand extends Command {
   @override
   String get name => 'help';
@@ -12,7 +13,9 @@ final class HelpCommand extends Command {
   @override
   List<String> get aliases => ['h', '-h', '--help'];
 
+  /// Public property or field.
   final Logger logger;
+  /// Public property or field.
   final Terminal terminal;
   final CommandRunner _runner;
 
@@ -23,6 +26,7 @@ final class HelpCommand extends Command {
   }) : _runner = runner;
 
   @override
+  /// Public method or function.
   Future<int> execute(List<String> args) async {
     if (args.isEmpty) {
       _runner.printUsage();

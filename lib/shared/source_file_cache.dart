@@ -1,6 +1,8 @@
 import 'package:firedoctor/filesystem/file_system_interface.dart';
 
+/// Core class.
 class SourceFileCache {
+  /// Public property or field.
   final FileSystem fs;
   final Map<String, List<String>> _dartFiles = {};
   final Map<String, String> _dartContent = {};
@@ -10,6 +12,7 @@ class SourceFileCache {
 
   SourceFileCache(this.fs);
 
+  /// Public method or function.
   void scanProject(String projectPath) {
     if (_scanned) return;
     final libPath = fs.join(projectPath, 'lib');
@@ -28,6 +31,7 @@ class SourceFileCache {
     _scanned = true;
   }
 
+  /// Public method or function.
   List<String> getDartFiles(String projectPath) =>
       _dartFiles[projectPath] ?? [];
 
@@ -37,6 +41,7 @@ class SourceFileCache {
 
   List<String>? getLines(String filePath) => _dartLines[filePath];
 
+  /// Public method or function.
   void reset() {
     _dartFiles.clear();
     _dartContent.clear();

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the analyze method from the FCMAnalyzer class, for the Dart programming language.">
+  <title>analyze method - FCMAnalyzer class - fcm_analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_fcm_fcm_analyzer/">analyzers&#47;fcm&#47;fcm_analyzer.dart</a></li>
+    <li><a href="../../analyzers_fcm_fcm_analyzer/FCMAnalyzer-class.html">FCMAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+  </ol>
+  <div class="self-name">analyze</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzers_fcm_fcm_analyzer&#47;FCMAnalyzer-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">analyze</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_diagnostic_result/DiagnosticResult-class.html">DiagnosticResult</a></span>&gt;</span></span>
+<span class="name ">analyze</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="analyze-param-context"><span class="type-annotation"><a href="../../analyzers_analyzer_context/AnalyzerContext-class.html">AnalyzerContext</a></span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Public method or function.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+&#47;&#47;&#47; Public method or function.
+Future&lt;DiagnosticResult&gt; analyze(AnalyzerContext context) async {
+  final startTime = DateTime.now();
+  final issues = &lt;DiagnosticIssue&gt;[];
+  final fs = context.fileSystem;
+  final projectPath = context.projectPath;
+
+  final pubspecPath = fs.join(projectPath, &#39;pubspec.yaml&#39;);
+  if (!fs.exists(pubspecPath)) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final pubspec = await PubspecParser.parseFromFile(pubspecPath, fs);
+  if (pubspec == null) {
+    return DiagnosticResult(
+      analyzerName: name,
+      status: CheckStatus.skipped,
+      issues: issues,
+      duration: DateTime.now().difference(startTime),
+      timestamp: DateTime.now(),
+    );
+  }
+
+  final hasFirebaseMessaging =
+      pubspec.hasDependency(&#39;firebase_messaging&#39;) ||
+      pubspec.hasDevDependency(&#39;firebase_messaging&#39;);
+
+  final iosPlistPath = fs.join(
+    fs.join(
+      fs.join(projectPath, &#39;ios&#39;, &#39;Runner&#39;),
+      &#39;GoogleService-Info.plist&#39;,
+    ),
+  );
+  final androidServicesPath = fs.join(
+    fs.join(projectPath, &#39;android&#39;, &#39;app&#39;),
+    &#39;google-services.json&#39;,
+  );
+
+  final hasIosConfig = fs.exists(iosPlistPath);
+  final hasAndroidConfig = fs.exists(androidServicesPath);
+
+  &#47;&#47; FD600: firebase_messaging dependency missing
+  if (!hasFirebaseMessaging &amp;&amp; (hasIosConfig || hasAndroidConfig)) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD600&#39;,
+        title: &#39;Missing firebase_messaging dependency&#39;,
+        description:
+            &#39;Firebase configuration files exist but firebase_messaging is &#39;
+            &#39;not declared in pubspec.yaml. Firebase Cloud Messaging &#39;
+            &#39;requires this package for push notifications.&#39;,
+        recommendation:
+            &#39;Add firebase_messaging to your dependencies:\n&#39;
+            &#39;  firebase_messaging: ^15.0.0&#39;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  &#47;&#47; Scan Dart files for FCM usage, permission requests, background handler, token refresh
+  bool hasFcmUsage = false;
+  bool hasPermissionRequest = false;
+  bool hasBackgroundHandler = false;
+  bool hasTokenRefresh = false;
+
+  if (hasFirebaseMessaging) {
+    final dartFiles =
+        context.sourceFileCache?.getDartFiles(projectPath) ?? [];
+
+    for (final filePath in dartFiles) {
+      final lines = context.sourceFileCache?.getLines(filePath);
+      if (lines == null) continue;
+
+      for (final line in lines) {
+        if (line.contains(&#39;FirebaseMessaging&#39;)) {
+          hasFcmUsage = true;
+        }
+        if (line.contains(&#39;requestPermission(&#39;) ||
+            line.contains(&#39;requestPermission()&#39;)) {
+          hasPermissionRequest = true;
+        }
+        if (line.contains(&#39;FirebaseMessaging.onBackgroundMessage(&#39;)) {
+          hasBackgroundHandler = true;
+        }
+        if (line.contains(&#39;onTokenRefresh&#39;) ||
+            line.contains(&#39;getToken(&#39;) ||
+            line.contains(&#39;.getToken()&#39;)) {
+          hasTokenRefresh = true;
+        }
+      }
+    }
+  }
+
+  &#47;&#47; FD601: FCM not used in Dart code
+  if (hasFirebaseMessaging &amp;&amp; !hasFcmUsage) {
+    issues.add(
+      DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD601&#39;,
+        title: &#39;FCM not initialized in Dart code&#39;,
+        description:
+            &#39;firebase_messaging is declared as a dependency but no &#39;
+            &#39;FirebaseMessaging references were found in Dart files under lib&#47;.&#39;,
+        recommendation:
+            &#39;Import and use firebase_messaging in your Dart code:\n&#39;
+            &quot;  import &#39;package:firebase_messaging&#47;firebase_messaging.dart&#39;;&quot;,
+        filePath: pubspecPath,
+      ),
+    );
+  }
+
+  &#47;&#47; FD602: Notification permission not requested
+  if (hasFcmUsage &amp;&amp; !hasPermissionRequest) {
+    issues.add(
+      const DiagnosticIssue(
+        severity: Severity.warning,
+        code: &#39;FD602&#39;,
+        title: &#39;Notification permission not requested&#39;,
+        description:
+            &#39;FCM usage was detected but no notification permission request &#39;
+            &#39;was found. On iOS and Android 13+, push notifications require &#39;
+            &#39;explicit user permission.&#39;,
+        recommendation:
+            &#39;Request notification permission after initializing Firebase:\n&#39;
+            &#39;  NotificationSettings settings = await messaging.requestPermission();&#39;,
+      ),
+    );
+  }
+
+  &#47;&#47; FD603: No background message handler
+  if (hasFcmUsage &amp;&amp; !hasBackgroundHandler) {
+    issues.add(
+      const DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD603&#39;,
+        title: &#39;No background message handler configured&#39;,
+        description:
+            &#39;No FirebaseMessaging.onBackgroundMessage handler was found. &#39;
+            &#39;Without this, messages received when the app is terminated &#39;
+            &#39;will not be handled.&#39;,
+        recommendation:
+            &#39;Add a top-level background message handler:\n&#39;
+            &quot;  @pragma(&#39;vm:entry-point&#39;)\n&quot;
+            &#39;  Future&lt;void&gt; firebaseMessagingBackgroundHandler(RemoteMessage message) async {\n&#39;
+            &#39;    await Firebase.initializeApp();\n&#39;
+            &#39;  }\n&#39;
+            &#39;  void main() {\n&#39;
+            &#39;    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);\n&#39;
+            &#39;  }&#39;,
+      ),
+    );
+  }
+
+  &#47;&#47; FD604: iOS FirebaseAppDelegateProxyEnabled set to false
+  if (hasIosConfig || hasFirebaseMessaging) {
+    final infoPlistPath = fs.join(
+      fs.join(projectPath, &#39;ios&#39;, &#39;Runner&#39;),
+      &#39;Info.plist&#39;,
+    );
+    if (fs.exists(infoPlistPath)) {
+      final infoPlistContent = fs.readAsString(infoPlistPath);
+      final proxyValue = _plistParser.parseFirebaseAppDelegateProxyValue(
+        infoPlistContent,
+      );
+      if (proxyValue == false) {
+        issues.add(
+          DiagnosticIssue(
+            severity: Severity.warning,
+            code: &#39;FD604&#39;,
+            title: &#39;FirebaseAppDelegateProxyEnabled set to false&#39;,
+            description:
+                &#39;FirebaseAppDelegateProxyEnabled is explicitly set to false &#39;
+                &#39;in Info.plist. This disables Firebase method swizzling, &#39;
+                &#39;which is required for the Firebase Messaging plugin to work.&#39;,
+            recommendation:
+                &#39;Remove the FirebaseAppDelegateProxyEnabled key from Info.plist &#39;
+                &#39;or set it to true:\n&#39;
+                &#39;  &lt;key&gt;FirebaseAppDelegateProxyEnabled&lt;&#47;key&gt;\n&#39;
+                &#39;  &lt;true&#47;&gt;&#39;,
+            filePath: infoPlistPath,
+          ),
+        );
+      }
+    }
+  }
+
+  &#47;&#47; FD605: No token refresh listener
+  if (hasFcmUsage &amp;&amp; !hasTokenRefresh) {
+    issues.add(
+      const DiagnosticIssue(
+        severity: Severity.info,
+        code: &#39;FD605&#39;,
+        title: &#39;No FCM token refresh listener&#39;,
+        description:
+            &#39;No onTokenRefresh or getToken call found. FCM tokens can &#39;
+            &#39;change (app reinstall, restore, refresh) and without handling &#39;
+            &#39;token updates, push notifications may silently fail.&#39;,
+        recommendation:
+            &#39;Listen for token refreshes:\n&#39;
+            &#39;  FirebaseMessaging.instance.onTokenRefresh.listen((token) {\n&#39;
+            &#39;    &#47;&#47; Send token to your server\n&#39;
+            &#39;  });&#39;,
+      ),
+    );
+  }
+
+  final hasCriticalOrError = issues.any(
+    (i) =&gt; i.severity == Severity.critical || i.severity == Severity.error,
+  );
+  final hasWarning = issues.any((i) =&gt; i.severity == Severity.warning);
+
+  CheckStatus status;
+  if (hasCriticalOrError) {
+    status = CheckStatus.failed;
+  } else if (hasWarning) {
+    status = CheckStatus.warning;
+  } else {
+    status = CheckStatus.passed;
+  }
+
+  return DiagnosticResult(
+    analyzerName: name,
+    status: status,
+    issues: issues,
+    duration: DateTime.now().difference(startTime),
+    timestamp: DateTime.now(),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">firedoctor</a></li>
+    <li><a href="../../analyzers_fcm_fcm_analyzer/">fcm_analyzer</a></li>
+    <li><a href="../../analyzers_fcm_fcm_analyzer/FCMAnalyzer-class.html">FCMAnalyzer</a></li>
+    <li class="self-crumb">analyze method</li>
+</ol>
+
+    <h5>FCMAnalyzer class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    firedoctor
+      0.1.0-beta.2
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

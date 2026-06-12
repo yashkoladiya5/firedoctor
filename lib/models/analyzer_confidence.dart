@@ -1,6 +1,10 @@
+/// Core class.
 final class AnalyzerConfidence {
+  /// Public property or field.
   final String code;
+  /// Public property or field.
   final double confidence;
+  /// Public property or field.
   final String reasoning;
 
   const AnalyzerConfidence({
@@ -9,6 +13,7 @@ final class AnalyzerConfidence {
     required this.reasoning,
   });
 
+  /// Public method or function.
   Map<String, dynamic> toJson() => {
     'code': code,
     'confidence': confidence,
