@@ -7,3 +7,4 @@ export 'firebase_core/firebase_core.dart';
 export 'android/android.dart';
 export 'ios/ios.dart';
 export 'fcm/fcm.dart';
+export 'crashlytics/crashlytics.dart';
